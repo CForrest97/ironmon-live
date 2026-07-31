@@ -1,7 +1,7 @@
 ---
 id: WORK-001
 title: Adopt TypeScript, Markdown work items, and agent review
-status: in-progress
+status: blocked
 kind: repository
 artifacts: []
 ---
@@ -48,7 +48,13 @@ review skill, a custom reviewer model, and remote GitHub configuration updates.
 
 ## Validation
 
-Validation evidence is updated after the revised independent review completes.
+`npm run check` passes with 25 Markdown files, strict TypeScript compilation,
+one governed work item, two workflow files, and fourteen tests. The official
+skill validator passes. Pull request 3's required `quality` check passes.
+
+The separate `gpt-5.6-terra` reviewer reported no blocking findings with high
+confidence and rated the material CI/agent-governance change `2`; human approval
+is therefore required before merge.
 
 ## Agent Notes
 
