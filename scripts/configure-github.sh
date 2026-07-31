@@ -35,7 +35,7 @@ gh api \
   -F allow_squash_merge=true \
   -F allow_merge_commit=false \
   -F allow_rebase_merge=false \
-  -F delete_branch_on_merge=true
+  -F delete_branch_on_merge=true >/dev/null
 
 gh api \
   --method PUT \
@@ -67,14 +67,17 @@ gh label create repository \
   --description "Agent, process, and repository improvements" \
   --force
 
-successful_runs="$(gh run list \
-  --repo "${repository}" \
-  --workflow quality.yml \
-  --branch main \
-  --status success \
-  --limit 1 \
-  --json databaseId \
-  --jq 'length')"
+successful_runs="0"
+if gh workflow view quality.yml --repo "${repository}" >/dev/null 2>&1; then
+  successful_runs="$(gh run list \
+    --repo "${repository}" \
+    --workflow quality.yml \
+    --branch main \
+    --status success \
+    --limit 1 \
+    --json databaseId \
+    --jq 'length')"
+fi
 
 if [[ "${successful_runs}" == "0" ]]; then
   echo "Remote settings applied, but the main ruleset was not created." >&2
