@@ -1,7 +1,7 @@
 ---
 id: WORK-001
 title: Adopt TypeScript, Markdown work items, and agent learning
-status: in-progress
+status: done
 kind: repository
 artifacts:
   - DEC-001
@@ -50,8 +50,10 @@ schemas, regression tests, and remote GitHub configuration updates.
 
 ## Validation
 
-Run `npm run check`, verify the pull-request workflow, and inspect remote
-repository settings after merge.
+`npm run check` passes with 29 Markdown files, strict TypeScript compilation,
+four governed artifacts, two workflow files, and fourteen tests. GitHub's
+required `quality` check passed on pull request 3. The repository API confirms
+GitHub Issues are disabled.
 
 ## Agent Notes
 
