@@ -1,0 +1,26 @@
+# Pull request
+
+## Intent
+
+Describe the problem this change addresses and the outcome it seeks.
+
+## Governed artifacts
+
+List affected `PRD-###`, `CTX-###`, and `DEC-###` IDs, or explain why none are
+affected.
+
+## Product and domain impact
+
+- [ ] Product intent and acceptance criteria remain accurate.
+- [ ] Domain language, invariants, boundaries, and context relationships remain accurate.
+- [ ] Durable trade-offs are recorded as decisions.
+
+## Validation
+
+- [ ] `npm run check` passes locally.
+- [ ] New or changed links and cross-references resolve.
+- [ ] Accepted/active artifacts contain no placeholders or open questions.
+
+## Assumptions and open questions
+
+State assumptions and unresolved questions explicitly, or write `None.`

@@ -1,0 +1,21 @@
+{
+  "name": "ironmon-live-repository-tooling",
+  "version": "0.0.0",
+  "private": true,
+  "description": "Documentation contracts and repository quality tooling for IronMON Live",
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "scripts": {
+    "lint:markdown": "markdownlint-cli2",
+    "validate:docs": "node scripts/validate-docs.mjs",
+    "test": "node --test",
+    "check": "npm run lint:markdown && npm run validate:docs && npm test",
+    "check:external": "node scripts/check-external-links.mjs"
+  },
+  "devDependencies": {
+    "markdownlint-cli2": "0.23.2",
+    "yaml": "2.9.0"
+  }
+}
