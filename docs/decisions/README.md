@@ -10,4 +10,4 @@ agent workflow, or CI policy.
 
 ## Index
 
-No product decisions have been created yet.
+- [DEC-001: Use ephemeral, unauthenticated live channels](DEC-001-unauthenticated-live-channels.md)
