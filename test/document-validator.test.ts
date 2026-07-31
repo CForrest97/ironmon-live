@@ -140,7 +140,6 @@ title: Example work
 status: in-progress
 kind: repository
 artifacts: []
-learnings: []
 ---
 
 # Example work
@@ -178,41 +177,4 @@ Run the quality command.
 No reusable correction observed.
 `);
   assert.deepEqual(errorsFor(root), []);
-});
-
-test("rejects learning records without their prevention contract", () => {
-  const root = fs.mkdtempSync(path.join(os.tmpdir(), "ironmon-learning-"));
-  fs.mkdirSync(path.join(root, "docs/repository/learnings"), { recursive: true });
-  fs.writeFileSync(path.join(root, "docs/repository/learnings/README.md"), "# Learnings\n\n## Active\n\n- [Learning](LRN-001-example.md)\n\n## Superseded\n\nNone.\n");
-  fs.writeFileSync(path.join(root, "docs/repository/learnings/LRN-001-example.md"), `---
-id: LRN-001
-title: Example learning
-status: active
-trigger: correction
-work_items: []
----
-
-# Example learning
-
-## Observation
-
-A reusable mistake happened.
-
-## Root Cause
-
-The guard was missing.
-
-## Correction
-
-The current instance was fixed.
-
-## Evidence
-
-The failed check demonstrates it.
-
-## Follow-up
-
-None.
-`);
-  assert(errorsFor(root).some((error) => error.includes('missing or empty section "Prevention"')));
 });

@@ -13,17 +13,16 @@ When artifacts conflict, use this precedence and surface the conflict:
 1. Accepted decision records.
 2. Accepted product specifications and active bounded contexts.
 3. Product foundations, domain narrative, glossary, and context map.
-4. Active repository learnings and collaborator preferences.
-5. Draft specifications, proposed decisions, work items, and discovery notes.
+4. Draft specifications, proposed decisions, work items, and discovery notes.
 
 Never silently resolve a contradiction. Record it as an open question or
 propose a decision record.
 
 ## Before changing anything
 
-1. Read the product brief, principles, and accepted repository decisions.
+1. Read the product brief and principles.
 2. Read the glossary and relevant bounded contexts.
-3. Read the current work item, linked artifacts, and active learnings.
+3. Read the current work item and linked product/domain artifacts.
 4. State any remaining assumption explicitly in the artifact or pull request.
 
 ## Change workflow
@@ -39,19 +38,32 @@ propose a decision record.
 
 ## Learning loop
 
-When a correction, failed check, review comment, or unexpected outcome reveals
-a reusable lesson:
+When feedback or a failure reveals a reusable lesson, update one concise bullet
+under `Learned rules` and add a focused test or validator when the rule can be
+checked mechanically. Merge overlapping bullets. Keep incident detail in the
+work item, not in startup context. Never change product/domain truth in the name
+of learning.
 
-1. Record the observation and evidence in the current work item.
-2. Check existing `LRN-###` records for the same underlying cause.
-3. Create or update a learning record when the lesson can improve future work.
-4. Change at least one prevention mechanism: agent guidance, validation, a
-   regression test, a template, or an evaluation fixture.
-5. Link the learning and prevention evidence from the work item.
+## Learned rules
 
-Do not create learning records for one-off typos with no reusable lesson. Do not
-silently change accepted product or domain decisions in the name of learning.
-All learning changes remain reviewable through the normal pull-request flow.
+- Prefer TypeScript wherever viable; justify exceptions in the work item.
+- Manage work only through `WORK-###` Markdown files, never GitHub Issues.
+
+## Independent review gate
+
+Before merging any agent-authored change:
+
+1. Delegate the branch diff to the `risk_reviewer` custom agent and explicitly
+   invoke `$review-change`.
+2. Use a reviewer model different from the implementation model when available.
+3. Post the reviewer's exact rating and recommendation to the pull request.
+4. If the rating is 2 or 3, confidence is not high, or the reviewer requests
+   human approval, stop and ask the human to approve the merge.
+5. Ratings 0 or 1 may merge without human approval only when checks pass and
+   the review reports no blocking findings.
+
+The implementation agent cannot review or approve its own change. The review
+agent is read-only and cannot merge.
 
 ## Guardrails
 
@@ -67,6 +79,6 @@ All learning changes remain reviewable through the normal pull-request flow.
 ## Definition of done
 
 A change is complete when its intent is documented, affected product/domain
-artifacts and references agree, durable trade-offs are recorded, all checks
-pass, the work item captures validation and learning, and the pull request
-contains no hidden assumptions.
+artifacts and references agree, product decisions are recorded where needed,
+all checks pass, the work item captures validation, and the independent review
+gate has been satisfied.

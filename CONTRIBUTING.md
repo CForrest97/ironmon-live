@@ -9,8 +9,10 @@ files under `work/items`; GitHub Issues are disabled.
 1. Create or select a `WORK-###` Markdown work item.
 2. Create a focused branch from `main`.
 3. Add or update the relevant governed artifact using its template.
-4. Record durable product, domain, or technical trade-offs as a decision.
-5. Capture reusable mistakes as learning records plus a prevention change.
+4. Record durable product or domain trade-offs as a decision. Repository and
+   tooling conventions belong in agent guidance, checks, or work-item history.
+5. Fold reusable feedback into the concise learned rules in `AGENTS.md` and add
+   a mechanical prevention check when useful.
 6. Run `npm ci` after dependency changes and `npm run check` before opening a
    pull request.
 7. Complete the pull request template and link the work item and artifacts.
@@ -35,15 +37,10 @@ Discovery notes use `YYYY-MM-DD-short-name.md` and the discovery template.
 They may contain raw observations and uncertainty. Link evidence from a product
 specification rather than promoting a note itself to authoritative status.
 
-## Agent learnings
-
-Learning records use `LRN-###-short-name.md`. A learning must identify evidence,
-root cause, correction, and a concrete prevention mechanism. Review active
-learnings before beginning related work and supersede obsolete guidance rather
-than deleting history.
-
 ## Pull requests
 
-Keep changes narrow enough to review as one decision. A pull request may have
-zero required approvals for solo work, but all conversations must be resolved
-and the `quality` check must pass before merge.
+Keep changes narrow enough to review coherently. Before merge, a separate
+read-only agent must use the repository review skill to rate the change. A
+rating of 2 or 3, uncertain evidence, or an explicit reviewer recommendation
+requires human approval. All conversations must be resolved and `quality` must
+pass.

@@ -5,15 +5,15 @@ response to observed failures, not anticipated fashion.
 
 ## Learning system
 
-Reusable mistakes and corrections are recorded as versioned
-[learning records](learnings/README.md). Work items capture local observations;
-learning records preserve only lessons that should change future agent behavior.
+Reusable mistakes become concise learned-rule bullets in `AGENTS.md`, which is
+loaded for every agent run. Incident detail stays in its work item. Add a test,
+validator, template constraint, or review rule when prevention can be mechanical.
 
 ## Escalation triggers
 
 | Signal | Required response |
 | --- | --- |
-| A mistake reveals a reusable cause | Create or update a learning record and one prevention mechanism. |
+| A mistake reveals a reusable cause | Merge a concise learned rule into `AGENTS.md` and add a prevention mechanism when useful. |
 | The same agent mistake occurs twice | Strengthen guidance with a validator, regression test, or evaluation fixture. |
 | The same manual check is missed twice | Automate it in the required quality workflow. |
 | An application stack is accepted | Add build, test, static analysis, dependency review, and code scanning appropriate to that stack. |
@@ -21,5 +21,5 @@ learning records preserve only lessons that should change future agent behavior.
 | A second regular maintainer joins | Add CODEOWNERS and require one approval. |
 | Agent regressions recur despite written guidance | Add a small fixture-based agent evaluation suite. |
 
-When a trigger fires, add a decision record if the response creates a durable
-trade-off or changes repository policy.
+Decision records remain reserved for product choices. Repository conventions
+belong in `AGENTS.md`, validation, skills, or work-item history.

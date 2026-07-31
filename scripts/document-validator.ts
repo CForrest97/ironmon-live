@@ -23,7 +23,6 @@ interface ArtifactType {
   resolvedStatus?: string;
   categories?: string[];
   kinds?: string[];
-  triggers?: string[];
 }
 
 interface ParsedDocument {
@@ -57,7 +56,6 @@ const REQUIRED_FOUNDATIONS = [
   "docs/domain/glossary.md",
   "docs/domain/context-map.md",
   "docs/repository/evolution.md",
-  "docs/repository/learnings/README.md",
   "work/README.md",
   "work/items/README.md",
 ];
@@ -122,32 +120,19 @@ const ARTIFACT_TYPES: ArtifactType[] = [
       { field: "supersedes", idPattern: /^DEC-\d{3}$/u, label: "DEC", section: "Supersedes", requireNoneWhenEmpty: true },
     ],
     resolvedStatus: "accepted",
-    categories: ["product", "domain", "technical"],
+    categories: ["product", "domain"],
   },
   {
     name: "work item",
     directory: "work/items",
     prefix: "WORK",
     statuses: ["backlog", "ready", "in-progress", "blocked", "done", "cancelled"],
-    metadataArrays: ["artifacts", "learnings"],
+    metadataArrays: ["artifacts"],
     requiredHeadings: ["Intent", "Outcome", "Context", "Scope", "Acceptance Criteria", "Plan", "Validation", "Agent Notes"],
     references: [
       { field: "artifacts", idPattern: /^(?:PRD|CTX|DEC)-\d{3}$/u, label: "PRD, CTX, or DEC", section: "Context" },
-      { field: "learnings", idPattern: /^LRN-\d{3}$/u, label: "LRN", section: "Agent Notes" },
     ],
     kinds: ["product", "domain", "technical", "repository"],
-  },
-  {
-    name: "learning record",
-    directory: "docs/repository/learnings",
-    prefix: "LRN",
-    statuses: ["active", "superseded"],
-    metadataArrays: ["work_items"],
-    requiredHeadings: ["Observation", "Root Cause", "Correction", "Prevention", "Evidence", "Follow-up"],
-    references: [
-      { field: "work_items", idPattern: /^WORK-\d{3}$/u, label: "WORK", section: "Evidence" },
-    ],
-    triggers: ["correction", "ci-failure", "review", "retrospective"],
   },
 ];
 
@@ -301,9 +286,6 @@ export function validateRepository(root: string, options: ValidationOptions = {}
       if (type.kinds && (typeof metadata.kind !== "string" || !type.kinds.includes(metadata.kind))) {
         errors.push(`${relative}: kind must be one of ${type.kinds.join(", ")}`);
       }
-      if (type.triggers && (typeof metadata.trigger !== "string" || !type.triggers.includes(metadata.trigger))) {
-        errors.push(`${relative}: trigger must be one of ${type.triggers.join(", ")}`);
-      }
       if (typeof metadata.title === "string") {
         const escapedTitle = metadata.title.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
         if (!body.match(new RegExp(`^# ${escapedTitle}\\s*$`, "mu"))) errors.push(`${relative}: H1 must exactly match metadata title`);
@@ -345,12 +327,6 @@ export function validateRepository(root: string, options: ValidationOptions = {}
         const targetSection = ["done", "cancelled"].includes(metadata.status) ? "Completed" : "Active";
         if (!(sectionBody(index, targetSection) ?? "").includes(`(${filename})`)) {
           errors.push(`${relative}: ${metadata.status} work item must be listed under "${targetSection}"`);
-        }
-      }
-      if (type.prefix === "LRN" && typeof metadata.status === "string") {
-        const targetSection = metadata.status === "active" ? "Active" : "Superseded";
-        if (!(sectionBody(index, targetSection) ?? "").includes(`(${filename})`)) {
-          errors.push(`${relative}: ${metadata.status} learning must be listed under "${targetSection}"`);
         }
       }
       artifactCount += 1;

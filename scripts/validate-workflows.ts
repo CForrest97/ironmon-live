@@ -12,6 +12,10 @@ export interface WorkflowValidationResult {
   workflowCount: number;
 }
 
+interface WorkflowValidationOptions {
+  requireAgentSystem?: boolean;
+}
+
 function asRecord(value: unknown): UnknownRecord | null {
   return value !== null && typeof value === "object" && !Array.isArray(value)
     ? (value as UnknownRecord)
@@ -46,10 +50,48 @@ function validateTypeScriptPreference(root: string, errors: string[]): void {
   }
 }
 
-export function validateWorkflows(root: string): WorkflowValidationResult {
+function validateAgentReviewSystem(root: string, errors: string[]): void {
+  const required = [
+    ".agents/skills/review-change/SKILL.md",
+    ".agents/skills/review-change/agents/openai.yaml",
+    ".codex/agents/risk-reviewer.toml",
+  ];
+  for (const relative of required) {
+    if (!fs.existsSync(path.join(root, relative))) errors.push(`${relative}: required independent-review file is missing`);
+  }
+
+  const agentsPath = path.join(root, "AGENTS.md");
+  if (fs.existsSync(agentsPath)) {
+    const guidance = fs.readFileSync(agentsPath, "utf8");
+    for (const heading of ["## Learned rules", "## Independent review gate"]) {
+      if (!guidance.includes(heading)) errors.push(`AGENTS.md: missing ${heading}`);
+    }
+    if (/\bLRN-\d{3}\b/u.test(guidance)) errors.push("AGENTS.md: heavyweight learning-record references are not allowed");
+  }
+
+  const skillPath = path.join(root, ".agents/skills/review-change/SKILL.md");
+  if (fs.existsSync(skillPath)) {
+    const skill = fs.readFileSync(skillPath, "utf8");
+    for (const field of ["REVIEW_RATING", "REVIEW_CONFIDENCE", "HUMAN_APPROVAL_REQUIRED", "BLOCKING_FINDINGS"]) {
+      if (!skill.includes(field)) errors.push(`review-change skill: missing output field ${field}`);
+    }
+  }
+
+  const reviewerPath = path.join(root, ".codex/agents/risk-reviewer.toml");
+  if (fs.existsSync(reviewerPath)) {
+    const reviewer = fs.readFileSync(reviewerPath, "utf8");
+    if (!/^model\s*=\s*"gpt-5\.6-terra"$/mu.test(reviewer)) errors.push("risk reviewer: must pin the independent reviewer model");
+    if (!/^model_reasoning_effort\s*=\s*"high"$/mu.test(reviewer)) errors.push("risk reviewer: reasoning effort must be high");
+    if (!/^sandbox_mode\s*=\s*"read-only"$/mu.test(reviewer)) errors.push("risk reviewer: sandbox must be read-only");
+    if (!reviewer.includes("$review-change")) errors.push("risk reviewer: must invoke the review-change skill");
+  }
+}
+
+export function validateWorkflows(root: string, options: WorkflowValidationOptions = {}): WorkflowValidationResult {
   const errors: string[] = [];
   const files = workflowFiles(root);
   validateTypeScriptPreference(root, errors);
+  if (options.requireAgentSystem !== false) validateAgentReviewSystem(root, errors);
 
   for (const absolute of files) {
     const relative = path.relative(root, absolute);

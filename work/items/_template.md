@@ -4,7 +4,6 @@ title: Replace with a work-item title
 status: backlog
 kind: repository
 artifacts: []
-learnings: []
 ---
 
 # Replace with a work-item title
@@ -19,7 +18,7 @@ Describe the observable result rather than implementation activity.
 
 ## Context
 
-Link evidence and relevant product, domain, decision, or learning records.
+Link evidence and relevant product, domain, decision, or learned-rule context.
 
 ## Scope
 
@@ -39,4 +38,5 @@ Record checks and evidence as work progresses.
 
 ## Agent Notes
 
-Record assumptions, corrections, and candidates for reusable learning.
+Record assumptions and incident detail. Fold only reusable conclusions into the
+concise learned rules in `AGENTS.md`.

@@ -32,6 +32,11 @@ State assumptions and unresolved questions explicitly, or write `None.`
 
 ## Learning review
 
-- [ ] Reusable corrections or failures are captured in an `LRN-###` record.
-- [ ] Every new learning includes a prevention change and evidence.
+- [ ] Reusable corrections are folded into concise `AGENTS.md` learned rules.
+- [ ] A focused prevention check was added where the rule is mechanical.
 - [ ] No learning was needed for this change.
+
+## Independent review gate
+
+Before merge, post a separate `risk_reviewer` report containing its model,
+0–3 rating, confidence, blocking findings, and human-approval recommendation.

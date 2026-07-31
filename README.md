@@ -14,8 +14,7 @@ established before an application stack is selected.
 - Browse [product specifications](docs/product/specs/README.md),
   [bounded contexts](docs/domain/contexts/README.md), and
   [decision records](docs/decisions/README.md).
-- Select work from the [versioned work-item index](work/items/README.md) and
-  review [active agent learnings](docs/repository/learnings/README.md).
+- Select work from the [versioned work-item index](work/items/README.md).
 - Follow [CONTRIBUTING.md](CONTRIBUTING.md) for the change process.
 - Agents must also follow [AGENTS.md](AGENTS.md).
 
