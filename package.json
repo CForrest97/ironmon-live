@@ -9,13 +9,27 @@
   },
   "scripts": {
     "lint:markdown": "markdownlint-cli2",
-    "validate:docs": "node scripts/validate-docs.mjs",
-    "test": "node --test",
-    "check": "npm run lint:markdown && npm run validate:docs && npm test",
-    "check:external": "node scripts/check-external-links.mjs"
+    "lint:ts": "eslint . --max-warnings 0",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "check:types": "tsc --noEmit",
+    "validate:docs": "node scripts/validate-docs.ts",
+    "validate:workflows": "node scripts/validate-workflows.ts",
+    "test": "node --test test/*.test.ts",
+    "check": "npm run lint:markdown && npm run format:check && npm run lint:ts && npm run check:types && npm run validate:docs && npm run validate:workflows && npm test",
+    "check:external": "node scripts/check-external-links.ts",
+    "configure:github": "scripts/configure-github.sh"
   },
   "devDependencies": {
+    "@eslint/js": "10.0.1",
+    "@types/node": "24.13.3",
+    "eslint": "10.8.0",
+    "eslint-config-prettier": "10.1.8",
+    "jiti": "2.7.0",
     "markdownlint-cli2": "0.23.2",
+    "prettier": "3.9.6",
+    "typescript": "6.0.3",
+    "typescript-eslint": "8.65.0",
     "yaml": "2.9.0"
   }
 }

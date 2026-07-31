@@ -4,6 +4,11 @@
 
 Describe the problem this change addresses and the outcome it seeks.
 
+## Work item
+
+Link the governing `WORK-###` file. Normal work must not originate from a
+GitHub Issue.
+
 ## Governed artifacts
 
 List affected `PRD-###`, `CTX-###`, and `DEC-###` IDs, or explain why none are
@@ -24,3 +29,14 @@ affected.
 ## Assumptions and open questions
 
 State assumptions and unresolved questions explicitly, or write `None.`
+
+## Learning review
+
+- [ ] Reusable corrections are folded into concise `AGENTS.md` learned rules.
+- [ ] A focused prevention check was added where the rule is mechanical.
+- [ ] No learning was needed for this change.
+
+## Independent review gate
+
+Before merge, post a separate `risk_reviewer` report containing its model,
+0–3 rating, confidence, blocking findings, and human-approval recommendation.

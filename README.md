@@ -14,13 +14,14 @@ established before an application stack is selected.
 - Browse [product specifications](docs/product/specs/README.md),
   [bounded contexts](docs/domain/contexts/README.md), and
   [decision records](docs/decisions/README.md).
+- Select work from the [versioned work-item index](work/items/README.md).
 - Follow [CONTRIBUTING.md](CONTRIBUTING.md) for the change process.
 - Agents must also follow [AGENTS.md](AGENTS.md).
 
 ## Quality checks
 
-Node is used only for repository tooling; it does not constrain the future
-application stack.
+Repository tooling is written in TypeScript and runs on Node. TypeScript is the
+preferred language for future code wherever the target platform supports it.
 
 ```sh
 npm ci

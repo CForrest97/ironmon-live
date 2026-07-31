@@ -1,0 +1,7 @@
+interface:
+  display_name: "Review Change"
+  short_description: "Rate change risk and human approval need"
+  default_prompt: "Use $review-change to independently review this branch and rate whether human approval is required."
+
+policy:
+  allow_implicit_invocation: true

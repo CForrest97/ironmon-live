@@ -1,0 +1,7 @@
+interface:
+  display_name: "TypeScript Expert"
+  short_description: "Apply pragmatic TypeScript coding preferences"
+  default_prompt: "Use $typescript-expert to implement this TypeScript change with the repository coding preferences."
+
+policy:
+  allow_implicit_invocation: true

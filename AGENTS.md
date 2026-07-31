@@ -13,7 +13,7 @@ When artifacts conflict, use this precedence and surface the conflict:
 1. Accepted decision records.
 2. Accepted product specifications and active bounded contexts.
 3. Product foundations, domain narrative, glossary, and context map.
-4. Draft specifications, proposed decisions, and discovery notes.
+4. Draft specifications, proposed decisions, work items, and discovery notes.
 
 Never silently resolve a contradiction. Record it as an open question or
 propose a decision record.
@@ -22,17 +22,50 @@ propose a decision record.
 
 1. Read the product brief and principles.
 2. Read the glossary and relevant bounded contexts.
-3. Read linked specifications and decisions.
+3. Read the current work item and linked product/domain artifacts.
 4. State any remaining assumption explicitly in the artifact or pull request.
 
 ## Change workflow
 
 - Work on a focused branch and merge through a pull request.
+- Start or update a versioned `WORK-###` file; do not use GitHub Issues to
+  manage work.
 - Give governed artifacts stable IDs and keep their cross-references current.
-- Promote GitHub issue discoveries into versioned documents before treating
-  them as accepted knowledge.
 - Update product/domain documents in the same change as behavior they govern.
+- Prefer TypeScript for program logic. Thin scripts that mostly orchestrate
+  commands may use shell.
+- Invoke `$typescript-expert` whenever a change creates or modifies `.ts` or
+  `.tsx` files; do not load it for changes without TypeScript.
 - Run `npm run check` before declaring work complete.
+
+## Learning loop
+
+When feedback or a failure reveals a reusable lesson, update one concise bullet
+under `Learned rules` and add a focused test or validator when the rule can be
+checked mechanically. Merge overlapping bullets. Keep incident detail in the
+work item, not in startup context. Never change product/domain truth in the name
+of learning.
+
+## Learned rules
+
+- Prefer TypeScript for program logic; thin command orchestration may use shell.
+- Manage work only through `WORK-###` Markdown files, never GitHub Issues.
+
+## Independent review gate
+
+Before merging any agent-authored change:
+
+1. Delegate the branch diff to the `risk_reviewer` custom agent and explicitly
+   invoke `$review-change`.
+2. Use a reviewer model different from the implementation model when available.
+3. Post the reviewer's exact rating and recommendation to the pull request.
+4. If the rating is 2 or 3, confidence is not high, or the reviewer requests
+   human approval, stop and ask the human to approve the merge.
+5. Ratings 0 or 1 may merge without human approval only when checks pass and
+   the review reports no blocking findings.
+
+The implementation agent cannot review or approve its own change. The review
+agent is read-only and cannot merge.
 
 ## Guardrails
 
@@ -43,9 +76,11 @@ propose a decision record.
 - Do not add an application framework until the stack has been deliberately
   selected and recorded.
 - Prefer the smallest rule or automation that addresses observed friction.
+- Never represent a GitHub Issue as the source of a work item.
 
 ## Definition of done
 
 A change is complete when its intent is documented, affected product/domain
-artifacts and references agree, durable trade-offs are recorded, all checks
-pass, and the pull request contains no hidden assumptions.
+artifacts and references agree, product decisions are recorded where needed,
+all checks pass, the work item captures validation, and the independent review
+gate has been satisfied.

@@ -29,5 +29,8 @@ jobs:
           node-version-file: .nvmrc
           package-manager-cache: false
 
+      - name: Install repository tooling
+        run: npm ci --ignore-scripts
+
       - name: Check remote links
         run: npm run check:external
