@@ -5,7 +5,7 @@ keep completed items as durable delivery history.
 
 ## Active
 
-- [WORK-001: Adopt TypeScript, Markdown work items, and agent review](WORK-001-typescript-work-items-learning.md)
+- [WORK-001: Adopt TypeScript, Markdown work items, and agent review](WORK-001-typescript-work-items-review.md)
 
 ## Completed
 

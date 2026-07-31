@@ -5,14 +5,14 @@ import path from "node:path";
 import test from "node:test";
 import { validateRepository } from "../scripts/document-validator.ts";
 
-interface ProductValues {
+type ProductValues = {
   id: string;
   title: string;
   status: string;
   contexts: string[];
   decisions: string[];
   openQuestions: string;
-}
+};
 
 const productSections = [
   "Problem",
@@ -33,7 +33,10 @@ function createRepository(): string {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "ironmon-docs-"));
   fs.mkdirSync(path.join(root, "docs/product/specs"), { recursive: true });
   fs.writeFileSync(path.join(root, "README.md"), "# Fixture\n");
-  fs.writeFileSync(path.join(root, "docs/product/specs/README.md"), "# Specs\n\n- [PRD-001](PRD-001-example.md)\n");
+  fs.writeFileSync(
+    path.join(root, "docs/product/specs/README.md"),
+    "# Specs\n\n- [PRD-001](PRD-001-example.md)\n",
+  );
   return root;
 }
 
@@ -84,7 +87,10 @@ test("accepts a complete draft with explicit open questions", () => {
 
 test("rejects an invalid lifecycle status", () => {
   const root = createRepository();
-  fs.writeFileSync(path.join(root, "docs/product/specs/PRD-001-example.md"), productDocument({ status: "ready" }));
+  fs.writeFileSync(
+    path.join(root, "docs/product/specs/PRD-001-example.md"),
+    productDocument({ status: "ready" }),
+  );
   assert(errorsFor(root).some((error) => error.includes("invalid status")));
 });
 
@@ -97,14 +103,20 @@ test("rejects a missing required section", () => {
 
 test("rejects a dangling artifact reference", () => {
   const root = createRepository();
-  const content = productDocument({ contexts: ["CTX-404"] }).replace("## Affected Contexts\n\nNone.", "## Affected Contexts\n\nCTX-404");
+  const content = productDocument({ contexts: ["CTX-404"] }).replace(
+    "## Affected Contexts\n\nNone.",
+    "## Affected Contexts\n\nCTX-404",
+  );
   fs.writeFileSync(path.join(root, "docs/product/specs/PRD-001-example.md"), content);
   assert(errorsFor(root).some((error) => error.includes("dangling artifact reference CTX-404")));
 });
 
 test("rejects a duplicate artifact ID", () => {
   const root = createRepository();
-  fs.writeFileSync(path.join(root, "docs/product/specs/README.md"), "# Specs\n\n- [One](PRD-001-example.md)\n- [Two](PRD-002-other.md)\n");
+  fs.writeFileSync(
+    path.join(root, "docs/product/specs/README.md"),
+    "# Specs\n\n- [One](PRD-001-example.md)\n- [Two](PRD-002-other.md)\n",
+  );
   fs.writeFileSync(path.join(root, "docs/product/specs/PRD-001-example.md"), productDocument());
   fs.writeFileSync(path.join(root, "docs/product/specs/PRD-002-other.md"), productDocument());
   assert(errorsFor(root).some((error) => error.includes("duplicate ID PRD-001")));
@@ -119,7 +131,10 @@ test("rejects a broken local Markdown link", () => {
 
 test("rejects accepted artifacts with unresolved questions", () => {
   const root = createRepository();
-  fs.writeFileSync(path.join(root, "docs/product/specs/PRD-001-example.md"), productDocument({ status: "accepted" }));
+  fs.writeFileSync(
+    path.join(root, "docs/product/specs/PRD-001-example.md"),
+    productDocument({ status: "accepted" }),
+  );
   assert(errorsFor(root).some((error) => error.includes('must have "None." in Open Questions')));
 });
 
@@ -133,8 +148,13 @@ test("rejects an artifact omitted from its index", () => {
 test("validates Markdown work-item contracts", () => {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "ironmon-work-"));
   fs.mkdirSync(path.join(root, "work/items"), { recursive: true });
-  fs.writeFileSync(path.join(root, "work/items/README.md"), "# Work\n\n## Active\n\n- [Work](WORK-001-example.md)\n\n## Completed\n\nNone.\n");
-  fs.writeFileSync(path.join(root, "work/items/WORK-001-example.md"), `---
+  fs.writeFileSync(
+    path.join(root, "work/items/README.md"),
+    "# Work\n\n## Active\n\n- [Work](WORK-001-example.md)\n\n## Completed\n\nNone.\n",
+  );
+  fs.writeFileSync(
+    path.join(root, "work/items/WORK-001-example.md"),
+    `---
 id: WORK-001
 title: Example work
 status: in-progress
@@ -175,6 +195,7 @@ Run the quality command.
 ## Agent Notes
 
 No reusable correction observed.
-`);
+`,
+  );
   assert.deepEqual(errorsFor(root), []);
 });

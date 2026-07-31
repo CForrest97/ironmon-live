@@ -4,15 +4,15 @@ import { parse as parseYaml } from "yaml";
 
 type Metadata = Record<string, unknown>;
 
-interface ReferenceRule {
+type ReferenceRule = {
   field: string;
   idPattern: RegExp;
   label: string;
   section: string;
   requireNoneWhenEmpty?: boolean;
-}
+};
 
-interface ArtifactType {
+type ArtifactType = {
   name: string;
   directory: string;
   prefix: string;
@@ -23,26 +23,26 @@ interface ArtifactType {
   resolvedStatus?: string;
   categories?: string[];
   kinds?: string[];
-}
+};
 
-interface ParsedDocument {
+type ParsedDocument = {
   metadata: Metadata;
   body: string;
-}
+};
 
-interface PendingReference {
+type PendingReference = {
   from: string;
   id: string;
-}
+};
 
-interface ValidationOptions {
+type ValidationOptions = {
   requireFoundations?: boolean;
-}
+};
 
-export interface ValidationResult {
+export type ValidationResult = {
   errors: string[];
   artifactCount: number;
-}
+};
 
 const REQUIRED_FOUNDATIONS = [
   "AGENTS.md",
@@ -82,8 +82,20 @@ const ARTIFACT_TYPES: ArtifactType[] = [
       "Open Questions",
     ],
     references: [
-      { field: "contexts", idPattern: /^CTX-\d{3}$/u, label: "CTX", section: "Affected Contexts", requireNoneWhenEmpty: true },
-      { field: "decisions", idPattern: /^DEC-\d{3}$/u, label: "DEC", section: "Decisions", requireNoneWhenEmpty: true },
+      {
+        field: "contexts",
+        idPattern: /^CTX-\d{3}$/u,
+        label: "CTX",
+        section: "Affected Contexts",
+        requireNoneWhenEmpty: true,
+      },
+      {
+        field: "decisions",
+        idPattern: /^DEC-\d{3}$/u,
+        label: "DEC",
+        section: "Decisions",
+        requireNoneWhenEmpty: true,
+      },
     ],
     resolvedStatus: "accepted",
   },
@@ -105,7 +117,13 @@ const ARTIFACT_TYPES: ArtifactType[] = [
       "Open Questions",
     ],
     references: [
-      { field: "decisions", idPattern: /^DEC-\d{3}$/u, label: "DEC", section: "Decisions", requireNoneWhenEmpty: true },
+      {
+        field: "decisions",
+        idPattern: /^DEC-\d{3}$/u,
+        label: "DEC",
+        section: "Decisions",
+        requireNoneWhenEmpty: true,
+      },
     ],
     resolvedStatus: "active",
   },
@@ -115,9 +133,22 @@ const ARTIFACT_TYPES: ArtifactType[] = [
     prefix: "DEC",
     statuses: ["proposed", "accepted", "rejected", "superseded"],
     metadataArrays: ["supersedes"],
-    requiredHeadings: ["Context", "Decision", "Consequences", "Alternatives", "Supersedes", "Open Questions"],
+    requiredHeadings: [
+      "Context",
+      "Decision",
+      "Consequences",
+      "Alternatives",
+      "Supersedes",
+      "Open Questions",
+    ],
     references: [
-      { field: "supersedes", idPattern: /^DEC-\d{3}$/u, label: "DEC", section: "Supersedes", requireNoneWhenEmpty: true },
+      {
+        field: "supersedes",
+        idPattern: /^DEC-\d{3}$/u,
+        label: "DEC",
+        section: "Supersedes",
+        requireNoneWhenEmpty: true,
+      },
     ],
     resolvedStatus: "accepted",
     categories: ["product", "domain"],
@@ -128,9 +159,23 @@ const ARTIFACT_TYPES: ArtifactType[] = [
     prefix: "WORK",
     statuses: ["backlog", "ready", "in-progress", "blocked", "done", "cancelled"],
     metadataArrays: ["artifacts"],
-    requiredHeadings: ["Intent", "Outcome", "Context", "Scope", "Acceptance Criteria", "Plan", "Validation", "Agent Notes"],
+    requiredHeadings: [
+      "Intent",
+      "Outcome",
+      "Context",
+      "Scope",
+      "Acceptance Criteria",
+      "Plan",
+      "Validation",
+      "Agent Notes",
+    ],
     references: [
-      { field: "artifacts", idPattern: /^(?:PRD|CTX|DEC)-\d{3}$/u, label: "PRD, CTX, or DEC", section: "Context" },
+      {
+        field: "artifacts",
+        idPattern: /^(?:PRD|CTX|DEC)-\d{3}$/u,
+        label: "PRD, CTX, or DEC",
+        section: "Context",
+      },
     ],
     kinds: ["product", "domain", "technical", "repository"],
   },
@@ -166,7 +211,9 @@ function parseFrontmatter(content: string): ParsedDocument {
 
 function sectionBody(body: string, heading: string): string | null {
   const escaped = heading.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
-  const match = body.match(new RegExp(`^## ${escaped}\\s*$([\\s\\S]*?)(?=^## |(?![\\s\\S]))`, "mu"));
+  const match = body.match(
+    new RegExp(`^## ${escaped}\\s*$([\\s\\S]*?)(?=^## |(?![\\s\\S]))`, "mu"),
+  );
   return match?.[1]?.trim() ?? null;
 }
 
@@ -183,7 +230,8 @@ function validateDiscoveryNotes(root: string, errors: string[]): void {
     const body = fs.readFileSync(path.join(directory, name), "utf8");
     for (const heading of required) {
       const section = sectionBody(body, heading);
-      if (section === null || section.length === 0) errors.push(`${relative}: missing or empty section "${heading}"`);
+      if (section === null || section.length === 0)
+        errors.push(`${relative}: missing or empty section "${heading}"`);
     }
   }
 }
@@ -220,7 +268,10 @@ function validateLocalLinks(root: string, markdownFiles: string[], errors: strin
   }
 }
 
-export function validateRepository(root: string, options: ValidationOptions = {}): ValidationResult {
+export function validateRepository(
+  root: string,
+  options: ValidationOptions = {},
+): ValidationResult {
   const errors: string[] = [];
   const requireFoundations = options.requireFoundations !== false;
   const allFiles = walkFiles(root);
@@ -228,7 +279,8 @@ export function validateRepository(root: string, options: ValidationOptions = {}
 
   if (requireFoundations) {
     for (const required of REQUIRED_FOUNDATIONS) {
-      if (!fs.existsSync(path.join(root, required))) errors.push(`${required}: required file is missing`);
+      if (!fs.existsSync(path.join(root, required)))
+        errors.push(`${required}: required file is missing`);
     }
   }
 
@@ -241,13 +293,17 @@ export function validateRepository(root: string, options: ValidationOptions = {}
     if (!fs.existsSync(absoluteDirectory)) continue;
     const indexPath = path.join(absoluteDirectory, "README.md");
     const index = fs.existsSync(indexPath) ? fs.readFileSync(indexPath, "utf8") : "";
-    if (!fs.existsSync(indexPath)) errors.push(`${type.directory}/README.md: artifact index is missing`);
+    if (!fs.existsSync(indexPath))
+      errors.push(`${type.directory}/README.md: artifact index is missing`);
 
     for (const filename of fs.readdirSync(absoluteDirectory).sort()) {
       if (!filename.endsWith(".md") || ["README.md", "_template.md"].includes(filename)) continue;
       const relative = `${type.directory}/${filename}`;
-      const filenameMatch = filename.match(new RegExp(`^(${type.prefix}-\\d{3})-[a-z0-9]+(?:-[a-z0-9]+)*\\.md$`, "u"));
-      if (!filenameMatch) errors.push(`${relative}: filename must match ${type.prefix}-###-short-name.md`);
+      const filenameMatch = filename.match(
+        new RegExp(`^(${type.prefix}-\\d{3})-[a-z0-9]+(?:-[a-z0-9]+)*\\.md$`, "u"),
+      );
+      if (!filenameMatch)
+        errors.push(`${relative}: filename must match ${type.prefix}-###-short-name.md`);
 
       let parsed: ParsedDocument;
       try {
@@ -268,9 +324,12 @@ export function validateRepository(root: string, options: ValidationOptions = {}
 
       const id = metadata.id;
       if (typeof id === "string") {
-        if (!new RegExp(`^${type.prefix}-\\d{3}$`, "u").test(id)) errors.push(`${relative}: id must match ${type.prefix}-###`);
+        if (!new RegExp(`^${type.prefix}-\\d{3}$`, "u").test(id))
+          errors.push(`${relative}: id must match ${type.prefix}-###`);
         if (filenameMatch?.[1] && filenameMatch[1] !== id) {
-          errors.push(`${relative}: filename ID ${filenameMatch[1]} does not match metadata ID ${id}`);
+          errors.push(
+            `${relative}: filename ID ${filenameMatch[1]} does not match metadata ID ${id}`,
+          );
         }
         const existing = ids.get(id);
         if (existing) errors.push(`${relative}: duplicate ID ${id}; first used by ${existing}`);
@@ -280,17 +339,25 @@ export function validateRepository(root: string, options: ValidationOptions = {}
       if (typeof metadata.status !== "string" || !type.statuses.includes(metadata.status)) {
         errors.push(`${relative}: invalid status "${String(metadata.status)}" for ${type.name}`);
       }
-      if (type.categories && (typeof metadata.category !== "string" || !type.categories.includes(metadata.category))) {
+      if (
+        type.categories &&
+        (typeof metadata.category !== "string" || !type.categories.includes(metadata.category))
+      ) {
         errors.push(`${relative}: category must be one of ${type.categories.join(", ")}`);
       }
-      if (type.kinds && (typeof metadata.kind !== "string" || !type.kinds.includes(metadata.kind))) {
+      if (
+        type.kinds &&
+        (typeof metadata.kind !== "string" || !type.kinds.includes(metadata.kind))
+      ) {
         errors.push(`${relative}: kind must be one of ${type.kinds.join(", ")}`);
       }
       if (typeof metadata.title === "string") {
         const escapedTitle = metadata.title.replace(/[.*+?^${}()|[\]\\]/gu, "\\$&");
-        if (!body.match(new RegExp(`^# ${escapedTitle}\\s*$`, "mu"))) errors.push(`${relative}: H1 must exactly match metadata title`);
+        if (!body.match(new RegExp(`^# ${escapedTitle}\\s*$`, "mu")))
+          errors.push(`${relative}: H1 must exactly match metadata title`);
       }
-      if (PLACEHOLDER_PATTERN.test(body)) errors.push(`${relative}: governed artifacts may not contain placeholders`);
+      if (PLACEHOLDER_PATTERN.test(body))
+        errors.push(`${relative}: governed artifacts may not contain placeholders`);
 
       for (const field of type.metadataArrays) {
         const value = metadata[field];
@@ -300,33 +367,52 @@ export function validateRepository(root: string, options: ValidationOptions = {}
       }
       for (const heading of type.requiredHeadings) {
         const section = sectionBody(body, heading);
-        if (section === null || section.length === 0) errors.push(`${relative}: missing or empty section "${heading}"`);
+        if (section === null || section.length === 0)
+          errors.push(`${relative}: missing or empty section "${heading}"`);
       }
 
       for (const reference of type.references) {
         const rawValues = metadata[reference.field];
-        const values = Array.isArray(rawValues) ? rawValues.filter((value): value is string => typeof value === "string") : [];
+        const values = Array.isArray(rawValues)
+          ? rawValues.filter((value): value is string => typeof value === "string")
+          : [];
         const section = sectionBody(body, reference.section) ?? "";
         if (reference.requireNoneWhenEmpty && values.length === 0 && section !== "None.") {
-          errors.push(`${relative}: section "${reference.section}" must say "None." when metadata is empty`);
+          errors.push(
+            `${relative}: section "${reference.section}" must say "None." when metadata is empty`,
+          );
         }
         for (const referencedId of values) {
           if (!reference.idPattern.test(referencedId)) {
-            errors.push(`${relative}: ${reference.field} contains invalid ${reference.label} ID ${referencedId}`);
+            errors.push(
+              `${relative}: ${reference.field} contains invalid ${reference.label} ID ${referencedId}`,
+            );
           }
-          if (!section.includes(referencedId)) errors.push(`${relative}: section "${reference.section}" must mention ${referencedId}`);
+          if (!section.includes(referencedId))
+            errors.push(`${relative}: section "${reference.section}" must mention ${referencedId}`);
           pendingReferences.push({ from: relative, id: referencedId });
         }
       }
 
-      if (type.resolvedStatus && metadata.status === type.resolvedStatus && sectionBody(body, "Open Questions") !== "None.") {
-        errors.push(`${relative}: ${type.resolvedStatus} artifacts must have "None." in Open Questions`);
+      if (
+        type.resolvedStatus &&
+        metadata.status === type.resolvedStatus &&
+        sectionBody(body, "Open Questions") !== "None."
+      ) {
+        errors.push(
+          `${relative}: ${type.resolvedStatus} artifacts must have "None." in Open Questions`,
+        );
       }
-      if (!index.includes(`(${filename})`)) errors.push(`${relative}: artifact is missing from ${type.directory}/README.md`);
+      if (!index.includes(`(${filename})`))
+        errors.push(`${relative}: artifact is missing from ${type.directory}/README.md`);
       if (type.prefix === "WORK" && typeof metadata.status === "string") {
-        const targetSection = ["done", "cancelled"].includes(metadata.status) ? "Completed" : "Active";
+        const targetSection = ["done", "cancelled"].includes(metadata.status)
+          ? "Completed"
+          : "Active";
         if (!(sectionBody(index, targetSection) ?? "").includes(`(${filename})`)) {
-          errors.push(`${relative}: ${metadata.status} work item must be listed under "${targetSection}"`);
+          errors.push(
+            `${relative}: ${metadata.status} work item must be listed under "${targetSection}"`,
+          );
         }
       }
       artifactCount += 1;
@@ -334,7 +420,8 @@ export function validateRepository(root: string, options: ValidationOptions = {}
   }
 
   for (const reference of pendingReferences) {
-    if (!ids.has(reference.id)) errors.push(`${reference.from}: dangling artifact reference ${reference.id}`);
+    if (!ids.has(reference.id))
+      errors.push(`${reference.from}: dangling artifact reference ${reference.id}`);
   }
 
   validateDiscoveryNotes(root, errors);

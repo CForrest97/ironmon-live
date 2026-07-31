@@ -38,7 +38,7 @@ async function request(url: string): Promise<string | null> {
       });
       await response.body?.cancel();
       if (response.ok || response.status === 429) return null;
-      if (attempt === 2) return `HTTP ${response.status}`;
+      if (attempt === 2) return `HTTP ${String(response.status)}`;
     } catch (error) {
       if (attempt === 2) return error instanceof Error ? error.message : String(error);
     }
@@ -50,16 +50,19 @@ const failures: string[] = [];
 const links = [...sources.keys()].sort();
 for (let index = 0; index < links.length; index += 5) {
   const batch = links.slice(index, index + 5);
-  const results = await Promise.all(batch.map(async (url): Promise<[string, string | null]> => [url, await request(url)]));
+  const results = await Promise.all(
+    batch.map(async (url): Promise<[string, string | null]> => [url, await request(url)]),
+  );
   for (const [url, error] of results) {
-    if (error) failures.push(`${url} (${error}) referenced by ${[...(sources.get(url) ?? [])].join(", ")}`);
+    if (error)
+      failures.push(`${url} (${error}) referenced by ${[...(sources.get(url) ?? [])].join(", ")}`);
   }
 }
 
 if (failures.length > 0) {
-  console.error(`External link check failed with ${failures.length} error(s):`);
+  console.error(`External link check failed with ${String(failures.length)} error(s):`);
   for (const failure of failures) console.error(`- ${failure}`);
   process.exitCode = 1;
 } else {
-  console.log(`External link check passed (${links.length} unique URL(s)).`);
+  console.log(`External link check passed (${String(links.length)} unique URL(s)).`);
 }

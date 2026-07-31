@@ -32,8 +32,10 @@ propose a decision record.
   manage work.
 - Give governed artifacts stable IDs and keep their cross-references current.
 - Update product/domain documents in the same change as behavior they govern.
-- Prefer TypeScript for repository and application code whenever the platform
-  supports it. Record and justify exceptions in the work item.
+- Prefer TypeScript for program logic. Thin scripts that mostly orchestrate
+  commands may use shell.
+- Invoke `$typescript-expert` whenever a change creates or modifies `.ts` or
+  `.tsx` files; do not load it for changes without TypeScript.
 - Run `npm run check` before declaring work complete.
 
 ## Learning loop
@@ -46,7 +48,7 @@ of learning.
 
 ## Learned rules
 
-- Prefer TypeScript wherever viable; justify exceptions in the work item.
+- Prefer TypeScript for program logic; thin command orchestration may use shell.
 - Manage work only through `WORK-###` Markdown files, never GitHub Issues.
 
 ## Independent review gate
