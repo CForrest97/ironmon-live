@@ -3,26 +3,33 @@ import fs from "node:fs";
 import os from "node:os";
 import path from "node:path";
 import test from "node:test";
-import { validateRepository } from "../scripts/document-validator.mjs";
+import { validateRepository } from "../scripts/document-validator.ts";
 
-const sections = {
-  PRD: [
-    "Problem",
-    "Evidence",
-    "Users",
-    "Desired Outcomes",
-    "Non-goals",
-    "Scope",
-    "Requirements",
-    "Acceptance Criteria",
-    "Affected Contexts",
-    "Decisions",
-    "Risks",
-    "Open Questions",
-  ],
-};
+interface ProductValues {
+  id: string;
+  title: string;
+  status: string;
+  contexts: string[];
+  decisions: string[];
+  openQuestions: string;
+}
 
-function createRepository() {
+const productSections = [
+  "Problem",
+  "Evidence",
+  "Users",
+  "Desired Outcomes",
+  "Non-goals",
+  "Scope",
+  "Requirements",
+  "Acceptance Criteria",
+  "Affected Contexts",
+  "Decisions",
+  "Risks",
+  "Open Questions",
+];
+
+function createRepository(): string {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "ironmon-docs-"));
   fs.mkdirSync(path.join(root, "docs/product/specs"), { recursive: true });
   fs.writeFileSync(path.join(root, "README.md"), "# Fixture\n");
@@ -30,8 +37,8 @@ function createRepository() {
   return root;
 }
 
-function productDocument(overrides = {}) {
-  const values = {
+function productDocument(overrides: Partial<ProductValues> = {}): string {
+  const values: ProductValues = {
     id: "PRD-001",
     title: "Example",
     status: "draft",
@@ -52,7 +59,7 @@ function productDocument(overrides = {}) {
     `# ${values.title}`,
     "",
   ];
-  const body = sections.PRD.flatMap((heading) => [
+  const body = productSections.flatMap((heading) => [
     `## ${heading}`,
     "",
     heading === "Open Questions"
@@ -65,7 +72,7 @@ function productDocument(overrides = {}) {
   return [...metadata, ...body].join("\n");
 }
 
-function errorsFor(root) {
+function errorsFor(root: string): string[] {
   return validateRepository(root, { requireFoundations: false }).errors;
 }
 
@@ -121,4 +128,91 @@ test("rejects an artifact omitted from its index", () => {
   fs.writeFileSync(path.join(root, "docs/product/specs/README.md"), "# Specs\n");
   fs.writeFileSync(path.join(root, "docs/product/specs/PRD-001-example.md"), productDocument());
   assert(errorsFor(root).some((error) => error.includes("artifact is missing")));
+});
+
+test("validates Markdown work-item contracts", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "ironmon-work-"));
+  fs.mkdirSync(path.join(root, "work/items"), { recursive: true });
+  fs.writeFileSync(path.join(root, "work/items/README.md"), "# Work\n\n## Active\n\n- [Work](WORK-001-example.md)\n\n## Completed\n\nNone.\n");
+  fs.writeFileSync(path.join(root, "work/items/WORK-001-example.md"), `---
+id: WORK-001
+title: Example work
+status: in-progress
+kind: repository
+artifacts: []
+learnings: []
+---
+
+# Example work
+
+## Intent
+
+Improve the repository.
+
+## Outcome
+
+The result is observable.
+
+## Context
+
+Repository context.
+
+## Scope
+
+One focused change.
+
+## Acceptance Criteria
+
+The check passes.
+
+## Plan
+
+Make and verify the change.
+
+## Validation
+
+Run the quality command.
+
+## Agent Notes
+
+No reusable correction observed.
+`);
+  assert.deepEqual(errorsFor(root), []);
+});
+
+test("rejects learning records without their prevention contract", () => {
+  const root = fs.mkdtempSync(path.join(os.tmpdir(), "ironmon-learning-"));
+  fs.mkdirSync(path.join(root, "docs/repository/learnings"), { recursive: true });
+  fs.writeFileSync(path.join(root, "docs/repository/learnings/README.md"), "# Learnings\n\n## Active\n\n- [Learning](LRN-001-example.md)\n\n## Superseded\n\nNone.\n");
+  fs.writeFileSync(path.join(root, "docs/repository/learnings/LRN-001-example.md"), `---
+id: LRN-001
+title: Example learning
+status: active
+trigger: correction
+work_items: []
+---
+
+# Example learning
+
+## Observation
+
+A reusable mistake happened.
+
+## Root Cause
+
+The guard was missing.
+
+## Correction
+
+The current instance was fixed.
+
+## Evidence
+
+The failed check demonstrates it.
+
+## Follow-up
+
+None.
+`);
+  assert(errorsFor(root).some((error) => error.includes('missing or empty section "Prevention"')));
 });

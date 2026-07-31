@@ -7,4 +7,5 @@ replace a decision by adding a new record and linking it through `supersedes`.
 
 ## Index
 
-No decision records have been created yet.
+- [DEC-001: Prefer TypeScript](DEC-001-prefer-typescript.md)
+- [DEC-002: Manage work as versioned Markdown](DEC-002-versioned-markdown-work-items.md)

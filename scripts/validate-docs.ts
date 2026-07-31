@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 import process from "node:process";
-import { validateRepository } from "./document-validator.mjs";
+import { validateRepository } from "./document-validator.ts";
 
 const result = validateRepository(process.cwd());
 if (result.errors.length > 0) {

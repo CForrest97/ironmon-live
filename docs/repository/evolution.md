@@ -3,19 +3,18 @@
 Start with the smallest useful agent and quality controls. Add sophistication in
 response to observed failures, not anticipated fashion.
 
-## Improvement log
+## Learning system
 
-For each recurring problem, record the date, symptom, examples, frequency, and
-chosen response in the table below.
-
-| Date | Symptom and evidence | Count | Response | Status |
-| --- | --- | --- | --- | --- |
+Reusable mistakes and corrections are recorded as versioned
+[learning records](learnings/README.md). Work items capture local observations;
+learning records preserve only lessons that should change future agent behavior.
 
 ## Escalation triggers
 
 | Signal | Required response |
 | --- | --- |
-| The same agent mistake occurs twice | Clarify `AGENTS.md` or add a focused validator rule. |
+| A mistake reveals a reusable cause | Create or update a learning record and one prevention mechanism. |
+| The same agent mistake occurs twice | Strengthen guidance with a validator, regression test, or evaluation fixture. |
 | The same manual check is missed twice | Automate it in the required quality workflow. |
 | An application stack is accepted | Add build, test, static analysis, dependency review, and code scanning appropriate to that stack. |
 | Bounded contexts appear in code | Add architecture tests that enforce allowed dependencies. |

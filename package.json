@@ -9,13 +9,18 @@
   },
   "scripts": {
     "lint:markdown": "markdownlint-cli2",
-    "validate:docs": "node scripts/validate-docs.mjs",
-    "test": "node --test",
-    "check": "npm run lint:markdown && npm run validate:docs && npm test",
-    "check:external": "node scripts/check-external-links.mjs"
+    "check:types": "tsc --noEmit",
+    "validate:docs": "node scripts/validate-docs.ts",
+    "validate:workflows": "node scripts/validate-workflows.ts",
+    "test": "node --test test/*.test.ts",
+    "check": "npm run lint:markdown && npm run check:types && npm run validate:docs && npm run validate:workflows && npm test",
+    "check:external": "node scripts/check-external-links.ts",
+    "configure:github": "node scripts/configure-github.ts"
   },
   "devDependencies": {
+    "@types/node": "24.13.3",
     "markdownlint-cli2": "0.23.2",
+    "typescript": "7.0.2",
     "yaml": "2.9.0"
   }
 }
