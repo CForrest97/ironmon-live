@@ -32,6 +32,19 @@ function workflowFiles(root: string): string[] {
     .sort();
 }
 
+function selectedActionPatterns(root: string): string[] {
+  const policyPath = path.join(root, ".github/selected-actions.json");
+  if (!fs.existsSync(policyPath)) return [];
+  const policy = asRecord(JSON.parse(fs.readFileSync(policyPath, "utf8")));
+  return policy && Array.isArray(policy.patterns_allowed)
+    ? policy.patterns_allowed.filter((pattern): pattern is string => typeof pattern === "string")
+    : [];
+}
+
+function actionMatchesPattern(action: string, pattern: string): boolean {
+  return pattern.endsWith("*") ? action.startsWith(pattern.slice(0, -1)) : action === pattern;
+}
+
 function validateScriptLanguagePreference(root: string, errors: string[]): void {
   for (const directoryName of ["scripts", "test"]) {
     const directory = path.join(root, directoryName);
@@ -125,6 +138,7 @@ export function validateWorkflows(
 ): WorkflowValidationResult {
   const errors: string[] = [];
   const files = workflowFiles(root);
+  const allowedActionPatterns = selectedActionPatterns(root);
   validateScriptLanguagePreference(root, errors);
   if (options.requireAgentSystem !== false) validateAgentReviewSystem(root, errors);
 
@@ -177,15 +191,24 @@ export function validateWorkflows(
         const step = asRecord(rawStep);
         if (!step) continue;
         if (typeof step.uses === "string" && !step.uses.startsWith("./")) {
-          if (!/^[^@\s]+@[0-9a-f]{40}$/u.test(step.uses)) {
+          const action = step.uses;
+          if (!/^[^@\s]+@[0-9a-f]{40}$/u.test(action)) {
             errors.push(
               `${relative}: job ${jobName} step ${String(index + 1)} must pin uses to a full commit SHA`,
             );
           }
-          if (step.uses.startsWith("actions/setup-go@")) {
+          if (action.startsWith("actions/setup-go@")) {
             errors.push(`${relative}: Go setup is not allowed for repository tooling`);
           }
-          if (step.uses.startsWith("actions/checkout@")) {
+          if (
+            !action.startsWith("actions/") &&
+            !allowedActionPatterns.some((pattern) => actionMatchesPattern(action, pattern))
+          ) {
+            errors.push(
+              `${relative}: job ${jobName} step ${String(index + 1)} action is missing from .github/selected-actions.json`,
+            );
+          }
+          if (action.startsWith("actions/checkout@")) {
             const inputs = asRecord(step.with);
             if (!inputs || inputs["persist-credentials"] !== false) {
               errors.push(`${relative}: checkout must set persist-credentials to false`);
@@ -204,6 +227,45 @@ export function validateWorkflows(
     errors.push(".github/workflows/quality.yml: required quality workflow is missing");
   } else if (!fs.readFileSync(qualityPath, "utf8").includes("npm run check")) {
     errors.push(".github/workflows/quality.yml: quality workflow must run npm run check");
+  }
+
+  const deployPath = path.join(root, ".github/workflows/deploy.yml");
+  if (fs.existsSync(deployPath)) {
+    const deploy = asRecord(parseYaml(fs.readFileSync(deployPath, "utf8")));
+    const triggers = asRecord(deploy?.on);
+    const push = asRecord(triggers?.push);
+    if (!Array.isArray(push?.branches) || !push.branches.includes("main")) {
+      errors.push(".github/workflows/deploy.yml: deployment must run on pushes to main");
+    }
+  }
+
+  const infrastructurePath = path.join(root, ".github/workflows/infrastructure.yml");
+  if (fs.existsSync(infrastructurePath)) {
+    const infrastructure = asRecord(parseYaml(fs.readFileSync(infrastructurePath, "utf8")));
+    const triggers = asRecord(infrastructure?.on);
+    if (!triggers || !Object.hasOwn(triggers, "workflow_dispatch")) {
+      errors.push(
+        ".github/workflows/infrastructure.yml: manual recovery requires workflow_dispatch",
+      );
+    }
+    const jobs = asRecord(infrastructure?.jobs);
+    const applyStep = Object.values(jobs ?? {})
+      .flatMap((job) => {
+        const steps = asRecord(job)?.steps;
+        return Array.isArray(steps) ? (steps as unknown[]) : [];
+      })
+      .map(asRecord)
+      .find(
+        (step) => typeof step?.run === "string" && step.run.includes("tofu -chdir=infra apply"),
+      );
+    if (
+      applyStep?.if !==
+      "github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')"
+    ) {
+      errors.push(
+        ".github/workflows/infrastructure.yml: apply must run for pushes or main-branch workflow dispatch only",
+      );
+    }
   }
 
   return { errors: [...new Set(errors)].sort(), workflowCount: files.length };
