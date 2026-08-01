@@ -57,6 +57,9 @@ of learning.
 - Generate, explicitly configure, and validate Tauri application icons before
   tagging a native release.
 - Build the Tauri macOS `app` target whenever updater artifacts are enabled.
+- Strictly verify the completed macOS app-bundle signature before publishing a DMG.
+- Grant and validate explicit Tauri window capabilities for every menu-bar window action.
+- Tauri scoped HTTP fetch requires explicit permissions for its entire request lifecycle.
 - Explicitly set `CI=true` for headless Tauri DMG packaging so its script skips Finder automation.
 - Declare and validate `serde_json` as a direct Rust dependency when using
   Tauri's generated context macro.

@@ -194,6 +194,19 @@ test("requires companion DMG packaging to explicitly enable CI mode", () => {
   );
 });
 
+test("requires companion releases to strictly verify the macOS app signature", () => {
+  const releaseWorkflow = validWorkflow
+    .replace("name: Quality", "name: Release companion")
+    .replace("      - run: npm run check", "      - run: npm run tauri:build");
+  const root = createWorkflowRepository(releaseWorkflow, "release-companion.yml");
+
+  assert(
+    validateWorkflows(root, { requireAgentSystem: false }).errors.some((error) =>
+      error.includes("must strictly verify the macOS app signature"),
+    ),
+  );
+});
+
 test("rejects pull_request_target", () => {
   const root = createWorkflowRepository(
     validWorkflow.replace("pull_request:", "pull_request_target:"),
@@ -269,6 +282,38 @@ test("rejects the nonexistent Tauri HTTP scope permission", () => {
   assert(
     validateWorkflows(root, { requireAgentSystem: false }).errors.some((error) =>
       error.includes("HTTP URL scope must be attached to http:allow-fetch"),
+    ),
+  );
+});
+
+test("requires all Tauri HTTP fetch lifecycle permissions", () => {
+  const root = createWorkflowRepository(validWorkflow);
+  const capabilityDirectory = path.join(root, "apps/companion/src-tauri/capabilities");
+  fs.mkdirSync(capabilityDirectory, { recursive: true });
+  fs.writeFileSync(
+    path.join(capabilityDirectory, "default.json"),
+    JSON.stringify({ permissions: ["http:allow-fetch"] }),
+  );
+
+  assert(
+    validateWorkflows(root, { requireAgentSystem: false }).errors.some((error) =>
+      error.includes("scoped HTTP fetch requires all fetch lifecycle permissions"),
+    ),
+  );
+});
+
+test("requires Tauri menu-bar window permissions", () => {
+  const root = createWorkflowRepository(validWorkflow);
+  const capabilityDirectory = path.join(root, "apps/companion/src-tauri/capabilities");
+  fs.mkdirSync(capabilityDirectory, { recursive: true });
+  fs.writeFileSync(
+    path.join(capabilityDirectory, "default.json"),
+    JSON.stringify({ permissions: ["core:window:allow-hide"] }),
+  );
+
+  assert(
+    validateWorkflows(root, { requireAgentSystem: false }).errors.some((error) =>
+      error.includes("menu-bar window controls require explicit hide, show, and focus permissions"),
     ),
   );
 });
