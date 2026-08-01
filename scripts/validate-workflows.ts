@@ -242,6 +242,12 @@ export function validateWorkflows(
   const infrastructurePath = path.join(root, ".github/workflows/infrastructure.yml");
   if (fs.existsSync(infrastructurePath)) {
     const infrastructure = asRecord(parseYaml(fs.readFileSync(infrastructurePath, "utf8")));
+    const triggers = asRecord(infrastructure?.on);
+    if (!triggers || !Object.hasOwn(triggers, "workflow_dispatch")) {
+      errors.push(
+        ".github/workflows/infrastructure.yml: manual recovery requires workflow_dispatch",
+      );
+    }
     const jobs = asRecord(infrastructure?.jobs);
     const applyStep = Object.values(jobs ?? {})
       .flatMap((job) => {
@@ -252,9 +258,12 @@ export function validateWorkflows(
       .find(
         (step) => typeof step?.run === "string" && step.run.includes("tofu -chdir=infra apply"),
       );
-    if (applyStep?.if !== "github.event_name != 'pull_request'") {
+    if (
+      applyStep?.if !==
+      "github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')"
+    ) {
       errors.push(
-        ".github/workflows/infrastructure.yml: apply must run for push and workflow dispatch only",
+        ".github/workflows/infrastructure.yml: apply must run for pushes or main-branch workflow dispatch only",
       );
     }
   }

@@ -57,5 +57,5 @@ jobs:
         run: tofu -chdir=infra plan -input=false -no-color -out=production.tfplan
 
       - name: Apply approved plan
-        if: github.event_name != 'pull_request'
+        if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')
         run: tofu -chdir=infra apply -input=false -auto-approve production.tfplan

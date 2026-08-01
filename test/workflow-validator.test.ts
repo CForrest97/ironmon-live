@@ -93,7 +93,7 @@ test("requires the deployment workflow to run on pushes to main", () => {
   );
 });
 
-test("allows infrastructure apply for push and manual dispatch only", () => {
+test("requires manual infrastructure apply to use the main branch", () => {
   const infrastructureWorkflow = `name: Infrastructure
 on:
   workflow_dispatch:
@@ -117,7 +117,22 @@ jobs:
   const root = createWorkflowRepository(infrastructureWorkflow, "infrastructure.yml");
   assert(
     validateWorkflows(root, { requireAgentSystem: false }).errors.some((error) =>
-      error.includes("push and workflow dispatch only"),
+      error.includes("main-branch workflow dispatch only"),
+    ),
+  );
+
+  fs.writeFileSync(
+    path.join(root, ".github/workflows/infrastructure.yml"),
+    infrastructureWorkflow
+      .replace("  workflow_dispatch:\n", "")
+      .replace(
+        "github.event_name == 'push'",
+        "github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main')",
+      ),
+  );
+  assert(
+    validateWorkflows(root, { requireAgentSystem: false }).errors.some((error) =>
+      error.includes("manual recovery requires workflow_dispatch"),
     ),
   );
 });

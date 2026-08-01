@@ -35,7 +35,8 @@ tofu -chdir=infra apply production.tfplan
 
 CI serializes production jobs and uses the protected `prod` environment for
 pull-request plans and applies infrastructure changes on `main`. Manual
-infrastructure dispatch remains available for recovery from workflow startup
-failures. Every push to `main` also runs the repository checks and deploys the
-application through Wrangler; local build and tool working directories remain
-ignored development artifacts.
+infrastructure dispatch from `main` remains available for recovery from
+workflow startup failures; dispatches from any other ref cannot apply. Every
+push to `main` also runs the repository checks and deploys the application
+through Wrangler; local build and tool working directories remain ignored
+development artifacts.
