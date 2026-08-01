@@ -361,7 +361,19 @@ export function validateWorkflows(
         ".github/workflows/release-companion.yml: R2 publication must not use AWS-style credentials or commands",
       );
     }
-    if (release.includes('--file="$file"') || /--file=?"?release-flat\//u.test(release)) {
+    if (!/CI:\s*["']true["']/u.test(release)) {
+      errors.push(
+        ".github/workflows/release-companion.yml: Tauri DMG packaging must explicitly set CI=true",
+      );
+    }
+    const fileArguments = [
+      ...release.matchAll(/(?:--file|-f)(?:=|\s+)(?:"([^"]+)"|'([^']+)'|([^\s\\]+))/gu),
+    ].map((match) => match[1] ?? match[2] ?? match[3] ?? "");
+    if (
+      fileArguments.some(
+        (argument) => !argument.startsWith("/") && !argument.startsWith("$GITHUB_WORKSPACE/"),
+      )
+    ) {
       errors.push(
         ".github/workflows/release-companion.yml: Wrangler upload files must use repository-absolute paths",
       );

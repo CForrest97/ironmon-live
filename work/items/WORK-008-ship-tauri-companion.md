@@ -124,6 +124,11 @@ delegate the complete diff to the independent reviewer.
   paths from the npm workspace selected by `npm exec`. Release uploads now use
   repository-absolute artifact paths, and workflow validation rejects relative
   upload paths that would resolve beneath `apps/web`.
+- The `v0.1.13` Apple Silicon native build stopped while Tauri generated the
+  DMG. Tauri's DMG script uses Finder automation unless it detects CI; the
+  release build now explicitly sets `CI=true` and uses verbose Tauri output so
+  headless packaging skips Finder layout and exposes any remaining `hdiutil`
+  failure.
 
 ## Agent Notes
 
