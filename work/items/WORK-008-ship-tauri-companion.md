@@ -129,6 +129,21 @@ delegate the complete diff to the independent reviewer.
   release build now explicitly sets `CI=true` and uses verbose Tauri output so
   headless packaging skips Finder layout and exposes any remaining `hdiutil`
   failure.
+- The published `v0.1.14` Apple Silicon DMG passed its checksum and image
+  verification, but its app bundle failed strict macOS code-signature
+  verification because only the executable had an ad-hoc signature. Release
+  `v0.1.15` requests an ad-hoc signature for the whole bundle and fails the
+  release job unless `codesign --verify --deep --strict` accepts the app.
+- Local startup exposed that `core:default` does not grant the Tauri window
+  hide, show, or focus commands used by the menu-bar utility. The companion
+  now grants those three explicit capabilities, with repository validation to
+  prevent another ACL-only startup failure.
+- Publication failures previously collapsed to a generic Offline—retrying
+  message, which hid the actionable local request error. The companion now
+  retains the error message in the status explanation while it retries.
+- The scoped HTTP permission grants only fetch creation; it does not grant the
+  send, read, or cancellation lifecycle commands. The companion now grants the
+  complete fetch lifecycle while retaining the two-domain fetch allowlist.
 
 ## Agent Notes
 

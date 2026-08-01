@@ -66,6 +66,7 @@ describe("companion controller", () => {
     });
     await controller.receive(snapshot());
     expect(controller.getState().status).toBe("offline_retrying");
+    expect(controller.getState().explanation).toContain("Details: offline");
     controller.retry();
     await vi.waitFor(() => {
       expect(controller.getState().status).toBe("live");

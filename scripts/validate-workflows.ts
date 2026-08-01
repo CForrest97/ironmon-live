@@ -103,6 +103,28 @@ function validateTauriCapabilities(root: string, errors: string[]): void {
         "apps/companion/src-tauri/capabilities/default.json: HTTP URL scope must be attached to http:allow-fetch",
       );
     }
+    const requiredHttpPermissions = [
+      "http:allow-fetch",
+      "http:allow-fetch-send",
+      "http:allow-fetch-read-body",
+      "http:allow-fetch-cancel",
+      "http:allow-fetch-cancel-body",
+    ];
+    if (requiredHttpPermissions.some((permission) => !identifiers.includes(permission))) {
+      errors.push(
+        "apps/companion/src-tauri/capabilities/default.json: scoped HTTP fetch requires all fetch lifecycle permissions",
+      );
+    }
+    const requiredWindowPermissions = [
+      "core:window:allow-hide",
+      "core:window:allow-set-focus",
+      "core:window:allow-show",
+    ];
+    if (requiredWindowPermissions.some((permission) => !identifiers.includes(permission))) {
+      errors.push(
+        "apps/companion/src-tauri/capabilities/default.json: menu-bar window controls require explicit hide, show, and focus permissions",
+      );
+    }
   }
 
   const configPath = path.join(root, "apps/companion/src-tauri/tauri.conf.json");
@@ -364,6 +386,11 @@ export function validateWorkflows(
     if (!/CI:\s*["']true["']/u.test(release)) {
       errors.push(
         ".github/workflows/release-companion.yml: Tauri DMG packaging must explicitly set CI=true",
+      );
+    }
+    if (!release.includes('codesign --verify --deep --strict --verbose=4 "$APP_PATH"')) {
+      errors.push(
+        ".github/workflows/release-companion.yml: release verification must strictly verify the macOS app signature",
       );
     }
     const fileArguments = [

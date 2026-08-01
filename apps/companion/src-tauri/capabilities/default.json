@@ -5,6 +5,9 @@
   "windows": ["main"],
   "permissions": [
     "core:default",
+    "core:window:allow-hide",
+    "core:window:allow-set-focus",
+    "core:window:allow-show",
     "autostart:default",
     "clipboard-manager:allow-write-text",
     "dialog:allow-open",
@@ -23,6 +26,10 @@
         { "url": "https://downloads.live.craigforrest.co.uk/**" }
       ]
     },
+    "http:allow-fetch-send",
+    "http:allow-fetch-read-body",
+    "http:allow-fetch-cancel",
+    "http:allow-fetch-cancel-body",
     "notification:default",
     "process:allow-exit",
     "updater:default",

@@ -74,6 +74,7 @@ jobs:
           DMG_PATH=$(find apps/companion/src-tauri/target/${{ matrix.target }}/release/bundle/dmg -name '*.dmg' -type f | head -1)
           test -n "$APP_PATH" && test -n "$DMG_PATH"
           file "$APP_PATH/Contents/MacOS/"* | grep -q '${{ matrix.binary_architecture }}'
+          codesign --verify --deep --strict --verbose=4 "$APP_PATH"
           shasum -a 256 "$DMG_PATH" > "$DMG_PATH.sha256"
       - name: Stage architecture artifacts
         run: |
