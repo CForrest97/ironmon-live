@@ -239,6 +239,26 @@ export function validateWorkflows(
     }
   }
 
+  const infrastructurePath = path.join(root, ".github/workflows/infrastructure.yml");
+  if (fs.existsSync(infrastructurePath)) {
+    const infrastructure = asRecord(parseYaml(fs.readFileSync(infrastructurePath, "utf8")));
+    const jobs = asRecord(infrastructure?.jobs);
+    const applyStep = Object.values(jobs ?? {})
+      .flatMap((job) => {
+        const steps = asRecord(job)?.steps;
+        return Array.isArray(steps) ? (steps as unknown[]) : [];
+      })
+      .map(asRecord)
+      .find(
+        (step) => typeof step?.run === "string" && step.run.includes("tofu -chdir=infra apply"),
+      );
+    if (applyStep?.if !== "github.event_name != 'pull_request'") {
+      errors.push(
+        ".github/workflows/infrastructure.yml: apply must run for push and workflow dispatch only",
+      );
+    }
+  }
+
   return { errors: [...new Set(errors)].sort(), workflowCount: files.length };
 }
 

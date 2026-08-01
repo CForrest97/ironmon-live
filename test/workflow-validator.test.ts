@@ -93,6 +93,35 @@ test("requires the deployment workflow to run on pushes to main", () => {
   );
 });
 
+test("allows infrastructure apply for push and manual dispatch only", () => {
+  const infrastructureWorkflow = `name: Infrastructure
+on:
+  workflow_dispatch:
+  pull_request:
+  push:
+    branches:
+      - main
+permissions:
+  contents: read
+jobs:
+  plan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd
+        with:
+          persist-credentials: false
+      - if: github.event_name == 'push'
+        run: tofu -chdir=infra apply production.tfplan
+`;
+  const root = createWorkflowRepository(infrastructureWorkflow, "infrastructure.yml");
+  assert(
+    validateWorkflows(root, { requireAgentSystem: false }).errors.some((error) =>
+      error.includes("push and workflow dispatch only"),
+    ),
+  );
+});
+
 test("rejects pull_request_target", () => {
   const root = createWorkflowRepository(
     validWorkflow.replace("pull_request:", "pull_request_target:"),
