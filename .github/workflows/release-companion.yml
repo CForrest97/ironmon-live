@@ -33,6 +33,7 @@ jobs:
   build:
     name: Build ${{ matrix.architecture }}
     needs: check
+    environment: prod
     timeout-minutes: 35
     strategy:
       fail-fast: true
