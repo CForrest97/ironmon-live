@@ -34,6 +34,11 @@ Run content is ephemeral: after a configurable period between 30 and 60 minutes
 without a heartbeat, the channel shows no active run and retains no final
 snapshot. The channel code remains available for a later run.
 
+Use 30 minutes as the initial expiry value. Treat every companion launch as a
+new publishing session. If publishers compete for the same channel code, the
+latest valid publication replaces the current state; this is collision
+behavior, not channel ownership.
+
 ## Consequences
 
 - Players can reuse and share a short, stable destination without managing an
@@ -46,8 +51,8 @@ snapshot. The channel code remains available for a later run.
   channel ownership or prevent another client from attempting to publish to a
   known code.
 - The product must not describe channels as secure or locked to a player.
-- Collision and concurrent-publisher behavior must be defined before this
-  proposal can be accepted.
+- Competing publishers may continually replace one another, because the
+  product deliberately provides no ownership credential in this version.
 - Stronger authentication or ownership controls can be proposed later if
   observed misuse or changed product needs justify them.
 
@@ -70,7 +75,5 @@ None.
 
 ## Open Questions
 
-- How are code collisions and concurrent publishers handled?
-- What exact heartbeat expiry within the 30-to-60-minute range should apply?
 - What evidence or misuse threshold should trigger reconsideration of a private
   publishing credential?

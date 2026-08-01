@@ -4,18 +4,25 @@
   "private": true,
   "description": "Documentation contracts and repository quality tooling for IronMON Live",
   "type": "module",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
   "engines": {
     "node": ">=24"
   },
   "scripts": {
+    "build": "npm run build --workspaces --if-present",
+    "dev": "scripts/dev.sh",
     "lint:markdown": "markdownlint-cli2",
     "lint:ts": "eslint . --max-warnings 0",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "check:types": "tsc --noEmit",
+    "check:types": "tsc --noEmit && npm run check:types --workspaces --if-present",
     "validate:docs": "node scripts/validate-docs.ts",
     "validate:workflows": "node scripts/validate-workflows.ts",
-    "test": "node --test test/*.test.ts",
+    "test": "node --test test/*.test.ts && npm run test --workspaces --if-present",
+    "test:latency": "npm run test:latency --workspace=@ironmon-live/companion",
     "check": "npm run lint:markdown && npm run format:check && npm run lint:ts && npm run check:types && npm run validate:docs && npm run validate:workflows && npm test",
     "check:external": "node scripts/check-external-links.ts",
     "configure:github": "scripts/configure-github.sh"
@@ -30,6 +37,7 @@
     "prettier": "3.9.6",
     "typescript": "6.0.3",
     "typescript-eslint": "8.65.0",
+    "vitest": "3.2.7",
     "yaml": "2.9.0"
   }
 }

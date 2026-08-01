@@ -4,7 +4,15 @@ import eslintConfigPrettier from "eslint-config-prettier";
 import tseslint from "typescript-eslint";
 
 export default defineConfig(
-  { ignores: ["node_modules/**"] },
+  {
+    ignores: [
+      "node_modules/**",
+      "**/node_modules/**",
+      "**/dist/**",
+      "**/.wrangler/**",
+      "infra/.terraform/**",
+    ],
+  },
   eslint.configs.recommended,
   tseslint.configs.strictTypeChecked,
   {

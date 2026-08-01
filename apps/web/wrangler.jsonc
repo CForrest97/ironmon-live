@@ -1,0 +1,27 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "ironmon-live",
+  "main": "worker/index.ts",
+  "compatibility_date": "2026-07-31",
+  "assets": {
+    "not_found_handling": "single-page-application",
+    "run_worker_first": ["/api/*"],
+  },
+  "durable_objects": {
+    "bindings": [
+      {
+        "name": "CHANNELS",
+        "class_name": "LiveChannel",
+      },
+    ],
+  },
+  "migrations": [
+    {
+      "tag": "v1",
+      "new_sqlite_classes": ["LiveChannel"],
+    },
+  ],
+  "vars": {
+    "EXPIRY_MINUTES": "30",
+  },
+}

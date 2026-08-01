@@ -1,0 +1,4 @@
+bucket    = "ironmon-live-tofu-state"
+endpoints = { s3 = "https://ACCOUNT_ID.r2.cloudflarestorage.com" }
+
+# Supply credentials through AWS_ACCESS_KEY_ID and AWS_SECRET_ACCESS_KEY.

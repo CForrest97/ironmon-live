@@ -8,7 +8,7 @@
   },
   "globs": [
     "**/*.md",
-    "!node_modules/**",
+    "!**/node_modules/**",
     "!test/fixtures/**"
   ]
 }
