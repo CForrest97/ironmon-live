@@ -40,3 +40,25 @@ workflow startup failures; dispatches from any other ref cannot apply. Every
 push to `main` also runs the repository checks and deploys the application
 through Wrangler; local build and tool working directories remain ignored
 development artifacts.
+
+## Companion releases
+
+OpenTofu creates the `ironmon-live-releases` R2 bucket and connects
+`downloads.live.craigforrest.co.uk` as its production custom domain. The managed `r2.dev`
+development URL remains disabled. Release automation uploads immutable,
+versioned companion artifacts with bucket-scoped S3 credentials; those
+credentials are separate from the private state-backend credentials.
+
+The protected `prod` environment must provide `R2_RELEASE_ACCESS_KEY_ID` and
+`R2_RELEASE_SECRET_ACCESS_KEY` secrets scoped to this bucket, plus the
+`R2_RELEASE_BUCKET` variable. Companion builds additionally require the Tauri
+updater private-key secrets and `TAURI_UPDATER_PUBLIC_KEY` variable documented
+by the release workflow. These keys protect in-app updates without an Apple
+Developer account and do not make the DMG Developer ID signed or notarized. No
+key belongs in the repository.
+
+Versioned release objects are immutable and retained indefinitely for v1;
+operators must not overwrite or delete an existing version during routine
+release work. Rollback means republishing `companion/latest.json` so it points
+to a previously verified updater archive. The matching versioned DMGs,
+signatures, checksums, and notes remain available throughout the rollback.

@@ -12,7 +12,7 @@ export type CompanionConfig = {
 
 export const defaultConfigPath = join(homedir(), ".ironmon-live", "config.json");
 const defaultInputPath = join(homedir(), ".ironmon-live", "tracker.json");
-const defaultPublishUrl = "https://ironmon.live";
+const defaultPublishUrl = "https://live.craigforrest.co.uk";
 
 const generateChannelCode = () => randomInt(0, 100_000).toString().padStart(5, "0");
 

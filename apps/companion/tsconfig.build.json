@@ -7,5 +7,6 @@
     "outDir": "dist",
     "rootDir": "src"
   },
+  "include": ["src/cli.ts", "src/config.ts", "src/publisher.ts", "src/watcher.ts"],
   "exclude": ["src/**/*.test.ts"]
 }
