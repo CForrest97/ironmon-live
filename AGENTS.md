@@ -57,6 +57,7 @@ of learning.
 - Generate, explicitly configure, and validate Tauri application icons before
   tagging a native release.
 - Build the Tauri macOS `app` target whenever updater artifacts are enabled.
+- Explicitly set `CI=true` for headless Tauri DMG packaging so its script skips Finder automation.
 - Declare and validate `serde_json` as a direct Rust dependency when using
   Tauri's generated context macro.
 - Exclude Tauri build output from repository-wide linting.

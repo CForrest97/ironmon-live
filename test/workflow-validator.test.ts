@@ -153,17 +153,43 @@ test("requires companion releases to publish through Wrangler with the deploy to
 });
 
 test("requires Wrangler uploads to use repository-absolute file paths", () => {
-  const releaseWorkflow = validWorkflow.replace("name: Quality", "name: Release companion").replace(
-    "      - run: npm run check",
-    `      - run: npm exec -- wrangler r2 object put bucket/object --file="$file"
+  const relativeUploads = [
+    'npm exec -- wrangler r2 object put bucket/object --file="$file"',
+    "npm exec -- wrangler r2 object put bucket/object --file=./release-flat/latest.json",
+    "npm exec -- wrangler r2 object put bucket/object --file ./release-flat/latest.json",
+    "npm exec -- wrangler r2 object put bucket/object -f=./release-flat/latest.json",
+    "npm exec -- wrangler r2 object put bucket/object -f ./release-flat/latest.json",
+    `npm exec -- wrangler r2 object put bucket/object \\
+          --file=./release-flat/latest.json`,
+  ];
+  for (const upload of relativeUploads) {
+    const releaseWorkflow = validWorkflow
+      .replace("name: Quality", "name: Release companion")
+      .replace(
+        "      - run: npm run check",
+        `      - run: ${upload}
         env:
           CLOUDFLARE_API_TOKEN: \${{ secrets.CLOUDFLARE_DEPLOY_API_TOKEN }}`,
-  );
+      );
+    const root = createWorkflowRepository(releaseWorkflow, "release-companion.yml");
+
+    assert(
+      validateWorkflows(root, { requireAgentSystem: false }).errors.some((error) =>
+        error.includes("upload files must use repository-absolute paths"),
+      ),
+    );
+  }
+});
+
+test("requires companion DMG packaging to explicitly enable CI mode", () => {
+  const releaseWorkflow = validWorkflow
+    .replace("name: Quality", "name: Release companion")
+    .replace("      - run: npm run check", "      - run: npm run tauri:build");
   const root = createWorkflowRepository(releaseWorkflow, "release-companion.yml");
 
   assert(
     validateWorkflows(root, { requireAgentSystem: false }).errors.some((error) =>
-      error.includes("upload files must use repository-absolute paths"),
+      error.includes("DMG packaging must explicitly set CI=true"),
     ),
   );
 });
