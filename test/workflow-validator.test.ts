@@ -185,6 +185,26 @@ test("rejects the nonexistent Tauri HTTP scope permission", () => {
   );
 });
 
+test("rejects missing Tauri bundle icons", () => {
+  const root = createWorkflowRepository(validWorkflow);
+  const tauriDirectory = path.join(root, "apps/companion/src-tauri");
+  fs.mkdirSync(path.join(tauriDirectory, "capabilities"), { recursive: true });
+  fs.writeFileSync(
+    path.join(tauriDirectory, "capabilities/default.json"),
+    JSON.stringify({ permissions: [] }),
+  );
+  fs.writeFileSync(
+    path.join(tauriDirectory, "tauri.conf.json"),
+    JSON.stringify({ bundle: { icon: ["icons/icon.png"], resources: {} } }),
+  );
+
+  assert(
+    validateWorkflows(root, { requireAgentSystem: false }).errors.some((error) =>
+      error.includes("bundle icon does not exist: icons/icon.png"),
+    ),
+  );
+});
+
 test("rejects missing Tauri bundle resources", () => {
   const root = createWorkflowRepository(validWorkflow);
   const tauriDirectory = path.join(root, "apps/companion/src-tauri");
@@ -195,7 +215,9 @@ test("rejects missing Tauri bundle resources", () => {
   );
   fs.writeFileSync(
     path.join(tauriDirectory, "tauri.conf.json"),
-    JSON.stringify({ bundle: { resources: { "../missing.lua": "missing.lua" } } }),
+    JSON.stringify({
+      bundle: { icon: ["icons/icon.png"], resources: { "../missing.lua": "missing.lua" } },
+    }),
   );
 
   assert(

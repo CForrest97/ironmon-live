@@ -98,6 +98,11 @@ delegate the complete diff to the independent reviewer.
   the `src-tauri` directory instead of the companion directory. The corrected
   path reaches `apps/tracker-extension`, and repository validation now rejects
   missing Tauri bundle resources.
+- The `v0.1.8` native build exposed the missing generated Tauri application
+  icons, including Tauri's implicit dependency on `src-tauri/icons/icon.png`.
+  The corrective release includes the standard icon set, configures bundle
+  icons explicitly, and repository validation now rejects missing macOS bundle
+  icons before tagging.
 
 ## Agent Notes
 

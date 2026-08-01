@@ -54,6 +54,8 @@ of learning.
 - Do not grant capability identifiers to Tauri plugins that expose no commands or permissions.
 - Attach Tauri HTTP URL allowlists to `http:allow-fetch`; `http:scope` is not a permission.
 - Resolve Tauri bundle resources from the directory containing `tauri.conf.json`.
+- Generate, explicitly configure, and validate Tauri application icons before
+  tagging a native release.
 
 ## Independent review gate
 

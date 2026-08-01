@@ -30,6 +30,7 @@
   "bundle": {
     "active": true,
     "targets": ["dmg"],
+    "icon": ["icons/icon.icns", "icons/icon.png"],
     "resources": {
       "../../tracker-extension/IronMONLive.lua": "IronMONLive.lua"
     },
