@@ -31,7 +31,7 @@
     "active": true,
     "targets": ["dmg"],
     "resources": {
-      "../tracker-extension/IronMONLive.lua": "IronMONLive.lua"
+      "../../tracker-extension/IronMONLive.lua": "IronMONLive.lua"
     },
     "createUpdaterArtifacts": true,
     "macOS": {

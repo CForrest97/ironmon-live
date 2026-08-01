@@ -94,6 +94,10 @@ delegate the complete diff to the independent reviewer.
 - The `v0.1.6` native build rejected the nonexistent `http:scope` permission.
   HTTP URL allowlists now attach directly to `http:allow-fetch`, and repository
   validation rejects the invalid permission before release.
+- The next native build exposed a Tracker extension resource path resolved from
+  the `src-tauri` directory instead of the companion directory. The corrected
+  path reaches `apps/tracker-extension`, and repository validation now rejects
+  missing Tauri bundle resources.
 
 ## Agent Notes
 
