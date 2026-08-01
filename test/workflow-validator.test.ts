@@ -169,6 +169,37 @@ test("allows shell scripts that orchestrate commands", () => {
   assert.deepEqual(validateWorkflows(root, { requireAgentSystem: false }).errors, []);
 });
 
+test("requires ESLint to ignore Tauri build output", () => {
+  const root = createWorkflowRepository(validWorkflow);
+  fs.writeFileSync(path.join(root, "eslint.config.ts"), "export default [];");
+
+  assert(
+    validateWorkflows(root, { requireAgentSystem: false }).errors.some((error) =>
+      error.includes("Tauri build output must be ignored"),
+    ),
+  );
+});
+
+test("requires serde_json for the generated Tauri context", () => {
+  const root = createWorkflowRepository(validWorkflow);
+  const tauriDirectory = path.join(root, "apps/companion/src-tauri");
+  fs.mkdirSync(path.join(tauriDirectory, "src"), { recursive: true });
+  fs.writeFileSync(
+    path.join(tauriDirectory, "Cargo.toml"),
+    '[dependencies]\ntauri = { version = "2" }\n',
+  );
+  fs.writeFileSync(
+    path.join(tauriDirectory, "src/lib.rs"),
+    "pub fn run() { tauri::generate_context!(); }\n",
+  );
+
+  assert(
+    validateWorkflows(root, { requireAgentSystem: false }).errors.some((error) =>
+      error.includes("serde_json must be a direct dependency"),
+    ),
+  );
+});
+
 test("rejects the nonexistent Tauri HTTP scope permission", () => {
   const root = createWorkflowRepository(validWorkflow);
   const capabilityDirectory = path.join(root, "apps/companion/src-tauri/capabilities");

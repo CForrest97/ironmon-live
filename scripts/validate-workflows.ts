@@ -64,7 +64,31 @@ function validateScriptLanguagePreference(root: string, errors: string[]): void 
   }
 }
 
+function validateGeneratedOutputIgnores(root: string, errors: string[]): void {
+  const eslintConfigPath = path.join(root, "eslint.config.ts");
+  if (
+    fs.existsSync(eslintConfigPath) &&
+    !fs.readFileSync(eslintConfigPath, "utf8").includes('"apps/companion/src-tauri/target/**"')
+  ) {
+    errors.push("eslint.config.ts: Tauri build output must be ignored");
+  }
+}
+
 function validateTauriCapabilities(root: string, errors: string[]): void {
+  const cargoPath = path.join(root, "apps/companion/src-tauri/Cargo.toml");
+  const libraryPath = path.join(root, "apps/companion/src-tauri/src/lib.rs");
+  if (fs.existsSync(cargoPath) && fs.existsSync(libraryPath)) {
+    const cargo = fs.readFileSync(cargoPath, "utf8");
+    const library = fs.readFileSync(libraryPath, "utf8");
+    const dependencies =
+      /^\[dependencies\]\s*$([\s\S]*?)(?=^\[|(?![\s\S]))/mu.exec(cargo)?.[1] ?? "";
+    if (library.includes("tauri::generate_context!()") && !/^serde_json\s*=/mu.test(dependencies)) {
+      errors.push(
+        "apps/companion/src-tauri/Cargo.toml: serde_json must be a direct dependency for tauri::generate_context!()",
+      );
+    }
+  }
+
   const capabilityPath = path.join(root, "apps/companion/src-tauri/capabilities/default.json");
   if (fs.existsSync(capabilityPath)) {
     const capability = asRecord(JSON.parse(fs.readFileSync(capabilityPath, "utf8")));
@@ -185,6 +209,7 @@ export function validateWorkflows(
   const files = workflowFiles(root);
   const allowedActionPatterns = selectedActionPatterns(root);
   validateScriptLanguagePreference(root, errors);
+  validateGeneratedOutputIgnores(root, errors);
   validateTauriCapabilities(root, errors);
   if (options.requireAgentSystem !== false) validateAgentReviewSystem(root, errors);
 
