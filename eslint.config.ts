@@ -11,6 +11,7 @@ export default defineConfig(
       "**/dist/**",
       "**/.wrangler/**",
       "infra/.terraform/**",
+      "apps/companion/src-tauri/target/**",
     ],
   },
   eslint.configs.recommended,

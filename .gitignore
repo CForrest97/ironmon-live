@@ -12,3 +12,4 @@ coverage/
 !*.tfvars.example
 .ironmon-live/
 apps/companion/src-tauri/target/
+apps/companion/src-tauri/gen/

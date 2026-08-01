@@ -69,8 +69,9 @@ delegate the complete diff to the independent reviewer.
 
 - `npm ci --ignore-scripts` completed successfully.
 - `npm run check` passed, including documentation and workflow validation,
-  19 repository tests, 14 companion tests, 3 website tests, and 3 contract
+  24 repository tests, 14 companion tests, 3 website tests, and 3 contract
   tests.
+- `cargo check --locked` passed for the Tauri host with the committed lockfile.
 - `npm run build` passed for the companion TypeScript controller, companion
   settings UI, website, contracts, and repository scripts.
 - `tofu init -backend=false -reconfigure` and `tofu validate` completed
@@ -78,8 +79,9 @@ delegate the complete diff to the independent reviewer.
   Cloudflare provider plugin handshake failure despite the provider binary
   matching the host architecture.
 - Native Tauri packaging and the two-machine manual acceptance pass remain
-  release prerequisites. This workstation does not have Rust, Cargo, or Xcode
-  available, so it cannot perform those checks.
+  release prerequisites. Rust and Cargo are now available locally for host
+  compilation, but the architecture-specific packaging and acceptance checks
+  remain the release workflow's responsibility.
 - Independent review found no remaining blocking findings and reported:
   `REVIEW_RATING: 2`, `REVIEW_CONFIDENCE: high`, and
   `HUMAN_APPROVAL_REQUIRED: yes`. Human approval is therefore required before
@@ -103,6 +105,13 @@ delegate the complete diff to the independent reviewer.
   The corrective release includes the standard icon set, configures bundle
   icons explicitly, and repository validation now rejects missing macOS bundle
   icons before tagging.
+- The `v0.1.9` native build exposed that `tauri::generate_context!()` requires
+  `serde_json` to be declared directly by the Rust host. The host now declares
+  it, and repository validation rejects the missing dependency before release.
+  Release `v0.1.10` carries the correction.
+- Local verification then exposed that repository-wide ESLint traversed Tauri's
+  generated `target` output. ESLint now ignores that build directory, with a
+  repository validation test preserving the boundary.
 
 ## Agent Notes
 
