@@ -361,7 +361,11 @@ export function validateWorkflows(
         ".github/workflows/release-companion.yml: R2 publication must not use AWS-style credentials or commands",
       );
     }
-    if (release.includes('--file="$file"') || /--file=?"?release-flat\//u.test(release)) {
+    const relativeUpload = release
+      .split("\n")
+      .filter((line) => line.includes("wrangler r2 object put") && line.includes("--file="))
+      .some((line) => !line.includes('--file="$GITHUB_WORKSPACE/'));
+    if (relativeUpload) {
       errors.push(
         ".github/workflows/release-companion.yml: Wrangler upload files must use repository-absolute paths",
       );

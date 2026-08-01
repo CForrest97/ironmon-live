@@ -153,19 +153,23 @@ test("requires companion releases to publish through Wrangler with the deploy to
 });
 
 test("requires Wrangler uploads to use repository-absolute file paths", () => {
-  const releaseWorkflow = validWorkflow.replace("name: Quality", "name: Release companion").replace(
-    "      - run: npm run check",
-    `      - run: npm exec -- wrangler r2 object put bucket/object --file="$file"
+  for (const relativePath of ['"$file"', "./release-flat/latest.json"]) {
+    const releaseWorkflow = validWorkflow
+      .replace("name: Quality", "name: Release companion")
+      .replace(
+        "      - run: npm run check",
+        `      - run: npm exec -- wrangler r2 object put bucket/object --file=${relativePath}
         env:
           CLOUDFLARE_API_TOKEN: \${{ secrets.CLOUDFLARE_DEPLOY_API_TOKEN }}`,
-  );
-  const root = createWorkflowRepository(releaseWorkflow, "release-companion.yml");
+      );
+    const root = createWorkflowRepository(releaseWorkflow, "release-companion.yml");
 
-  assert(
-    validateWorkflows(root, { requireAgentSystem: false }).errors.some((error) =>
-      error.includes("upload files must use repository-absolute paths"),
-    ),
-  );
+    assert(
+      validateWorkflows(root, { requireAgentSystem: false }).errors.some((error) =>
+        error.includes("upload files must use repository-absolute paths"),
+      ),
+    );
+  }
 });
 
 test("rejects pull_request_target", () => {
