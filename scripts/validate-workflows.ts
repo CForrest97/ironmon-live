@@ -64,6 +64,24 @@ function validateScriptLanguagePreference(root: string, errors: string[]): void 
   }
 }
 
+function validateTauriCapabilities(root: string, errors: string[]): void {
+  const capabilityPath = path.join(root, "apps/companion/src-tauri/capabilities/default.json");
+  if (!fs.existsSync(capabilityPath)) return;
+
+  const capability = asRecord(JSON.parse(fs.readFileSync(capabilityPath, "utf8")));
+  const permissions = Array.isArray(capability?.permissions) ? capability.permissions : [];
+  const identifiers = permissions.flatMap((permission) => {
+    if (typeof permission === "string") return [permission];
+    const identifier = asRecord(permission)?.identifier;
+    return typeof identifier === "string" ? [identifier] : [];
+  });
+  if (identifiers.includes("http:scope")) {
+    errors.push(
+      "apps/companion/src-tauri/capabilities/default.json: HTTP URL scope must be attached to http:allow-fetch",
+    );
+  }
+}
+
 function validateAgentReviewSystem(root: string, errors: string[]): void {
   const required = [
     ".agents/skills/review-change/SKILL.md",
@@ -140,6 +158,7 @@ export function validateWorkflows(
   const files = workflowFiles(root);
   const allowedActionPatterns = selectedActionPatterns(root);
   validateScriptLanguagePreference(root, errors);
+  validateTauriCapabilities(root, errors);
   if (options.requireAgentSystem !== false) validateAgentReviewSystem(root, errors);
 
   for (const absolute of files) {

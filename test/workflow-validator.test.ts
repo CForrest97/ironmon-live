@@ -169,6 +169,22 @@ test("allows shell scripts that orchestrate commands", () => {
   assert.deepEqual(validateWorkflows(root, { requireAgentSystem: false }).errors, []);
 });
 
+test("rejects the nonexistent Tauri HTTP scope permission", () => {
+  const root = createWorkflowRepository(validWorkflow);
+  const capabilityDirectory = path.join(root, "apps/companion/src-tauri/capabilities");
+  fs.mkdirSync(capabilityDirectory, { recursive: true });
+  fs.writeFileSync(
+    path.join(capabilityDirectory, "default.json"),
+    JSON.stringify({ permissions: [{ identifier: "http:scope", allow: [] }] }),
+  );
+
+  assert(
+    validateWorkflows(root, { requireAgentSystem: false }).errors.some((error) =>
+      error.includes("HTTP URL scope must be attached to http:allow-fetch"),
+    ),
+  );
+});
+
 test("requires the repository skills and custom reviewer", () => {
   const root = createWorkflowRepository(validWorkflow);
   assert(

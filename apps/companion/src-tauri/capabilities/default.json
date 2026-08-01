@@ -16,7 +16,13 @@
     "fs:allow-rename",
     "fs:allow-copy-file",
     "fs:allow-watch",
-    "http:allow-fetch",
+    {
+      "identifier": "http:allow-fetch",
+      "allow": [
+        { "url": "https://live.craigforrest.co.uk/**" },
+        { "url": "https://downloads.live.craigforrest.co.uk/**" }
+      ]
+    },
     "notification:default",
     "process:allow-exit",
     "updater:default",
@@ -26,13 +32,6 @@
         { "path": "$HOME/.ironmon-live" },
         { "path": "$HOME/.ironmon-live/*" },
         { "path": "$RESOURCE/IronMONLive.lua" }
-      ]
-    },
-    {
-      "identifier": "http:scope",
-      "allow": [
-        { "url": "https://live.craigforrest.co.uk/**" },
-        { "url": "https://downloads.live.craigforrest.co.uk/**" }
       ]
     },
     {
