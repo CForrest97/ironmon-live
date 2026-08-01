@@ -18,7 +18,6 @@
     "fs:allow-watch",
     "http:allow-fetch",
     "notification:default",
-    "persisted-scope:default",
     "process:allow-exit",
     "updater:default",
     {
