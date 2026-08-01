@@ -345,6 +345,24 @@ export function validateWorkflows(
     }
   }
 
+  const releasePath = path.join(root, ".github/workflows/release-companion.yml");
+  if (fs.existsSync(releasePath)) {
+    const release = fs.readFileSync(releasePath, "utf8");
+    if (!release.includes("secrets.CLOUDFLARE_DEPLOY_API_TOKEN")) {
+      errors.push(
+        ".github/workflows/release-companion.yml: R2 publication must use CLOUDFLARE_DEPLOY_API_TOKEN",
+      );
+    }
+    if (!release.includes("wrangler r2 object put")) {
+      errors.push(".github/workflows/release-companion.yml: R2 publication must use Wrangler");
+    }
+    if (/R2_RELEASE_(?:ACCESS_KEY_ID|SECRET_ACCESS_KEY)|aws s3/u.test(release)) {
+      errors.push(
+        ".github/workflows/release-companion.yml: R2 publication must not use AWS-style credentials or commands",
+      );
+    }
+  }
+
   return { errors: [...new Set(errors)].sort(), workflowCount: files.length };
 }
 

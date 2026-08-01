@@ -117,6 +117,9 @@ delegate the complete diff to the independent reviewer.
   release verification expected. Release `v0.1.11` builds both the macOS `app`
   and `dmg` targets, and repository validation now rejects updater artifact
   configuration without the app target.
+- Release publication now uses Wrangler and the existing
+  `CLOUDFLARE_DEPLOY_API_TOKEN`; it no longer requires separate AWS-style R2
+  release credentials.
 
 ## Agent Notes
 
