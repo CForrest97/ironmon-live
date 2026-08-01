@@ -58,7 +58,7 @@ export const createCompanionController = (options: ControllerOptions) => {
         ? ` Details: ${error.message}`
         : typeof error === "string"
           ? ` Details: ${error}`
-          : JSON.stringify(error, null, 2); 
+          : JSON.stringify(error, null, 2);
     update({
       ...state,
       status: "offline_retrying",
