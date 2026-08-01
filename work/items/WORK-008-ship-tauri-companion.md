@@ -91,6 +91,9 @@ delegate the complete diff to the independent reviewer.
 - A later native build rejected `persisted-scope:default` because the plugin
   exposes no capability permissions. The plugin remains registered after the
   filesystem plugin, without an invalid capability entry.
+- The `v0.1.6` native build rejected the nonexistent `http:scope` permission.
+  HTTP URL allowlists now attach directly to `http:allow-fetch`, and repository
+  validation rejects the invalid permission before release.
 
 ## Agent Notes
 
