@@ -84,6 +84,10 @@ delegate the complete diff to the independent reviewer.
   `REVIEW_RATING: 2`, `REVIEW_CONFIDENCE: high`, and
   `HUMAN_APPROVAL_REQUIRED: yes`. Human approval is therefore required before
   merge.
+- The first `v0.1.0` release attempt passed repository checks but the native
+  build could not read the environment-scoped Tauri signing secrets or updater
+  public-key variable. The build job must reference the protected `prod`
+  environment that owns those values.
 
 ## Agent Notes
 
