@@ -20,6 +20,7 @@ describe("snapshot watcher", () => {
         },
       });
     });
+    await new Promise((resolve) => setTimeout(resolve, 150));
     const replacement = join(directory, "next.json");
     await writeFile(
       replacement,

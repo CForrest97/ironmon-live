@@ -73,6 +73,11 @@ player usability comparison require their target environments and remain
 outstanding. The synthetic latency test checks local publication overhead but
 is not accepted as evidence for the end-to-end product criterion.
 
+The first GitHub Actions run exposed that the watcher test replaced its file
+before the polling watcher had established a baseline on Linux. The focused
+test now waits for that baseline, and the repository action allowlist includes
+the pinned OpenTofu setup action used by the infrastructure workflow.
+
 ## Agent Notes
 
 Assumption: schema conformance is the MVP compatibility boundary; it is not
