@@ -109,6 +109,12 @@ function validateTauriCapabilities(root: string, errors: string[]): void {
   if (!fs.existsSync(configPath)) return;
   const config = asRecord(JSON.parse(fs.readFileSync(configPath, "utf8")));
   const bundle = asRecord(config?.bundle);
+  const targets = Array.isArray(bundle?.targets) ? bundle.targets : [];
+  if (bundle?.createUpdaterArtifacts === true && !targets.includes("app")) {
+    errors.push(
+      "apps/companion/src-tauri/tauri.conf.json: macOS updater artifacts require the app bundle target",
+    );
+  }
   const resources = asRecord(bundle?.resources);
   for (const resourcePath of Object.keys(resources ?? {})) {
     if (!fs.existsSync(path.resolve(path.dirname(configPath), resourcePath))) {

@@ -216,6 +216,22 @@ test("rejects the nonexistent Tauri HTTP scope permission", () => {
   );
 });
 
+test("requires the app target for Tauri updater artifacts", () => {
+  const root = createWorkflowRepository(validWorkflow);
+  const tauriDirectory = path.join(root, "apps/companion/src-tauri");
+  fs.mkdirSync(tauriDirectory, { recursive: true });
+  fs.writeFileSync(
+    path.join(tauriDirectory, "tauri.conf.json"),
+    JSON.stringify({ bundle: { createUpdaterArtifacts: true, targets: ["dmg"] } }),
+  );
+
+  assert(
+    validateWorkflows(root, { requireAgentSystem: false }).errors.some((error) =>
+      error.includes("macOS updater artifacts require the app bundle target"),
+    ),
+  );
+});
+
 test("rejects missing Tauri bundle icons", () => {
   const root = createWorkflowRepository(validWorkflow);
   const tauriDirectory = path.join(root, "apps/companion/src-tauri");

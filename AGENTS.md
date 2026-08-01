@@ -56,6 +56,7 @@ of learning.
 - Resolve Tauri bundle resources from the directory containing `tauri.conf.json`.
 - Generate, explicitly configure, and validate Tauri application icons before
   tagging a native release.
+- Build the Tauri macOS `app` target whenever updater artifacts are enabled.
 - Declare and validate `serde_json` as a direct Rust dependency when using
   Tauri's generated context macro.
 - Exclude Tauri build output from repository-wide linting.
