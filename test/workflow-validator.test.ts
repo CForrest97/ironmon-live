@@ -5,10 +5,13 @@ import path from "node:path";
 import test from "node:test";
 import { validateWorkflows } from "../scripts/validate-workflows.ts";
 
-function createWorkflowRepository(workflow: string): string {
+function createWorkflowRepository(workflow: string, filename = "quality.yml"): string {
   const root = fs.mkdtempSync(path.join(os.tmpdir(), "ironmon-workflow-"));
   fs.mkdirSync(path.join(root, ".github/workflows"), { recursive: true });
-  fs.writeFileSync(path.join(root, ".github/workflows/quality.yml"), workflow);
+  fs.writeFileSync(path.join(root, `.github/workflows/${filename}`), workflow);
+  if (filename !== "quality.yml") {
+    fs.writeFileSync(path.join(root, ".github/workflows/quality.yml"), validWorkflow);
+  }
   return root;
 }
 
@@ -46,6 +49,46 @@ test("rejects actions that are not pinned to a full SHA", () => {
   assert(
     validateWorkflows(root, { requireAgentSystem: false }).errors.some((error) =>
       error.includes("full commit SHA"),
+    ),
+  );
+});
+
+test("rejects third-party actions missing from the selected-action policy", () => {
+  const root = createWorkflowRepository(
+    validWorkflow.replace(
+      "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+      "example/setup@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+    ),
+  );
+  assert(
+    validateWorkflows(root, { requireAgentSystem: false }).errors.some((error) =>
+      error.includes("selected-actions.json"),
+    ),
+  );
+});
+
+test("accepts pinned third-party actions in the selected-action policy", () => {
+  const root = createWorkflowRepository(
+    validWorkflow.replace(
+      "actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+      "example/setup@de0fac2e4500dabe0009e67214ff5f5447ce83dd",
+    ),
+  );
+  fs.writeFileSync(
+    path.join(root, ".github/selected-actions.json"),
+    JSON.stringify({ patterns_allowed: ["example/setup@*"] }),
+  );
+  assert.deepEqual(validateWorkflows(root, { requireAgentSystem: false }).errors, []);
+});
+
+test("requires the deployment workflow to run on pushes to main", () => {
+  const root = createWorkflowRepository(
+    validWorkflow.replace("name: Quality", "name: Deploy application"),
+    "deploy.yml",
+  );
+  assert(
+    validateWorkflows(root, { requireAgentSystem: false }).errors.some((error) =>
+      error.includes("pushes to main"),
     ),
   );
 });
