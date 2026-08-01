@@ -66,29 +66,44 @@ function validateScriptLanguagePreference(root: string, errors: string[]): void 
 
 function validateTauriCapabilities(root: string, errors: string[]): void {
   const capabilityPath = path.join(root, "apps/companion/src-tauri/capabilities/default.json");
-  if (!fs.existsSync(capabilityPath)) return;
-
-  const capability = asRecord(JSON.parse(fs.readFileSync(capabilityPath, "utf8")));
-  const permissions = Array.isArray(capability?.permissions) ? capability.permissions : [];
-  const identifiers = permissions.flatMap((permission) => {
-    if (typeof permission === "string") return [permission];
-    const identifier = asRecord(permission)?.identifier;
-    return typeof identifier === "string" ? [identifier] : [];
-  });
-  if (identifiers.includes("http:scope")) {
-    errors.push(
-      "apps/companion/src-tauri/capabilities/default.json: HTTP URL scope must be attached to http:allow-fetch",
-    );
+  if (fs.existsSync(capabilityPath)) {
+    const capability = asRecord(JSON.parse(fs.readFileSync(capabilityPath, "utf8")));
+    const permissions = Array.isArray(capability?.permissions) ? capability.permissions : [];
+    const identifiers = permissions.flatMap((permission) => {
+      if (typeof permission === "string") return [permission];
+      const identifier = asRecord(permission)?.identifier;
+      return typeof identifier === "string" ? [identifier] : [];
+    });
+    if (identifiers.includes("http:scope")) {
+      errors.push(
+        "apps/companion/src-tauri/capabilities/default.json: HTTP URL scope must be attached to http:allow-fetch",
+      );
+    }
   }
 
   const configPath = path.join(root, "apps/companion/src-tauri/tauri.conf.json");
   if (!fs.existsSync(configPath)) return;
   const config = asRecord(JSON.parse(fs.readFileSync(configPath, "utf8")));
-  const resources = asRecord(asRecord(config?.bundle)?.resources);
+  const bundle = asRecord(config?.bundle);
+  const resources = asRecord(bundle?.resources);
   for (const resourcePath of Object.keys(resources ?? {})) {
     if (!fs.existsSync(path.resolve(path.dirname(configPath), resourcePath))) {
       errors.push(
         `apps/companion/src-tauri/tauri.conf.json: resource path does not exist: ${resourcePath}`,
+      );
+    }
+  }
+
+  const icons = Array.isArray(bundle?.icon)
+    ? bundle.icon.filter((icon): icon is string => typeof icon === "string")
+    : [];
+  if (icons.length === 0) {
+    errors.push("apps/companion/src-tauri/tauri.conf.json: bundle icons must be configured");
+  }
+  for (const iconPath of icons) {
+    if (!fs.existsSync(path.resolve(path.dirname(configPath), iconPath))) {
+      errors.push(
+        `apps/companion/src-tauri/tauri.conf.json: bundle icon does not exist: ${iconPath}`,
       );
     }
   }
