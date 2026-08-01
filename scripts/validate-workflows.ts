@@ -361,6 +361,11 @@ export function validateWorkflows(
         ".github/workflows/release-companion.yml: R2 publication must not use AWS-style credentials or commands",
       );
     }
+    if (release.includes('--file="$file"') || /--file=?"?release-flat\//u.test(release)) {
+      errors.push(
+        ".github/workflows/release-companion.yml: Wrangler upload files must use repository-absolute paths",
+      );
+    }
   }
 
   return { errors: [...new Set(errors)].sort(), workflowCount: files.length };

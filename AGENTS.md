@@ -60,6 +60,8 @@ of learning.
 - Declare and validate `serde_json` as a direct Rust dependency when using
   Tauri's generated context macro.
 - Exclude Tauri build output from repository-wide linting.
+- Pass repository-absolute file paths to tools launched through a selected npm
+  workspace.
 
 ## Independent review gate
 

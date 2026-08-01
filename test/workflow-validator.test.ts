@@ -152,6 +152,22 @@ test("requires companion releases to publish through Wrangler with the deploy to
   assert(errors.some((error) => error.includes("must not use AWS-style credentials")));
 });
 
+test("requires Wrangler uploads to use repository-absolute file paths", () => {
+  const releaseWorkflow = validWorkflow.replace("name: Quality", "name: Release companion").replace(
+    "      - run: npm run check",
+    `      - run: npm exec -- wrangler r2 object put bucket/object --file="$file"
+        env:
+          CLOUDFLARE_API_TOKEN: \${{ secrets.CLOUDFLARE_DEPLOY_API_TOKEN }}`,
+  );
+  const root = createWorkflowRepository(releaseWorkflow, "release-companion.yml");
+
+  assert(
+    validateWorkflows(root, { requireAgentSystem: false }).errors.some((error) =>
+      error.includes("upload files must use repository-absolute paths"),
+    ),
+  );
+});
+
 test("rejects pull_request_target", () => {
   const root = createWorkflowRepository(
     validWorkflow.replace("pull_request:", "pull_request_target:"),

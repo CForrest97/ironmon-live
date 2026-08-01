@@ -141,7 +141,7 @@ jobs:
           VERSION="${GITHUB_REF_NAME#v}"
           for file in release-flat/*; do
             if [ "$file" != "release-flat/latest.json" ]; then
-              npm exec --workspace=@ironmon-live/web -- wrangler r2 object put "${{ vars.R2_RELEASE_BUCKET }}/companion/v$VERSION/${file#release-flat/}" --file="$file" --remote --force
+              npm exec --workspace=@ironmon-live/web -- wrangler r2 object put "${{ vars.R2_RELEASE_BUCKET }}/companion/v$VERSION/${file#release-flat/}" --file="$GITHUB_WORKSPACE/$file" --remote --force
             fi
           done
-          npm exec --workspace=@ironmon-live/web -- wrangler r2 object put "${{ vars.R2_RELEASE_BUCKET }}/companion/latest.json" --file=release-flat/latest.json --content-type=application/json --cache-control=no-cache --remote --force
+          npm exec --workspace=@ironmon-live/web -- wrangler r2 object put "${{ vars.R2_RELEASE_BUCKET }}/companion/latest.json" --file="$GITHUB_WORKSPACE/release-flat/latest.json" --content-type=application/json --cache-control=no-cache --remote --force

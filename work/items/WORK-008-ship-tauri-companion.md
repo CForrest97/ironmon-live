@@ -120,6 +120,10 @@ delegate the complete diff to the independent reviewer.
 - Release publication now uses Wrangler and the existing
   `CLOUDFLARE_DEPLOY_API_TOKEN`; it no longer requires separate AWS-style R2
   release credentials.
+- The `v0.1.12` publication attempt exposed that Wrangler resolves `--file`
+  paths from the npm workspace selected by `npm exec`. Release uploads now use
+  repository-absolute artifact paths, and workflow validation rejects relative
+  upload paths that would resolve beneath `apps/web`.
 
 ## Agent Notes
 
