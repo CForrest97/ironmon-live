@@ -5,30 +5,61 @@ through evidence and accepted decisions; do not guess at answers.
 
 ## Vision
 
-Define the durable future state IronMON Live exists to create.
+IronMON Live gives people undertaking an IronMON challenge a clear, live view
+of the run information they need while playing and lets others follow that run
+without adding work for the player.
 
 ## Problem
 
-Describe the user problem after discovery provides sufficient evidence.
+Players consult an existing command-line tracker continuously during an
+IronMON challenge because detailed party and route information informs their
+play. The current presentation is difficult to use at a glance, and sharing a
+run with friends requires taking and sending screenshots manually.
 
 ## Target users
 
-Identify the users and relevant situations after they have been validated.
+The first target user is a player actively undertaking an IronMON challenge
+with the IronMON Tracker on mGBA. Friends and other spectators who have been
+given the player's live channel code are secondary users.
+
+These users and situations come from the maintainer interview recorded in the
+[initial product discovery note](discovery/2026-07-31-initial-player-companion.md);
+broader user validation has not yet occurred.
 
 ## Value proposition
 
-Explain why the intended outcome would be valuable and meaningfully different.
+IronMON Live turns Tracker data into a player-first view that stays current
+without manual refresh or screenshot sharing. The same ephemeral view can be
+followed remotely by anyone with its code.
 
 ## Outcomes
 
-Define measurable product outcomes rather than output or feature counts.
+- During play, a player can understand current party details and route-trainer
+  progress at a glance.
+- Changes visible to the Tracker appear in the live view within one second
+  under supported operating conditions.
+- A player can let another person follow the current run without repeatedly
+  capturing and sending screenshots.
+
+Product evidence has not yet established adoption, usability, or reliability
+targets beyond the one-second update target supplied by the maintainer.
 
 ## Non-goals
 
-Record attractive work that is intentionally outside the current product
-direction.
+- Searching, browsing, or publicly listing players or live channels.
+- Player accounts or authenticated spectator access in the initial product.
+- Permanent run history or a retained final run snapshot.
+- Encounter and battle guidance in the initial product.
+- Inventory display or remaining route-item progress in the initial product.
+- Spectator-specific presentation before the player experience is proven.
 
 ## Open questions
 
-- What problem and audience should IronMON Live serve first?
-- What evidence will demonstrate that this problem is worth solving?
+- Which game, ruleset, emulator, and Tracker combinations will be validated
+  beyond conformance to the initial canonical Tracker schema?
+- What evidence will demonstrate that the player view is materially easier to
+  use than the existing command-line presentation?
+- Under which supported conditions can the product reliably meet the one-second
+  update target?
+- When would misuse of an unauthenticated five-digit channel justify stronger
+  channel ownership or access controls?

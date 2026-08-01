@@ -6,4 +6,4 @@ unused `PRD-###` ID, and keep the filename stable.
 
 ## Index
 
-No product specifications have been created yet.
+- [PRD-001: Provide an ephemeral live player companion](PRD-001-live-player-companion.md)

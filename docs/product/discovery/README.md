@@ -6,3 +6,7 @@ They are informative, not authoritative. Use
 
 Product specifications should link the evidence that supports their problem
 and requirements.
+
+## Index
+
+- [Initial player-companion interview and PoC review](2026-07-31-initial-player-companion.md)
