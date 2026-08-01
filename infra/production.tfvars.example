@@ -1,0 +1,4 @@
+cloudflare_account_id = "replace-me"
+cloudflare_zone_id    = "replace-me"
+hostname              = "live.example.com"
+worker_name           = "ironmon-live"

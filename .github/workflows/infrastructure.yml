@@ -1,0 +1,60 @@
+name: Infrastructure
+
+on:
+  pull_request:
+    paths:
+      - "infra/**"
+      - ".github/workflows/infrastructure.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "infra/**"
+      - ".github/workflows/infrastructure.yml"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: production-infrastructure
+  cancel-in-progress: false
+
+jobs:
+  plan:
+    name: OpenTofu plan
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    environment: prod
+    env:
+      AWS_ACCESS_KEY_ID: ${{ secrets.R2_STATE_ACCESS_KEY_ID }}
+      AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_STATE_SECRET_ACCESS_KEY }}
+      CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_INFRA_API_TOKEN }}
+      TF_VAR_cloudflare_account_id: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
+      TF_VAR_cloudflare_zone_id: ${{ vars.CLOUDFLARE_ZONE_ID }}
+      TF_VAR_hostname: ${{ vars.IRONMON_LIVE_HOSTNAME }}
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          persist-credentials: false
+
+      - name: Set up OpenTofu
+        uses: opentofu/setup-opentofu@9d84900f3238fab8cd84ce47d658d25dd008be2f # v1
+        with:
+          tofu_version: 1.11.6
+
+      - name: Check formatting
+        run: tofu -chdir=infra fmt -check
+
+      - name: Initialize remote state
+        run: tofu -chdir=infra init -input=false -backend-config="bucket=${{ vars.R2_STATE_BUCKET }}" -backend-config="endpoints={s3=\"https://${{ vars.CLOUDFLARE_ACCOUNT_ID }}.r2.cloudflarestorage.com\"}"
+
+      - name: Validate configuration
+        run: tofu -chdir=infra validate
+
+      - name: Create saved plan
+        run: tofu -chdir=infra plan -input=false -no-color -out=production.tfplan
+
+      - name: Apply approved plan
+        if: github.event_name == 'push'
+        run: tofu -chdir=infra apply -input=false -auto-approve production.tfplan

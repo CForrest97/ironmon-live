@@ -66,8 +66,8 @@ channel remains available for a later run.
 
 1. Launching the companion begins publishing available run state without a
    separate start-sharing action.
-2. A companion retains and reuses the same five-digit channel code across play
-   sessions and runs.
+2. A companion generates a five-digit channel code on first launch, retains it
+   locally, and reuses it across play sessions and runs.
 3. A viewer can use the channel code to open the live state without an account
    or access approval.
 4. The player view shows every current party Pokémon reported by the Tracker.
@@ -75,8 +75,9 @@ channel remains available for a later run.
    and types.
 6. The view shows the current route and which reported trainers on that route
    have been battled, including completed and total trainer counts.
-7. A run-state change observable by the Tracker is reflected in the live view
-   within one second under supported operating conditions.
+7. At least 95% of representative run-state changes written through the
+   supported Tracker schema are reflected in an already-open live view within
+   one second under measured operating conditions.
 8. When no heartbeat has been received for the configured expiry period between
    30 and 60 minutes, the channel shows no active run.
 9. Expiry removes the live run state but does not retire the stable channel
@@ -87,6 +88,15 @@ channel remains available for a later run.
     empty value and does not infer facts absent from Tracker output.
 12. The product does not describe the five-digit channel code as private,
     secure, or proof of player ownership.
+13. A local companion launch creates a new publishing session, and the latest
+    valid publisher to a channel replaces its current live state.
+14. Before the first valid snapshot, after unsupported or invalid Tracker
+    input, and after expiry, the channel shows no active run.
+15. A terminal Tracker snapshot remains visible until expiry and displays the
+    exact status reported by the Tracker.
+16. Initial compatibility is defined by version 1 of the canonical Tracker
+    file schema rather than by a promise of particular games, rulesets,
+    emulator versions, operating systems, or Tracker releases.
 
 ## Acceptance Criteria
 
@@ -105,8 +115,13 @@ channel remains available for a later run.
   the same current run state without signing in.
 - Starting a later run from the same retained companion configuration reuses
   the same channel code and does not expose the prior expired run.
-- After the configured period between 30 and 60 minutes without a heartbeat,
+- After the configured period, defaulting to 30 minutes and constrained between
+  30 and 60 minutes, without a heartbeat,
   the channel shows no active run or retained final snapshot.
+- When multiple companions publish to one code, each latest valid snapshot
+  becomes the channel state without claiming ownership for either publisher.
+- A terminal snapshot continues to show its reported status and run details
+  until heartbeat expiry.
 - Inventory, remaining route-item progress, encounter information, and battle
   information do not appear in the initial view.
 
@@ -134,13 +149,7 @@ None.
 
 ## Open Questions
 
-- Which game, IronMON ruleset, Tracker version, and operating conditions define
-  initial support?
-- What exact expiry value between 30 and 60 minutes should be used?
-- What should viewers see during startup, unsupported-game, game-over,
-  completed, and unloading states?
-- What marks a new run when a stable channel previously carried another run?
-- How should collisions or concurrent publishers using the same five-digit code
-  behave?
 - What usability evidence is sufficient to show improvement over the existing
   command-line view?
+- Which measured operating conditions can consistently satisfy the latency
+  criterion?

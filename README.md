@@ -31,10 +31,30 @@ npm run check
 Use `npm test` to run the document-contract fixture suite and
 `npm run check:external` to check remote links on demand.
 
-## Status
+## Application workspaces
 
-There is no production application yet. Product discovery and strategic domain
-modeling are the current work.
+- `packages/contracts` defines the versioned Tracker and channel contracts.
+- `apps/companion` provides the local Node CLI.
+- `apps/tracker-extension` provides the Lua producer for IronMON Tracker.
+- `apps/web` contains the React/Vite view and Cloudflare Worker.
+- `infra` contains production OpenTofu configuration.
+
+The application is an unvalidated MVP. PRD-001 remains draft while latency and
+player-usability evidence are gathered.
+
+## Local development
+
+Start the web application, local Worker, and companion together:
+
+```sh
+npm run dev
+```
+
+The development server is available at `http://127.0.0.1:5174`. Override the
+port with `IRONMON_LIVE_DEV_PORT` when needed. The companion uses
+`.ironmon-live/dev-config.json`, keeping local development settings
+separate from the normal companion configuration. The Lua extension continues
+to write to its default `~/.ironmon-live/tracker.json` input path.
 
 ## License
 

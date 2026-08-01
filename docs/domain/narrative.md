@@ -22,10 +22,17 @@ at the same destination. A friend or spectator with that code may view the
 same run state without an account or approval. The product does not offer
 search or public discovery of channels.
 
-Run state is ephemeral. When no heartbeat has arrived for between 30 and 60
-minutes, the live channel no longer shows a run. The stable channel remains
+Run state is ephemeral. When no heartbeat has arrived for 30 minutes by
+default, the live channel no longer shows a run. The configured expiry may be
+between 30 and 60 minutes. The stable channel remains
 available for the player's next run, but no completed run or final snapshot is
 retained.
+
+Each local companion launch establishes a publishing session. The latest valid
+publisher wins when multiple companions use the same channel code; this does
+not establish ownership. Terminal run details remain visible with the exact
+Tracker-reported status until the heartbeat expires. Startup, unsupported
+input, and invalid input show no active run.
 
 The Tracker limits what IronMON Live can know. The product presents reported
 facts and does not infer hidden run state. In particular, current inventory is
@@ -41,12 +48,6 @@ because the inspected proof of concept does not export it.
 
 ## Open questions
 
-- Which games, rulesets, and Tracker versions are supported initially?
-- What precisely starts a new run when a channel previously showed another
-  run?
-- What should the live channel show during startup, an unsupported game, game
-  over, completion, or companion unloading?
-- How is a channel-code collision or competing publisher handled without a
-  secret publishing credential?
 - Does later evidence justify distinct domain boundaries for observing a run
   and presenting a live channel?
+- Which operating conditions consistently meet the latency criterion?

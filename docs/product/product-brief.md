@@ -55,8 +55,8 @@ targets beyond the one-second update target supplied by the maintainer.
 
 ## Open questions
 
-- Which game, IronMON ruleset, and IronMON Tracker versions will the initial
-  product support?
+- Which game, ruleset, emulator, and Tracker combinations will be validated
+  beyond conformance to the initial canonical Tracker schema?
 - What evidence will demonstrate that the player view is materially easier to
   use than the existing command-line presentation?
 - Under which supported conditions can the product reliably meet the one-second
