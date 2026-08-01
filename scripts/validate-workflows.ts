@@ -80,6 +80,18 @@ function validateTauriCapabilities(root: string, errors: string[]): void {
       "apps/companion/src-tauri/capabilities/default.json: HTTP URL scope must be attached to http:allow-fetch",
     );
   }
+
+  const configPath = path.join(root, "apps/companion/src-tauri/tauri.conf.json");
+  if (!fs.existsSync(configPath)) return;
+  const config = asRecord(JSON.parse(fs.readFileSync(configPath, "utf8")));
+  const resources = asRecord(asRecord(config?.bundle)?.resources);
+  for (const resourcePath of Object.keys(resources ?? {})) {
+    if (!fs.existsSync(path.resolve(path.dirname(configPath), resourcePath))) {
+      errors.push(
+        `apps/companion/src-tauri/tauri.conf.json: resource path does not exist: ${resourcePath}`,
+      );
+    }
+  }
 }
 
 function validateAgentReviewSystem(root: string, errors: string[]): void {

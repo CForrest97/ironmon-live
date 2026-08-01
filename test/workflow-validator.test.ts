@@ -185,6 +185,26 @@ test("rejects the nonexistent Tauri HTTP scope permission", () => {
   );
 });
 
+test("rejects missing Tauri bundle resources", () => {
+  const root = createWorkflowRepository(validWorkflow);
+  const tauriDirectory = path.join(root, "apps/companion/src-tauri");
+  fs.mkdirSync(path.join(tauriDirectory, "capabilities"), { recursive: true });
+  fs.writeFileSync(
+    path.join(tauriDirectory, "capabilities/default.json"),
+    JSON.stringify({ permissions: [] }),
+  );
+  fs.writeFileSync(
+    path.join(tauriDirectory, "tauri.conf.json"),
+    JSON.stringify({ bundle: { resources: { "../missing.lua": "missing.lua" } } }),
+  );
+
+  assert(
+    validateWorkflows(root, { requireAgentSystem: false }).errors.some((error) =>
+      error.includes("resource path does not exist: ../missing.lua"),
+    ),
+  );
+});
+
 test("requires the repository skills and custom reviewer", () => {
   const root = createWorkflowRepository(validWorkflow);
   assert(
