@@ -51,6 +51,7 @@ of learning.
 - Prefer TypeScript for program logic; thin command orchestration may use shell.
 - Manage work only through `WORK-###` Markdown files, never GitHub Issues.
 - Let file-watcher tests establish their polling baseline before replacing files.
+- Do not grant capability identifiers to Tauri plugins that expose no commands or permissions.
 
 ## Independent review gate
 

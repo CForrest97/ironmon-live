@@ -88,6 +88,9 @@ delegate the complete diff to the independent reviewer.
   build could not read the environment-scoped Tauri signing secrets or updater
   public-key variable. The build job must reference the protected `prod`
   environment that owns those values.
+- A later native build rejected `persisted-scope:default` because the plugin
+  exposes no capability permissions. The plugin remains registered after the
+  filesystem plugin, without an invalid capability entry.
 
 ## Agent Notes
 
