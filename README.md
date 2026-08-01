@@ -42,6 +42,20 @@ Use `npm test` to run the document-contract fixture suite and
 The application is an unvalidated MVP. PRD-001 remains draft while latency and
 player-usability evidence are gathered.
 
+## Production companion
+
+Start the local companion against the deployed IronMON Live service:
+
+```sh
+npm start
+```
+
+The command builds the workspaces, watches the default Tracker snapshot at
+`~/.ironmon-live/tracker.json`, and publishes it to
+`https://live.craigforrest.co.uk`. The companion retains its generated channel
+code in `~/.ironmon-live/config.json`; open that channel at
+`https://live.craigforrest.co.uk/channel/<code>`.
+
 ## Local development
 
 Start the web application, local Worker, and companion together:

@@ -60,6 +60,8 @@ and domain artifacts with every behavior selected during implementation.
 ## Validation
 
 `npm run build` produces the companion CLI, Cloudflare Worker, and React client.
+`npm start` builds those workspaces and launches the local companion against
+the deployed production service at `https://live.craigforrest.co.uk`.
 `npm run check` passes Markdown linting, formatting, strict ESLint and
 TypeScript checks, documentation and workflow validation, the fifteen existing
 repository tests, and seven focused application tests. `npm audit
