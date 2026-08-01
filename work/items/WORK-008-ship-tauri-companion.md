@@ -69,7 +69,7 @@ delegate the complete diff to the independent reviewer.
 
 - `npm ci --ignore-scripts` completed successfully.
 - `npm run check` passed, including documentation and workflow validation,
-  24 repository tests, 14 companion tests, 3 website tests, and 3 contract
+  25 repository tests, 14 companion tests, 3 website tests, and 3 contract
   tests.
 - `cargo check --locked` passed for the Tauri host with the committed lockfile.
 - `npm run build` passed for the companion TypeScript controller, companion
@@ -112,6 +112,11 @@ delegate the complete diff to the independent reviewer.
 - Local verification then exposed that repository-wide ESLint traversed Tauri's
   generated `target` output. ESLint now ignores that build directory, with a
   repository validation test preserving the boundary.
+- The `v0.1.10` native build produced its DMG but warned that updater artifacts
+  require an updater-enabled target, then removed the temporary app bundle that
+  release verification expected. Release `v0.1.11` builds both the macOS `app`
+  and `dmg` targets, and repository validation now rejects updater artifact
+  configuration without the app target.
 
 ## Agent Notes
 
