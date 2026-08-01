@@ -137,6 +137,21 @@ jobs:
   );
 });
 
+test("requires companion releases to publish through Wrangler with the deploy token", () => {
+  const releaseWorkflow = validWorkflow.replace("name: Quality", "name: Release companion").replace(
+    "      - run: npm run check",
+    `      - run: aws s3 cp release artifact
+        env:
+          AWS_ACCESS_KEY_ID: \${{ secrets.R2_RELEASE_ACCESS_KEY_ID }}`,
+  );
+  const root = createWorkflowRepository(releaseWorkflow, "release-companion.yml");
+  const errors = validateWorkflows(root, { requireAgentSystem: false }).errors;
+
+  assert(errors.some((error) => error.includes("must use CLOUDFLARE_DEPLOY_API_TOKEN")));
+  assert(errors.some((error) => error.includes("must use Wrangler")));
+  assert(errors.some((error) => error.includes("must not use AWS-style credentials")));
+});
+
 test("rejects pull_request_target", () => {
   const root = createWorkflowRepository(
     validWorkflow.replace("pull_request:", "pull_request_target:"),

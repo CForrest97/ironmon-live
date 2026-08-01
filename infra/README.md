@@ -46,16 +46,18 @@ development artifacts.
 OpenTofu creates the `ironmon-live-releases` R2 bucket and connects
 `downloads.live.craigforrest.co.uk` as its production custom domain. The managed `r2.dev`
 development URL remains disabled. Release automation uploads immutable,
-versioned companion artifacts with bucket-scoped S3 credentials; those
-credentials are separate from the private state-backend credentials.
+versioned companion artifacts through Wrangler using the same Cloudflare API
+token as the application deployment. The private state backend continues to
+use its separate S3-compatible credentials.
 
-The protected `prod` environment must provide `R2_RELEASE_ACCESS_KEY_ID` and
-`R2_RELEASE_SECRET_ACCESS_KEY` secrets scoped to this bucket, plus the
-`R2_RELEASE_BUCKET` variable. Companion builds additionally require the Tauri
-updater private-key secrets and `TAURI_UPDATER_PUBLIC_KEY` variable documented
-by the release workflow. These keys protect in-app updates without an Apple
-Developer account and do not make the DMG Developer ID signed or notarized. No
-key belongs in the repository.
+The protected `prod` environment must provide the
+`CLOUDFLARE_DEPLOY_API_TOKEN` secret with access to deploy the application and
+write release objects, plus the `R2_RELEASE_BUCKET` and
+`CLOUDFLARE_ACCOUNT_ID` variables. Companion builds additionally require the
+Tauri updater private-key secrets and `TAURI_UPDATER_PUBLIC_KEY` variable
+documented by the release workflow. These keys protect in-app updates without
+an Apple Developer account and do not make the DMG Developer ID signed or
+notarized. No key belongs in the repository.
 
 Versioned release objects are immutable and retained indefinitely for v1;
 operators must not overwrite or delete an existing version during routine
