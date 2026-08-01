@@ -7,7 +7,7 @@
     "build": "WRANGLER_LOG_PATH=.wrangler/build.log vite build",
     "check:types": "tsc --noEmit",
     "dev": "vite",
-    "deploy": "wrangler deploy",
+    "deploy": "npm run build && wrangler deploy",
     "test": "vitest run"
   },
   "dependencies": {
