@@ -117,3 +117,44 @@ button {
   color: #9dac9f;
   font-style: italic;
 }
+.companion-link {
+  color: #a5d66f;
+  margin-top: 1rem;
+}
+.download {
+  max-width: 62rem;
+}
+.lede {
+  color: #bec9c1;
+  font-size: 1.25rem;
+  max-width: 42rem;
+}
+.download-grid {
+  display: grid;
+  gap: 1rem;
+  grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+  margin-top: 3rem;
+}
+.download-card {
+  background: #1b241e;
+  border: 1px solid #344139;
+  border-radius: 0.7rem;
+  padding: 1.5rem;
+}
+.download-card h2 {
+  margin-top: 0;
+}
+.button {
+  display: inline-block;
+  background: #a5d66f;
+  border-radius: 0.4rem;
+  color: #111713;
+  font-weight: 800;
+  padding: 0.8rem 1rem;
+  text-decoration: none;
+}
+.release-details {
+  border-top: 1px solid #344139;
+  margin-top: 3rem;
+  padding-top: 1rem;
+}

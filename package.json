@@ -13,8 +13,7 @@
   },
   "scripts": {
     "build": "npm run build --workspaces --if-present",
-    "prestart": "npm run build",
-    "start": "node apps/companion/dist/cli.js --url https://live.craigforrest.co.uk",
+    "start": "npm run tauri:dev --workspace=@ironmon-live/companion",
     "dev": "scripts/dev.sh",
     "lint:markdown": "markdownlint-cli2",
     "lint:ts": "eslint . --max-warnings 0",

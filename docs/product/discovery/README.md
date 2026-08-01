@@ -10,3 +10,4 @@ and requirements.
 ## Index
 
 - [Initial player-companion interview and PoC review](2026-07-31-initial-player-companion.md)
+- [Companion utility product direction](2026-08-01-companion-utility-direction.md)

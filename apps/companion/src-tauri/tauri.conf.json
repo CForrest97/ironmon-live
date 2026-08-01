@@ -1,0 +1,46 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "IronMON Live",
+  "version": "0.1.0",
+  "identifier": "live.ironmon.companion",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "main",
+        "title": "IronMON Live",
+        "width": 500,
+        "height": 720,
+        "minWidth": 420,
+        "minHeight": 560,
+        "resizable": true,
+        "fullscreen": false,
+        "visible": true
+      }
+    ],
+    "security": {
+      "csp": "default-src 'self'; connect-src ipc: http://ipc.localhost https://live.craigforrest.co.uk https://downloads.live.craigforrest.co.uk; img-src 'self' asset: http://asset.localhost; style-src 'self' 'unsafe-inline'"
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["dmg"],
+    "resources": {
+      "../tracker-extension/IronMONLive.lua": "IronMONLive.lua"
+    },
+    "createUpdaterArtifacts": true,
+    "macOS": {
+      "minimumSystemVersion": "13.0"
+    }
+  },
+  "plugins": {
+    "updater": {
+      "endpoints": ["https://downloads.live.craigforrest.co.uk/companion/latest.json"]
+    }
+  }
+}

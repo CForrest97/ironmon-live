@@ -3,16 +3,40 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "bin": {
-    "ironmon-live": "./dist/cli.js"
-  },
   "scripts": {
-    "build": "tsc -p tsconfig.build.json",
+    "build": "vite build",
+    "build:cli": "tsc -p tsconfig.build.json",
     "check:types": "tsc --noEmit",
+    "dev": "vite",
+    "tauri": "tauri",
+    "tauri:build": "tauri build",
+    "tauri:dev": "tauri dev",
     "test": "vitest run",
     "test:latency": "vitest run src/latency.test.ts"
   },
   "dependencies": {
-    "@ironmon-live/contracts": "0.1.0"
+    "@ironmon-live/contracts": "0.1.0",
+    "@tauri-apps/api": "2.11.1",
+    "@tauri-apps/plugin-autostart": "2.5.1",
+    "@tauri-apps/plugin-clipboard-manager": "2.3.2",
+    "@tauri-apps/plugin-dialog": "2.7.2",
+    "@tauri-apps/plugin-fs": "2.5.1",
+    "@tauri-apps/plugin-http": "2.5.9",
+    "@tauri-apps/plugin-notification": "2.3.3",
+    "@tauri-apps/plugin-opener": "2.5.4",
+    "@tauri-apps/plugin-process": "2.3.1",
+    "@tauri-apps/plugin-updater": "2.10.1",
+    "react": "19.1.1",
+    "react-dom": "19.1.1"
+  },
+  "devDependencies": {
+    "@tauri-apps/cli": "2.11.4",
+    "@testing-library/jest-dom": "7.0.0",
+    "@testing-library/react": "16.3.2",
+    "@types/react": "19.1.9",
+    "@types/react-dom": "19.1.7",
+    "@vitejs/plugin-react": "4.7.0",
+    "jsdom": "29.1.1",
+    "vite": "7.3.6"
   }
 }

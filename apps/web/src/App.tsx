@@ -1,6 +1,7 @@
 import { useEffect, useState, type FormEvent } from "react";
 import type { Available, ChannelEvent, RunSnapshot } from "@ironmon-live/contracts";
 import { subscribeToChannel } from "./channel.ts";
+import { DownloadCompanion } from "./download.tsx";
 
 const Unavailable = () => <span className="unavailable">Unavailable</span>;
 
@@ -92,6 +93,7 @@ const RunView = ({ snapshot }: { readonly snapshot: RunSnapshot }) => (
 const channelFromPath = () => /^\/channel\/(\d{5})$/.exec(window.location.pathname)?.[1];
 
 export const App = () => {
+  if (window.location.pathname === "/download") return <DownloadCompanion />;
   const [code, setCode] = useState(channelFromPath() ?? "");
   const [activeCode, setActiveCode] = useState(channelFromPath());
   const [event, setEvent] = useState<ChannelEvent>({ type: "inactive" });
@@ -128,6 +130,9 @@ export const App = () => {
           />
           <button type="submit">Open channel</button>
         </form>
+        <a className="companion-link" href="/download">
+          Download the macOS companion
+        </a>
       </main>
     );
 

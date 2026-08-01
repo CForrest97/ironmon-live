@@ -34,7 +34,8 @@ Use `npm test` to run the document-contract fixture suite and
 ## Application workspaces
 
 - `packages/contracts` defines the versioned Tracker and channel contracts.
-- `apps/companion` provides the local Node CLI.
+- `apps/companion` provides the TypeScript-owned Tauri menu-bar companion; its
+  generated Rust bootstrap contains no product logic.
 - `apps/tracker-extension` provides the Lua producer for IronMON Tracker.
 - `apps/web` contains the React/Vite view and Cloudflare Worker.
 - `infra` contains production OpenTofu configuration.
@@ -42,19 +43,18 @@ Use `npm test` to run the document-contract fixture suite and
 The application is an unvalidated MVP. PRD-001 remains draft while latency and
 player-usability evidence are gathered.
 
-## Production companion
+## Companion development
 
-Start the local companion against the deployed IronMON Live service:
+Start the Tauri companion in development mode:
 
 ```sh
 npm start
 ```
 
-The command builds the workspaces, watches the default Tracker snapshot at
-`~/.ironmon-live/tracker.json`, and publishes it to
-`https://live.craigforrest.co.uk`. The companion retains its generated channel
-code in `~/.ironmon-live/config.json`; open that channel at
-`https://live.craigforrest.co.uk/channel/<code>`.
+The companion watches `~/.ironmon-live/tracker.json`, publishes to IronMON
+Live, and retains its generated channel code in
+`~/.ironmon-live/config.json`. A Rust toolchain is required only to build the
+generated Tauri host; application behavior is implemented in TypeScript.
 
 ## Local development
 
@@ -64,7 +64,9 @@ Start the web application, local Worker, and companion together:
 npm run dev
 ```
 
-The development server is available at `http://127.0.0.1:5174`. Override the
+This command retains the internal CLI as a lightweight local publication
+harness alongside the web application. The development server is available at
+`http://127.0.0.1:5174`. Override the
 port with `IRONMON_LIVE_DEV_PORT` when needed. The companion uses
 `.ironmon-live/dev-config.json`, keeping local development settings
 separate from the normal companion configuration. The Lua extension continues

@@ -28,3 +28,19 @@ resource "cloudflare_workers_custom_domain" "live" {
   service    = var.worker_name
   zone_id    = var.cloudflare_zone_id
 }
+
+resource "cloudflare_r2_bucket" "companion_releases" {
+  account_id    = var.cloudflare_account_id
+  name          = var.release_bucket_name
+  location      = "weur"
+  storage_class = "Standard"
+}
+
+resource "cloudflare_r2_custom_domain" "companion_releases" {
+  account_id  = var.cloudflare_account_id
+  bucket_name = cloudflare_r2_bucket.companion_releases.name
+  domain      = var.download_hostname
+  zone_id     = var.cloudflare_zone_id
+  enabled     = true
+  min_tls     = "1.2"
+}

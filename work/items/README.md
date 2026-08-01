@@ -10,7 +10,8 @@ keep completed items as durable delivery history.
 - [WORK-004: Build the live player companion MVP](WORK-004-live-player-companion-mvp.md)
 - [WORK-005: Add the Lua Tracker extension](WORK-005-add-lua-tracker-extension.md)
 - [WORK-006: Deploy production automatically from main](WORK-006-automatic-main-deploy.md)
+- [WORK-008: Ship the TypeScript-owned Tauri companion](WORK-008-ship-tauri-companion.md)
 
 ## Completed
 
-No completed work items.
+- [WORK-007: Define the quiet companion utility](WORK-007-define-companion-utility.md)

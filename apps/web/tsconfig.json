@@ -4,7 +4,7 @@
     "jsx": "react-jsx",
     "lib": ["ES2024", "DOM", "DOM.Iterable"],
     "skipLibCheck": true,
-    "types": ["@cloudflare/workers-types", "vite/client"]
+    "types": ["@cloudflare/workers-types", "@testing-library/jest-dom/vitest", "vite/client"]
   },
   "include": ["src/**/*.ts", "src/**/*.tsx", "worker/**/*.ts", "vite.config.ts", "vitest.config.ts"]
 }

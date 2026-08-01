@@ -23,7 +23,7 @@ stop_processes() {
 trap stop_processes EXIT INT TERM
 
 mkdir -p "${TRACKER_OUTPUT_DIR}"
-npm run build --workspace=@ironmon-live/companion
+npm run build:cli --workspace=@ironmon-live/companion
 npm run dev --workspace=@ironmon-live/web -- --host "${DEV_HOST}" --port "${DEV_PORT}" --strictPort &
 web_pid=$!
 
