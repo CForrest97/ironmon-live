@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { ContractError, isChannelCode, parseTrackerMessage } from "./index.ts";
+import {
+  ContractError,
+  isChannelCode,
+  parseChannelEvent,
+  parseTrackerMessage,
+  type ExpandedRunSnapshot,
+} from "./index.ts";
 
 const base = {
   kind: "snapshot",
@@ -20,13 +26,77 @@ const base = {
   route: { availability: "unavailable" },
 };
 
+const available = <T>(value: T) => ({ availability: "available" as const, value });
+const unavailable = { availability: "unavailable" as const };
+const member = {
+  id: "1",
+  name: "Bulbasaur",
+  speciesId: available("1"),
+  level: available(0),
+  currentHp: available(0),
+  maximumHp: available(10),
+  types: available([]),
+  status: available("healthy"),
+  ability: unavailable,
+  heldItem: unavailable,
+  moves: available([]),
+  stats: available({ hp: 0 }),
+  statStages: available({ atk: 0 }),
+  ivs: available({ hp: 0 }),
+  evs: unavailable,
+  nature: unavailable,
+  experience: available(0),
+  friendship: available(0),
+  gender: unavailable,
+  shiny: available(false),
+  pokerus: available(false),
+} as const;
+const expanded: ExpandedRunSnapshot = {
+  kind: "snapshot",
+  schemaVersion: 2,
+  observedAt: "2026-08-01T12:00:00.000Z",
+  status: "active",
+  party: [member],
+  location: available({ name: "Route 1", mapId: unavailable }),
+  battle: available({ active: false }),
+  route: available({ name: "Route 1", trainers: [], completed: 0, total: 0 }),
+  progress: available({
+    romName: unavailable,
+    gameCode: unavailable,
+    trackerVersion: unavailable,
+    timer: unavailable,
+    paused: available(false),
+    playtime: unavailable,
+    badges: available([]),
+    centreHeals: available(0),
+    wildBattles: available(0),
+    trainerBattles: available(0),
+    fishing: available(0),
+    rockSmash: available(0),
+  }),
+};
+
 describe("tracker contract", () => {
   it("preserves zero and empty values as available", () => {
     expect(parseTrackerMessage(base)).toEqual(base);
   });
 
+  it("accepts the expanded schema and preserves zero, false, and empty values", () => {
+    expect(parseTrackerMessage(expanded)).toEqual(expanded);
+  });
+
   it("rejects unknown schema versions", () => {
-    expect(() => parseTrackerMessage({ ...base, schemaVersion: 2 })).toThrow(ContractError);
+    expect(() => parseTrackerMessage({ ...base, schemaVersion: 3 })).toThrow(ContractError);
+  });
+
+  it("validates channel event snapshots", () => {
+    expect(parseChannelEvent({ type: "active", snapshot: expanded })).toEqual({
+      type: "active",
+      snapshot: expanded,
+    });
+    expect(() =>
+      parseChannelEvent({ type: "active", snapshot: { ...expanded, schemaVersion: 3 } }),
+    ).toThrow(ContractError);
   });
 
   it("validates channel codes", () => {

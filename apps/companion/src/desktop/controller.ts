@@ -1,4 +1,5 @@
 import type { RunSnapshot, TrackerMessage } from "@ironmon-live/contracts";
+import { normalizeForPublication } from "../expanded-state";
 import type { CompanionState, PublicationClient, Scheduler } from "./types";
 
 export type ControllerOptions = {
@@ -73,7 +74,7 @@ export const createCompanionController = (options: ControllerOptions) => {
     try {
       await options.publish({
         kind: "heartbeat",
-        schemaVersion: 1,
+        schemaVersion: latest?.schemaVersion ?? 1,
         observedAt: new Date(options.scheduler.now()).toISOString(),
       });
       retryAttempt = 0;
@@ -111,22 +112,23 @@ export const createCompanionController = (options: ControllerOptions) => {
       };
     },
     receive: async (message: TrackerMessage) => {
-      if (Date.parse(message.observedAt) < options.startedAt) return;
+      const normalized = normalizeForPublication(message);
+      if (Date.parse(normalized.observedAt) < options.startedAt) return;
       clearStaleTimer();
       staleTimer = options.scheduler.setTimeout(markWaiting, sourceStaleMs);
-      if (message.kind === "unsupported") {
+      if (normalized.kind === "unsupported") {
         clearTimer();
         latest = undefined;
         update({
           ...state,
           status: state.paused ? "paused" : "unsupported",
-          explanation: message.reason,
+          explanation: normalized.reason,
           recommendedAction: undefined,
         });
         return;
       }
-      if (message.kind === "heartbeat") return;
-      latest = message;
+      if (normalized.kind === "heartbeat") return;
+      latest = normalized;
       clearTimer();
       await publishLatest();
     },

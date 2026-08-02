@@ -1,0 +1,64 @@
+:root {
+  /* base palette — dark GBC-inspired navy/crimson */
+  --navy-950: #0d0d1a;
+  --navy-900: #12121f;
+  --navy-800: #1a1a2e;
+  --navy-700: #202037;
+  --navy-600: #262645;
+  --navy-500: #33335c;
+  --navy-400: #4d4d7a;
+  --navy-300: #6b6b8f;
+  --navy-200: #a8a8c0;
+  --navy-100: #e4e4ee;
+  --crimson-700: #8f2438;
+  --crimson-600: #b83349;
+  --crimson-500: #e94560;
+  --crimson-400: #f16c83;
+  --crimson-300: #f79aac;
+  --blue-700: #0a2645;
+  --blue-600: #0f3460;
+  --blue-500: #3f6fa8;
+  --blue-400: #7aa3d1;
+  --lcd-green-700: #2f6b46;
+  --lcd-green-600: #3f8f5c;
+  --lcd-green-500: #4caf6e;
+  --lcd-green-400: #7bd69a;
+  --amber-600: #c98a1d;
+  --amber-500: #f2b134;
+  --amber-400: #f7cc74;
+  --cream-100: #f5f5f0;
+
+  /* semantic surfaces */
+  --bg-void: var(--navy-950);
+  --bg-base: var(--navy-800);
+  --bg-panel: var(--navy-700);
+  --bg-panel-raised: var(--navy-600);
+  --bg-inset: var(--navy-900);
+  --bg-overlay: rgba(13, 13, 26, 0.72);
+
+  --border-hairline: var(--navy-500);
+  --border-strong: var(--navy-400);
+  --border-focus: var(--crimson-500);
+
+  --text-primary: var(--cream-100);
+  --text-secondary: var(--navy-200);
+  --text-tertiary: var(--navy-300);
+  --text-on-accent: var(--cream-100);
+  --text-disabled: var(--navy-400);
+
+  --accent-primary: var(--crimson-500);
+  --accent-primary-hover: var(--crimson-400);
+  --accent-primary-active: var(--crimson-600);
+  --accent-secondary: var(--blue-500);
+  --accent-secondary-hover: var(--blue-400);
+
+  --status-live: var(--crimson-500);
+  --status-success: var(--lcd-green-500);
+  --status-warning: var(--amber-500);
+  --status-defeated: var(--navy-300);
+  --status-info: var(--blue-500);
+
+  --hp-high: var(--lcd-green-500);
+  --hp-mid: var(--amber-500);
+  --hp-low: var(--crimson-500);
+}
