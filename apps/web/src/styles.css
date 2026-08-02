@@ -327,24 +327,60 @@ button:active {
   display: inline-block;
   background: var(--bg-panel-raised);
 }
-.tag-normal { background: #a8a878; }
-.tag-fire { background: #f08030; }
-.tag-water { background: #6890f0; }
-.tag-electric { background: #f8d030; }
-.tag-grass { background: #78c850; }
-.tag-ice { background: #98d8d8; }
-.tag-fighting { background: #c03028; }
-.tag-poison { background: #a040a0; }
-.tag-ground { background: #e0c068; }
-.tag-flying { background: #a890f0; }
-.tag-psychic { background: #f85888; }
-.tag-bug { background: #a8b820; }
-.tag-rock { background: #b8a038; }
-.tag-ghost { background: #705898; }
-.tag-dragon { background: #7038f8; }
-.tag-dark { background: #705848; }
-.tag-steel { background: #b8b8d0; }
-.tag-fairy { background: #ee99ac; }
+.tag-normal {
+  background: #a8a878;
+}
+.tag-fire {
+  background: #f08030;
+}
+.tag-water {
+  background: #6890f0;
+}
+.tag-electric {
+  background: #f8d030;
+}
+.tag-grass {
+  background: #78c850;
+}
+.tag-ice {
+  background: #98d8d8;
+}
+.tag-fighting {
+  background: #c03028;
+}
+.tag-poison {
+  background: #a040a0;
+}
+.tag-ground {
+  background: #e0c068;
+}
+.tag-flying {
+  background: #a890f0;
+}
+.tag-psychic {
+  background: #f85888;
+}
+.tag-bug {
+  background: #a8b820;
+}
+.tag-rock {
+  background: #b8a038;
+}
+.tag-ghost {
+  background: #705898;
+}
+.tag-dragon {
+  background: #7038f8;
+}
+.tag-dark {
+  background: #705848;
+}
+.tag-steel {
+  background: #b8b8d0;
+}
+.tag-fairy {
+  background: #ee99ac;
+}
 
 /* HP bar */
 .hp-bar {
