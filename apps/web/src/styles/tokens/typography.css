@@ -1,0 +1,25 @@
+@import url("https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&family=Manrope:wght@400;500;600;700;800&display=swap");
+:root {
+  --font-pixel-display: "Press Start 2P", monospace;
+  --font-pixel-data: "VT323", monospace;
+  --font-sans: "Manrope", system-ui, sans-serif;
+
+  --text-display-lg: 28px;
+  --text-display-md: 18px;
+  --text-display-sm: 12px;
+  --text-data-xl: 34px;
+  --text-data-lg: 24px;
+  --text-data-md: 19px;
+  --text-body-lg: 17px;
+  --text-body-md: 15px;
+  --text-body-sm: 13px;
+  --text-label: 12px;
+  --text-micro: 10px;
+
+  --lh-tight: 1.1;
+  --lh-normal: 1.4;
+  --lh-relaxed: 1.6;
+
+  --tracking-pixel: 0.5px;
+  --tracking-label: 0.6px;
+}

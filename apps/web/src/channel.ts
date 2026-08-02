@@ -1,4 +1,4 @@
-import type { ChannelEvent } from "@ironmon-live/contracts";
+import { parseChannelEvent, type ChannelEvent } from "@ironmon-live/contracts";
 
 export const channelSocketUrl = (code: string, location: Location = window.location) => {
   const protocol = location.protocol === "https:" ? "wss:" : "ws:";
@@ -23,7 +23,11 @@ export const subscribeToChannel = (
       onConnection(true);
     });
     socket.addEventListener("message", (message) => {
-      onEvent(JSON.parse(String(message.data)) as ChannelEvent);
+      try {
+        onEvent(parseChannelEvent(JSON.parse(String(message.data)) as unknown));
+      } catch {
+        socket?.close();
+      }
     });
     socket.addEventListener("close", () => {
       onConnection(false);

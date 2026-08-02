@@ -11,7 +11,9 @@ keep completed items as durable delivery history.
 - [WORK-005: Add the Lua Tracker extension](WORK-005-add-lua-tracker-extension.md)
 - [WORK-006: Deploy production automatically from main](WORK-006-automatic-main-deploy.md)
 - [WORK-008: Ship the TypeScript-owned Tauri companion](WORK-008-ship-tauri-companion.md)
+- [WORK-010: Implement the expanded player-first live channel](WORK-010-implement-expanded-player-first-live-channel.md)
 
 ## Completed
 
 - [WORK-007: Define the quiet companion utility](WORK-007-define-companion-utility.md)
+- [WORK-009: Define the expanded player-first live channel](WORK-009-define-expanded-player-first-live-channel.md)

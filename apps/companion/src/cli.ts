@@ -3,6 +3,7 @@ import { randomUUID } from "node:crypto";
 import { resolve } from "node:path";
 import { isChannelCode } from "@ironmon-live/contracts";
 import { defaultConfigPath, loadConfig, resetChannelCode, saveConfig } from "./config.js";
+import { normalizeForPublication } from "./expanded-state.js";
 import { createPublisher } from "./publisher.js";
 import { watchSnapshots } from "./watcher.js";
 
@@ -53,7 +54,7 @@ const main = async () => {
   process.stdout.write(`Watching ${config.inputPath}\n`);
   watchSnapshots({
     path: config.inputPath,
-    onMessage: publish,
+    onMessage: async (message) => publish(normalizeForPublication(message)),
     onError: async (error) => {
       process.stderr.write(`${String(error)}\n`);
       await publish({

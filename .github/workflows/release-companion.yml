@@ -28,6 +28,8 @@ jobs:
           node-version-file: .nvmrc
           package-manager-cache: false
       - run: npm ci --ignore-scripts
+      - name: Install Chromium for viewport coverage
+        run: npm exec --workspace=@ironmon-live/web -- playwright install --with-deps chromium
       - run: npm run check
 
   build:

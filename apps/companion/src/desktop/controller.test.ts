@@ -104,6 +104,31 @@ describe("companion controller", () => {
     expect(publish).not.toHaveBeenCalled();
   });
 
+  it("uses the expanded heartbeat version after normalizing a legacy snapshot", async () => {
+    const publish = vi.fn(() => Promise.resolve());
+    const scheduled: Array<() => void> = [];
+    const controller = createCompanionController({
+      initialState: baseState,
+      startedAt: 0,
+      publish,
+      scheduler: {
+        now: () => Date.parse("2026-08-01T10:00:00Z"),
+        setTimeout: (callback) => {
+          scheduled.push(callback);
+          return scheduled.length;
+        },
+        clearTimeout: vi.fn(),
+      },
+    });
+    await controller.receive(snapshot());
+    scheduled.at(-1)?.();
+    await vi.waitFor(() => {
+      expect(publish).toHaveBeenLastCalledWith(
+        expect.objectContaining({ kind: "heartbeat", schemaVersion: 2 }),
+      );
+    });
+  });
+
   it("reports unsupported input locally without deleting remote state", async () => {
     const publish = vi.fn(() => Promise.resolve());
     const controller = createCompanionController({
