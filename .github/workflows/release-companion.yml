@@ -68,7 +68,7 @@ jobs:
           TAURI_SIGNING_PRIVATE_KEY_PASSWORD: ${{ secrets.TAURI_SIGNING_PRIVATE_KEY_PASSWORD }}
           TAURI_UPDATER_PUBLIC_KEY: ${{ vars.TAURI_UPDATER_PUBLIC_KEY }}
         run: |
-          node scripts/configure-tauri-updater.ts apps/companion/src-tauri/tauri.conf.json "${GITHUB_REF_NAME#v}" apps/web/src/companion-release.json
+          node scripts/configure-tauri-updater.ts apps/companion/src-tauri/tauri.conf.json "${GITHUB_REF_NAME#v}"
           npm run tauri:build --workspace=@ironmon-live/companion -- --verbose --target "${{ matrix.target }}"
       - name: Verify release artifacts
         run: |
