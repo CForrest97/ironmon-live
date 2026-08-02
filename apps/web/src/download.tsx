@@ -9,9 +9,7 @@ interface CompanionRelease {
 
 const fetchCompanionRelease = async (): Promise<CompanionRelease | null> => {
   try {
-    const response = await fetch(
-      "https://downloads.live.craigforrest.co.uk/companion/latest.json",
-    );
+    const response = await fetch("https://downloads.live.craigforrest.co.uk/companion/latest.json");
     if (!response.ok) throw new Error(`HTTP ${response.status}`);
     const data = (await response.json()) as { version?: string };
     if (!data.version) throw new Error("Missing version in latest.json");
@@ -118,9 +116,7 @@ export const DownloadCompanion = ({ available = true }: { readonly available?: b
         </div>
         <section className="release-details">
           <h2>Version {release.version}</h2>
-          <p aria-label="System requirement">
-            Requires macOS {release.minimumMacOS} or later.
-          </p>
+          <p aria-label="System requirement">Requires macOS {release.minimumMacOS} or later.</p>
           <p>
             This independent build is not Developer ID signed or notarized. macOS may require you to
             approve it in Privacy &amp; Security after download.
