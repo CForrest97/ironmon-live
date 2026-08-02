@@ -83,9 +83,9 @@ test("the expanded channel remains operable at 640 CSS pixels", async ({ page })
   await expect(page.getByRole("region", { name: "Run overview" })).toBeVisible();
   await expect(page.getByText("Route 1").first()).toBeVisible();
   for (const panel of ["Party", "Battle", "Route", "Progress"]) {
-    await expect(page.locator("summary", { hasText: panel })).toBeVisible();
+    await expect(page.getByRole("button", { name: panel })).toBeVisible();
   }
-  await page.locator("summary", { hasText: "Party" }).click();
+  await page.getByRole("button", { name: "Party" }).click();
   await expect(page.getByText("Tackle").first()).toBeVisible();
   await expect(
     page.evaluate(() => document.documentElement.scrollWidth <= window.innerWidth),

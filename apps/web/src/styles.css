@@ -247,22 +247,129 @@ button:active {
   color: var(--text-primary);
   overflow-wrap: anywhere;
 }
+.overview-card-party {
+  grid-column: span 2;
+}
+.badge-count {
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  color: var(--text-secondary);
+}
+.badge-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+.badge-chip {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: var(--text-micro);
+  letter-spacing: var(--tracking-label);
+  text-transform: uppercase;
+  padding: 3px 9px;
+  border-radius: var(--radius-sm);
+  border: var(--border-w-box) solid var(--navy-950);
+  display: inline-block;
+  background: var(--status-warning);
+  color: var(--navy-950);
+}
+.overview-party {
+  display: grid;
+  gap: var(--space-2);
+}
+.overview-party-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.overview-party-row .sprite,
+.overview-party-row .sprite-fallback {
+  height: 2.75rem;
+  width: 2.75rem;
+}
+.overview-party-info {
+  flex: 1;
+  min-width: 0;
+}
+.overview-party-name {
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: var(--text-body-sm);
+  color: var(--text-primary);
+}
 .panel-stack {
   display: grid;
   gap: var(--space-4);
   margin-top: var(--space-4);
 }
-.panel summary {
+.panel-summary {
+  all: unset;
   cursor: pointer;
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
   font-family: var(--font-pixel-display);
   font-size: var(--text-display-sm);
   letter-spacing: var(--tracking-pixel);
   color: var(--text-primary);
   padding: var(--space-4) var(--space-5);
 }
+.panel-summary:focus-visible {
+  outline: 2px solid var(--accent-primary);
+  outline-offset: -2px;
+}
 .panel-content {
   border-top: var(--border-w-box) solid var(--navy-950);
   padding: var(--space-5);
+}
+.party-more {
+  margin-top: var(--space-3);
+}
+.party-more summary {
+  cursor: pointer;
+  font-family: var(--font-sans);
+  font-weight: 700;
+  font-size: var(--text-body-sm);
+  color: var(--accent-secondary);
+}
+.trainer-heading {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+.trainer-portrait,
+.trainer-fallback {
+  height: 2rem;
+  width: 2rem;
+  font-size: 8px;
+}
+.counter-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  margin-top: var(--space-2);
+}
+.counter {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  background: var(--bg-inset);
+  border: var(--border-w-hair) solid var(--border-hairline);
+  border-radius: var(--radius-sm);
+  padding: var(--space-2) var(--space-3);
+  min-width: 6rem;
+}
+.counter-label {
+  font-family: var(--font-sans);
+  font-size: var(--text-micro);
+  color: var(--text-tertiary);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+}
+.counter-value {
+  font-family: var(--font-pixel-data);
+  font-size: var(--text-data-md);
+  color: var(--text-primary);
 }
 
 /* party card internals */
@@ -634,6 +741,9 @@ a:hover {
   .overview-grid,
   .facts {
     grid-template-columns: minmax(0, 1fr);
+  }
+  .overview-card-party {
+    grid-column: span 1;
   }
   .panel-content,
   .party-card {

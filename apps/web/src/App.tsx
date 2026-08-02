@@ -27,11 +27,6 @@ const Values = ({ value }: { readonly value: Available<Readonly<Record<string, n
     </dl>
   ));
 
-const TypeList = ({ value }: { readonly value: Available<readonly string[]> }) =>
-  availableValue(value, (types) =>
-    types.length === 0 ? <span>None</span> : <span>{types.join(", ")}</span>,
-  );
-
 const TypeTags = ({ value }: { readonly value: Available<readonly string[]> }) =>
   availableValue(value, (types) =>
     types.length === 0 ? (
@@ -41,6 +36,21 @@ const TypeTags = ({ value }: { readonly value: Available<readonly string[]> }) =
         {types.map((type) => (
           <span key={type} className={`tag tag-${type.toLowerCase()}`}>
             {type}
+          </span>
+        ))}
+      </div>
+    ),
+  );
+
+const BadgeChips = ({ value }: { readonly value: Available<readonly string[]> }) =>
+  availableValue(value, (badges) =>
+    badges.length === 0 ? (
+      <span className="badge-count">No badges yet</span>
+    ) : (
+      <div className="badge-chips">
+        {badges.map((badge) => (
+          <span key={badge} className="badge-chip">
+            {badge}
           </span>
         ))}
       </div>
@@ -120,6 +130,31 @@ const Sprite = ({ member }: { readonly member: ExpandedPartyMember }) => {
   );
 };
 
+const TrainerPortrait = ({
+  trainer,
+}: {
+  readonly trainer: { readonly portraitId: Available<string>; readonly name: string };
+}) => {
+  const [failed, setFailed] = useState(false);
+  if (failed || trainer.portraitId.availability !== "available") {
+    return (
+      <span className="sprite-fallback trainer-fallback">
+        {trainer.name.slice(0, 2).toUpperCase()}
+      </span>
+    );
+  }
+  return (
+    <img
+      className="sprite trainer-portrait"
+      src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/trainers/${trainer.portraitId.value}.png`}
+      alt={`${trainer.name} portrait`}
+      onError={() => {
+        setFailed(true);
+      }}
+    />
+  );
+};
+
 const PartyDetails = ({ member }: { readonly member: ExpandedPartyMember }) => (
   <article className="party-card">
     <div className="card-heading">
@@ -143,30 +178,6 @@ const PartyDetails = ({ member }: { readonly member: ExpandedPartyMember }) => (
         <dt>Held item</dt>
         <dd>{availableValue(member.heldItem, String)}</dd>
       </div>
-      <div>
-        <dt>Nature</dt>
-        <dd>{availableValue(member.nature, String)}</dd>
-      </div>
-      <div>
-        <dt>Experience</dt>
-        <dd>{availableValue(member.experience, String)}</dd>
-      </div>
-      <div>
-        <dt>Friendship</dt>
-        <dd>{availableValue(member.friendship, String)}</dd>
-      </div>
-      <div>
-        <dt>Gender</dt>
-        <dd>{availableValue(member.gender, String)}</dd>
-      </div>
-      <div>
-        <dt>Shiny</dt>
-        <dd>{availableValue(member.shiny, String)}</dd>
-      </div>
-      <div>
-        <dt>PokeRus</dt>
-        <dd>{availableValue(member.pokerus, String)}</dd>
-      </div>
     </dl>
     <h4>Moves</h4>
     {availableValue(member.moves, (moves) => (
@@ -178,14 +189,43 @@ const PartyDetails = ({ member }: { readonly member: ExpandedPartyMember }) => (
         ))}
       </div>
     ))}
-    <h4>Stats</h4>
-    <Values value={member.stats} />
-    <h4>Stat stages</h4>
-    <Values value={member.statStages} />
-    <h4>IVs</h4>
-    <Values value={member.ivs} />
-    <h4>EVs</h4>
-    <Values value={member.evs} />
+    <details className="party-more">
+      <summary>More details</summary>
+      <dl className="facts">
+        <div>
+          <dt>Nature</dt>
+          <dd>{availableValue(member.nature, String)}</dd>
+        </div>
+        <div>
+          <dt>Experience</dt>
+          <dd>{availableValue(member.experience, String)}</dd>
+        </div>
+        <div>
+          <dt>Friendship</dt>
+          <dd>{availableValue(member.friendship, String)}</dd>
+        </div>
+        <div>
+          <dt>Gender</dt>
+          <dd>{availableValue(member.gender, String)}</dd>
+        </div>
+        <div>
+          <dt>Shiny</dt>
+          <dd>{availableValue(member.shiny, String)}</dd>
+        </div>
+        <div>
+          <dt>PokeRus</dt>
+          <dd>{availableValue(member.pokerus, String)}</dd>
+        </div>
+      </dl>
+      <h4>Stats</h4>
+      <Values value={member.stats} />
+      <h4>Stat stages</h4>
+      <Values value={member.statStages} />
+      <h4>IVs</h4>
+      <Values value={member.ivs} />
+      <h4>EVs</h4>
+      <Values value={member.evs} />
+    </details>
   </article>
 );
 
@@ -256,14 +296,41 @@ const LegacyRunView = ({ snapshot }: { readonly snapshot: LegacyRunSnapshot }) =
   </main>
 );
 
-const Panel = ({ title, children }: { readonly title: string; readonly children: ReactNode }) => (
-  <details className="panel">
-    <summary>{title}</summary>
-    <div className="panel-content">{children}</div>
-  </details>
+const Panel = ({
+  title,
+  open,
+  onToggle,
+  children,
+}: {
+  readonly title: string;
+  readonly open: boolean;
+  readonly onToggle: () => void;
+  readonly children: ReactNode;
+}) => (
+  <section className="panel">
+    <button
+      type="button"
+      className="panel-summary"
+      aria-expanded={open}
+      aria-controls={`panel-${title}`}
+      onClick={onToggle}
+    >
+      {title}
+    </button>
+    {open && (
+      <div className="panel-content" id={`panel-${title}`}>
+        {children}
+      </div>
+    )}
+  </section>
 );
 
 export const ExpandedRunView = ({ snapshot }: { readonly snapshot: ExpandedRunSnapshot }) => {
+  const [openPanel, setOpenPanel] = useState<string | undefined>(undefined);
+  const togglePanel = (title: string) => {
+    setOpenPanel((current) => (current === title ? undefined : title));
+  };
+
   const routeProgress = availableValue(
     snapshot.route,
     (route) => `${String(route.completed)}/${String(route.total)}`,
@@ -283,6 +350,32 @@ export const ExpandedRunView = ({ snapshot }: { readonly snapshot: ExpandedRunSn
         <article className="overview-card">
           <h2>Location</h2>
           <p>{availableValue(snapshot.location, (location) => location.name)}</p>
+          {availableValue(snapshot.route, (route) => (
+            <ProgressTrack
+              steps={route.trainers.map((trainer) => ({
+                name: trainer.name,
+                state:
+                  trainer.battled.availability === "available" && trainer.battled.value
+                    ? "battled"
+                    : "upcoming",
+              }))}
+            />
+          ))}
+          <span className="badge-count">{routeProgress} trainers</span>
+        </article>
+        <article className="overview-card overview-card-party">
+          <h2>Party</h2>
+          <div className="overview-party">
+            {snapshot.party.map((member) => (
+              <div className="overview-party-row" key={member.id}>
+                <Sprite member={member} />
+                <div className="overview-party-info">
+                  <span className="overview-party-name">{member.name}</span>
+                  <HpBar member={member} />
+                </div>
+              </div>
+            ))}
+          </div>
         </article>
         <article className="overview-card">
           <h2>Battle</h2>
@@ -297,18 +390,20 @@ export const ExpandedRunView = ({ snapshot }: { readonly snapshot: ExpandedRunSn
           </p>
         </article>
         <article className="overview-card">
-          <h2>Party readiness</h2>
-          <p>
-            {snapshot.party.length} reported member{snapshot.party.length === 1 ? "" : "s"}
-          </p>
-        </article>
-        <article className="overview-card">
-          <h2>Route trainers</h2>
-          <p>{routeProgress}</p>
+          <h2>Badges</h2>
+          {availableValue(snapshot.progress, (progress) => (
+            <BadgeChips value={progress.badges} />
+          ))}
         </article>
       </section>
       <section className="panel-stack" aria-label="Run details">
-        <Panel title="Party">
+        <Panel
+          title="Party"
+          open={openPanel === "Party"}
+          onToggle={() => {
+            togglePanel("Party");
+          }}
+        >
           <div className="party-grid">
             {snapshot.party.map((member) => (
               <PartyDetails key={member.id} member={member} />
@@ -316,13 +411,20 @@ export const ExpandedRunView = ({ snapshot }: { readonly snapshot: ExpandedRunSn
           </div>
         </Panel>
         {activeBattle && (
-          <Panel title="Battle">
+          <Panel
+            title="Battle"
+            open={openPanel === "Battle"}
+            onToggle={() => {
+              togglePanel("Battle");
+            }}
+          >
             <h2>
               {activeBattle.kind} battle · {activeBattle.format}
             </h2>
             <p>Outcome: {availableValue(activeBattle.outcome, String)}</p>
             {availableValue(activeBattle.trainer, (trainer) => (
-              <p>
+              <p className="trainer-heading">
+                <TrainerPortrait trainer={trainer} />
                 Opponent:{" "}
                 {trainer.trainerClass.availability === "available"
                   ? `${trainer.trainerClass.value} `
@@ -338,7 +440,13 @@ export const ExpandedRunView = ({ snapshot }: { readonly snapshot: ExpandedRunSn
             </div>
           </Panel>
         )}
-        <Panel title="Route">
+        <Panel
+          title="Route"
+          open={openPanel === "Route"}
+          onToggle={() => {
+            togglePanel("Route");
+          }}
+        >
           {availableValue(snapshot.route, (route) => (
             <>
               <div className="route-top">
@@ -362,7 +470,8 @@ export const ExpandedRunView = ({ snapshot }: { readonly snapshot: ExpandedRunSn
                     trainer.battled.availability === "available" && trainer.battled.value;
                   return (
                     <div className="trainer-row" key={trainer.id}>
-                      <span>
+                      <span className="trainer-heading">
+                        <TrainerPortrait trainer={trainer} />
                         {trainer.name}
                         {trainer.trainerClass.availability === "available"
                           ? ` · ${trainer.trainerClass.value}`
@@ -380,60 +489,75 @@ export const ExpandedRunView = ({ snapshot }: { readonly snapshot: ExpandedRunSn
             </>
           ))}
         </Panel>
-        <Panel title="Progress">
+        <Panel
+          title="Progress"
+          open={openPanel === "Progress"}
+          onToggle={() => {
+            togglePanel("Progress");
+          }}
+        >
           {availableValue(snapshot.progress, (progress) => (
-            <dl className="facts progress-facts">
-              <div>
-                <dt>ROM</dt>
-                <dd>{availableValue(progress.romName, String)}</dd>
+            <>
+              <dl className="facts">
+                <div>
+                  <dt>ROM</dt>
+                  <dd>{availableValue(progress.romName, String)}</dd>
+                </div>
+                <div>
+                  <dt>Game code</dt>
+                  <dd>{availableValue(progress.gameCode, String)}</dd>
+                </div>
+                <div>
+                  <dt>Tracker</dt>
+                  <dd>{availableValue(progress.trackerVersion, String)}</dd>
+                </div>
+                <div>
+                  <dt>Timer</dt>
+                  <dd>{availableValue(progress.timer, String)}</dd>
+                </div>
+                <div>
+                  <dt>Paused</dt>
+                  <dd>{availableValue(progress.paused, String)}</dd>
+                </div>
+                <div>
+                  <dt>Playtime</dt>
+                  <dd>{availableValue(progress.playtime, String)}</dd>
+                </div>
+              </dl>
+              <h4>Badges</h4>
+              <BadgeChips value={progress.badges} />
+              <h4>Run counters</h4>
+              <div className="counter-row">
+                <span className="counter">
+                  <span className="counter-label">Centre heals</span>
+                  <span className="counter-value">
+                    {availableValue(progress.centreHeals, String)}
+                  </span>
+                </span>
+                <span className="counter">
+                  <span className="counter-label">Wild battles</span>
+                  <span className="counter-value">
+                    {availableValue(progress.wildBattles, String)}
+                  </span>
+                </span>
+                <span className="counter">
+                  <span className="counter-label">Trainer battles</span>
+                  <span className="counter-value">
+                    {availableValue(progress.trainerBattles, String)}
+                  </span>
+                </span>
+                <span className="counter">
+                  <span className="counter-label">Fishing</span>
+                  <span className="counter-value">{availableValue(progress.fishing, String)}</span>
+                </span>
+                <span className="counter">
+                  <span className="counter-label">Rock Smash</span>
+                  <span className="counter-value">
+                    {availableValue(progress.rockSmash, String)}
+                  </span>
+                </span>
               </div>
-              <div>
-                <dt>Game code</dt>
-                <dd>{availableValue(progress.gameCode, String)}</dd>
-              </div>
-              <div>
-                <dt>Tracker</dt>
-                <dd>{availableValue(progress.trackerVersion, String)}</dd>
-              </div>
-              <div>
-                <dt>Timer</dt>
-                <dd>{availableValue(progress.timer, String)}</dd>
-              </div>
-              <div>
-                <dt>Paused</dt>
-                <dd>{availableValue(progress.paused, String)}</dd>
-              </div>
-              <div>
-                <dt>Playtime</dt>
-                <dd>{availableValue(progress.playtime, String)}</dd>
-              </div>
-              <div>
-                <dt>Badges</dt>
-                <dd>
-                  <TypeList value={progress.badges} />
-                </dd>
-              </div>
-              <div>
-                <dt>Centre heals</dt>
-                <dd>{availableValue(progress.centreHeals, String)}</dd>
-              </div>
-              <div>
-                <dt>Wild battles</dt>
-                <dd>{availableValue(progress.wildBattles, String)}</dd>
-              </div>
-              <div>
-                <dt>Trainer battles</dt>
-                <dd>{availableValue(progress.trainerBattles, String)}</dd>
-              </div>
-              <div>
-                <dt>Fishing</dt>
-                <dd>{availableValue(progress.fishing, String)}</dd>
-              </div>
-              <div>
-                <dt>Rock Smash</dt>
-                <dd>{availableValue(progress.rockSmash, String)}</dd>
-              </div>
-            </dl>
+            </>
           ))}
         </Panel>
       </section>
