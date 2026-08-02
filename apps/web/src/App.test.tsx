@@ -32,7 +32,7 @@ const member = {
   pokerus: available(false),
 } as const;
 
-const snapshot = (active = true) => ({
+const snapshot = (active = true, badges: readonly string[] = []) => ({
   kind: "snapshot" as const,
   schemaVersion: 2 as const,
   observedAt: "2026-08-01T10:00:00Z",
@@ -52,7 +52,23 @@ const snapshot = (active = true) => ({
         }
       : { active: false as const },
   ),
-  route: available({ name: "Route 1", trainers: [], completed: 0, total: 0 }),
+  route: available({
+    name: "Route 1",
+    trainers: [
+      {
+        id: "t1",
+        name: "R1 Trainer",
+        trainerClass: unavailable,
+        portraitId: unavailable,
+        battled: available(false),
+        party: unavailable,
+        battleItems: unavailable,
+        doubleBattle: unavailable,
+      },
+    ],
+    completed: 0,
+    total: 1,
+  }),
   progress: available({
     romName: unavailable,
     gameCode: unavailable,
@@ -60,7 +76,7 @@ const snapshot = (active = true) => ({
     timer: unavailable,
     paused: available(false),
     playtime: unavailable,
-    badges: available([]),
+    badges: available(badges),
     centreHeals: available(0),
     wildBattles: available(0),
     trainerBattles: available(0),
@@ -70,20 +86,47 @@ const snapshot = (active = true) => ({
 });
 
 describe("expanded run dashboard", () => {
-  it("keeps the overview visible and exposes each detail panel", () => {
+  it("shows party HP and badge state in the overview without opening a panel", () => {
     render(<ExpandedRunView snapshot={snapshot()} />);
-    expect(screen.getByRole("region", { name: "Run overview" })).toHaveTextContent("Route 1");
-    expect(screen.getByText("Party readiness")).toBeInTheDocument();
+    const overview = screen.getByRole("region", { name: "Run overview" });
+    expect(overview).toHaveTextContent("Route 1");
+    expect(overview).toHaveTextContent("Bulbasaur");
+    expect(overview).toHaveTextContent("12/20 HP");
+    expect(overview).toHaveTextContent("No badges yet");
     ["Party", "Battle", "Route", "Progress"].forEach((panel) => {
-      expect(screen.getByText(panel, { selector: "summary" })).toBeInTheDocument();
+      expect(screen.getByRole("button", { name: panel })).toBeInTheDocument();
     });
-    fireEvent.click(screen.getByText("Party", { selector: "summary" }));
+    fireEvent.click(screen.getByRole("button", { name: "Party" }));
     expect(screen.getAllByText(/Tackle/u)[0]).toBeInTheDocument();
+  });
+
+  it("also shows badges inside the Progress panel", () => {
+    render(<ExpandedRunView snapshot={snapshot(true, ["Boulder"])} />);
+    expect(screen.getByRole("region", { name: "Run overview" })).toHaveTextContent("Boulder");
+    fireEvent.click(screen.getByRole("button", { name: "Progress" }));
+    expect(screen.getAllByText("Boulder")).toHaveLength(2);
+  });
+
+  it("keeps only one panel open at a time", () => {
+    render(<ExpandedRunView snapshot={snapshot()} />);
+    fireEvent.click(screen.getByRole("button", { name: "Party" }));
+    expect(screen.getByRole("button", { name: "Party" })).toHaveAttribute("aria-expanded", "true");
+    fireEvent.click(screen.getByRole("button", { name: "Route" }));
+    expect(screen.getByRole("button", { name: "Party" })).toHaveAttribute("aria-expanded", "false");
+    expect(screen.getByRole("button", { name: "Route" })).toHaveAttribute("aria-expanded", "true");
+  });
+
+  it("hides deep party stats behind a more-details disclosure", () => {
+    render(<ExpandedRunView snapshot={snapshot()} />);
+    fireEvent.click(screen.getByRole("button", { name: "Party" }));
+    expect(screen.getByText("Stat stages")).not.toBeVisible();
+    fireEvent.click(screen.getByText("More details"));
+    expect(screen.getByText("Stat stages")).toBeVisible();
   });
 
   it("does not reserve a battle panel for an inactive battle", () => {
     render(<ExpandedRunView snapshot={snapshot(false)} />);
-    expect(screen.queryByText("Battle", { selector: "summary" })).not.toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "Battle" })).not.toBeInTheDocument();
     expect(screen.getByRole("region", { name: "Run overview" })).toHaveTextContent(
       "No active battle",
     );
@@ -93,5 +136,11 @@ describe("expanded run dashboard", () => {
     render(<ExpandedRunView snapshot={snapshot()} />);
     fireEvent.error(screen.getAllByAltText("Bulbasaur sprite")[0] as HTMLImageElement);
     expect(screen.getAllByText("BU")[0]).toBeInTheDocument();
+  });
+
+  it("falls back to initials when a trainer portrait is unavailable", () => {
+    render(<ExpandedRunView snapshot={snapshot()} />);
+    fireEvent.click(screen.getByRole("button", { name: "Route" }));
+    expect(screen.getAllByText("R1")[0]).toBeInTheDocument();
   });
 });
