@@ -10,8 +10,8 @@ interface CompanionRelease {
 const fetchCompanionRelease = async (): Promise<CompanionRelease | null> => {
   try {
     const response = await fetch("https://downloads.live.craigforrest.co.uk/companion/latest.json");
-    if (!response.ok) throw new Error(`HTTP ${response.status}`);
-    const data = (await response.json()) as { version?: string };
+    if (!response.ok) throw new Error(`HTTP ${String(response.status)}`);
+    const data: { version?: string } = await response.json();
     if (!data.version) throw new Error("Missing version in latest.json");
     return {
       version: data.version,
@@ -45,7 +45,7 @@ export const DownloadCompanion = ({ available = true }: { readonly available?: b
   const [release, setRelease] = useState<CompanionRelease | null>(null);
 
   useEffect(() => {
-    fetchCompanionRelease().then(setRelease);
+    void fetchCompanionRelease().then(setRelease);
   }, []);
 
   if (!release) {
