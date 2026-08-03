@@ -30,15 +30,15 @@
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
-    "@types/node": "24.13.3",
+    "@types/node": "26.1.2",
     "eslint": "10.8.0",
     "eslint-config-prettier": "10.1.8",
     "jiti": "2.7.0",
     "markdownlint-cli2": "0.23.2",
     "prettier": "3.9.6",
-    "typescript": "6.0.3",
+    "typescript": "7.0.2",
     "typescript-eslint": "8.65.0",
-    "vitest": "3.2.7",
+    "vitest": "4.1.10",
     "yaml": "2.9.0"
   }
 }
