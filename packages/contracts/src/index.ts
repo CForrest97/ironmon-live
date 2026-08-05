@@ -471,3 +471,17 @@ export const parseChannelEvent = (value: unknown): ChannelEvent => {
 };
 
 export const isChannelCode = (value: string) => /^\d{5}$/.test(value);
+
+export type ActiveChannelsResponse = { readonly channels: readonly string[] };
+
+export const parseActiveChannels = (value: unknown): ActiveChannelsResponse => {
+  if (!isRecord(value)) throw new ContractError("active channels response must be an object");
+  const { channels } = value;
+  if (
+    !Array.isArray(channels) ||
+    channels.some((code) => typeof code !== "string" || !isChannelCode(code))
+  ) {
+    throw new ContractError("channels must be an array of five-digit channel codes");
+  }
+  return { channels };
+};

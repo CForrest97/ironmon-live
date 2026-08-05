@@ -46,7 +46,9 @@ targets beyond the one-second update target supplied by the maintainer.
 
 ## Non-goals
 
-- Searching, browsing, or publicly listing players or live channels.
+- Searching or filtering live channels, or listing anything about a channel
+  beyond its code (see [DEC-003](../decisions/DEC-003-list-active-channels-on-homepage.md)
+  for the homepage's default listing of active channel codes).
 - Player accounts or authenticated spectator access in the initial product.
 - Permanent run history or a retained final run snapshot.
 - Encounter and battle guidance in the initial product.

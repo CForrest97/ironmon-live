@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import {
   ContractError,
   isChannelCode,
+  parseActiveChannels,
   parseChannelEvent,
   parseTrackerMessage,
   type ExpandedRunSnapshot,
@@ -102,5 +103,13 @@ describe("tracker contract", () => {
   it("validates channel codes", () => {
     expect(isChannelCode("00001")).toBe(true);
     expect(isChannelCode("1234")).toBe(false);
+  });
+
+  it("validates active-channels responses", () => {
+    expect(parseActiveChannels({ channels: ["12345", "00001"] })).toEqual({
+      channels: ["12345", "00001"],
+    });
+    expect(() => parseActiveChannels({ channels: ["1234"] })).toThrow(ContractError);
+    expect(() => parseActiveChannels({ channels: "12345" })).toThrow(ContractError);
   });
 });

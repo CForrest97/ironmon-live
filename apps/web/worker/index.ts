@@ -1,8 +1,10 @@
 import { isChannelCode } from "@ironmon-live/contracts";
 export { LiveChannel } from "./channel.ts";
+export { ChannelRegistry } from "./registry.ts";
 
 type Env = {
   readonly CHANNELS: DurableObjectNamespace;
+  readonly REGISTRY: DurableObjectNamespace;
   readonly ASSETS: Fetcher;
   readonly EXPIRY_MINUTES: string;
 };
@@ -12,6 +14,10 @@ const apiMatch = /^\/api\/channels\/(\d{5})\/(publish|snapshot|connect)$/;
 export default {
   async fetch(request: Request, env: Env) {
     const url = new URL(request.url);
+    if (url.pathname === "/api/channels" && request.method === "GET") {
+      const registry = env.REGISTRY.get(env.REGISTRY.idFromName("singleton"));
+      return registry.fetch("https://registry/channels");
+    }
     const match = apiMatch.exec(url.pathname);
     if (!match) return env.ASSETS.fetch(request);
     const code = match[1];
