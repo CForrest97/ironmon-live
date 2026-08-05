@@ -1,11 +1,16 @@
 import { DurableObject } from "cloudflare:workers";
 import { parsePublication, type ChannelEvent, type RunSnapshot } from "@ironmon-live/contracts";
 
-type Env = { readonly EXPIRY_MINUTES: string };
+type Env = {
+  readonly EXPIRY_MINUTES: string;
+  readonly REGISTRY: DurableObjectNamespace;
+};
 
 const snapshotKey = "snapshot";
 const expiresAtKey = "expiresAt";
 const sessionIdKey = "sessionId";
+const lastRegisteredAtKey = "lastRegisteredAt";
+const registryRefreshMilliseconds = 60_000;
 
 const json = (value: unknown, status = 200) =>
   Response.json(value, { status, headers: { "cache-control": "no-store" } });
@@ -26,8 +31,41 @@ export class LiveChannel extends DurableObject<Env> {
     });
   }
 
+  private registryStub() {
+    return this.env.REGISTRY.get(this.env.REGISTRY.idFromName("singleton"));
+  }
+
+  private async registerActive(expiresAt: number) {
+    const code = this.ctx.id.name;
+    if (!code) return;
+    const lastRegisteredAt = await this.ctx.storage.get<number>(lastRegisteredAtKey);
+    const now = Date.now();
+    if (lastRegisteredAt !== undefined && now - lastRegisteredAt < registryRefreshMilliseconds)
+      return;
+    await this.ctx.storage.put(lastRegisteredAtKey, now);
+    this.ctx.waitUntil(
+      this.registryStub()
+        .fetch("https://registry/register", {
+          method: "PUT",
+          body: JSON.stringify({ code, expiresAt }),
+        })
+        .catch(() => undefined),
+    );
+  }
+
+  private unregisterActive() {
+    const code = this.ctx.id.name;
+    if (!code) return;
+    this.ctx.waitUntil(
+      this.registryStub()
+        .fetch(`https://registry/register?code=${code}`, { method: "DELETE" })
+        .catch(() => undefined),
+    );
+  }
+
   private async inactive() {
     await this.ctx.storage.deleteAll();
+    this.unregisterActive();
     this.broadcast({ type: "inactive" });
   }
 
@@ -69,7 +107,10 @@ export class LiveChannel extends DurableObject<Env> {
       }
       await this.ctx.storage.put(expiresAtKey, expiresAt);
     }
-    if (await this.ctx.storage.get(snapshotKey)) await this.ctx.storage.setAlarm(expiresAt);
+    if (await this.ctx.storage.get(snapshotKey)) {
+      await this.ctx.storage.setAlarm(expiresAt);
+      await this.registerActive(expiresAt);
+    }
     return new Response(null, { status: 204 });
   }
 

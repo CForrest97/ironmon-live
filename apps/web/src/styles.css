@@ -176,6 +176,39 @@ button:active {
   box-shadow: none;
 }
 
+.active-channels {
+  margin-bottom: var(--space-4);
+}
+.active-channels h2 {
+  font-family: var(--font-sans);
+  font-size: var(--text-body-sm);
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-label);
+  color: var(--text-secondary);
+  margin-bottom: var(--space-2);
+}
+.active-channels ul {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-2);
+  padding: 0;
+}
+.active-channels a {
+  font-family: var(--font-pixel-data);
+  font-weight: 700;
+  padding: 0.5rem 0.9rem;
+  border-radius: var(--radius-sm);
+  border: var(--border-w-box) solid var(--navy-950);
+  background: var(--bg-inset);
+  display: inline-block;
+}
+.active-channels-empty {
+  color: var(--text-tertiary);
+  font-style: italic;
+}
+
 /* connection banner (shown only when not live) */
 .connection {
   font-family: var(--font-sans);

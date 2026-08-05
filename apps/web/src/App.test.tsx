@@ -1,8 +1,8 @@
 // @vitest-environment jsdom
 import "@testing-library/jest-dom/vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it } from "vitest";
-import { ExpandedRunView, trainerPortraitUrl } from "./App";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { App, ExpandedRunView, trainerPortraitUrl } from "./App";
 
 afterEach(cleanup);
 
@@ -176,5 +176,31 @@ describe("expanded run dashboard", () => {
       "https://play.pokemonshowdown.com/sprites/trainers/acetrainer-gen3.png",
     );
     expect(trainerPortraitUrl("../../untrusted")).toBeUndefined();
+  });
+});
+
+describe("homepage active channels", () => {
+  afterEach(() => {
+    vi.unstubAllGlobals();
+  });
+
+  it("renders active channels as links into their live view", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve({ channels: ["12345"] }) }),
+    );
+    render(<App />);
+    const link = await screen.findByRole("link", { name: "Channel 12345" });
+    expect(link).toHaveAttribute("href", "/channel/12345");
+  });
+
+  it("shows an explicit empty state when no channels are active", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve({ channels: [] }) }),
+    );
+    render(<App />);
+    expect(await screen.findByText("No channels are live right now.")).toBeInTheDocument();
+    expect(screen.getByLabelText("Five-digit channel code")).toBeInTheDocument();
   });
 });

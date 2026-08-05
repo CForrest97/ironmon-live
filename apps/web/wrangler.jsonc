@@ -13,12 +13,20 @@
         "name": "CHANNELS",
         "class_name": "LiveChannel",
       },
+      {
+        "name": "REGISTRY",
+        "class_name": "ChannelRegistry",
+      },
     ],
   },
   "migrations": [
     {
       "tag": "v1",
       "new_sqlite_classes": ["LiveChannel"],
+    },
+    {
+      "tag": "v2",
+      "new_sqlite_classes": ["ChannelRegistry"],
     },
   ],
   "vars": {

@@ -19,8 +19,11 @@ available under supported conditions.
 
 The companion retains a stable five-digit channel code, so later runs appear
 at the same destination. A friend or spectator with that code may view the
-same run state without an account or approval. The product does not offer
-search or public discovery of channels.
+same run state without an account or approval. Anyone visiting the homepage
+can also discover the code of every channel with an active run without
+having been given the code, per
+[DEC-003](../decisions/DEC-003-list-active-channels-on-homepage.md); the
+homepage lists only the code, never player name or run content.
 
 Run state is ephemeral. When no heartbeat has arrived for 30 minutes by
 default, the live channel no longer shows a run. The configured expiry may be

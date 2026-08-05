@@ -7,7 +7,7 @@ import type {
   LegacyRunSnapshot,
   RunSnapshot,
 } from "@ironmon-live/contracts";
-import { subscribeToChannel } from "./channel.ts";
+import { fetchActiveChannels, subscribeToChannel } from "./channel.ts";
 import { DownloadCompanion } from "./download.tsx";
 import { SetupCompanion } from "./setup.tsx";
 import { TopBar } from "./TopBar.tsx";
@@ -586,6 +586,62 @@ const RunView = ({ snapshot }: { readonly snapshot: RunSnapshot }) =>
 
 const channelFromPath = () => /^\/channel\/(\d{5})$/.exec(window.location.pathname)?.[1];
 
+const ActiveChannels = ({ onSelect }: { readonly onSelect: (channelCode: string) => void }) => {
+  const [channels, setChannels] = useState<readonly string[] | "error">();
+
+  useEffect(() => {
+    let cancelled = false;
+    fetchActiveChannels()
+      .then((result) => {
+        if (!cancelled) setChannels(result);
+      })
+      .catch(() => {
+        if (!cancelled) setChannels("error");
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  if (channels === undefined) return null;
+  if (channels === "error") return null;
+
+  return (
+    <section className="active-channels">
+      <h2>Active channels</h2>
+      {channels.length === 0 ? (
+        <p className="active-channels-empty">No channels are live right now.</p>
+      ) : (
+        <ul>
+          {channels.map((channelCode) => (
+            <li key={channelCode}>
+              <a
+                href={`/channel/${channelCode}`}
+                onClick={(clickEvent) => {
+                  if (
+                    clickEvent.defaultPrevented ||
+                    clickEvent.button !== 0 ||
+                    clickEvent.metaKey ||
+                    clickEvent.ctrlKey ||
+                    clickEvent.shiftKey ||
+                    clickEvent.altKey
+                  ) {
+                    return;
+                  }
+                  clickEvent.preventDefault();
+                  onSelect(channelCode);
+                }}
+              >
+                Channel {channelCode}
+              </a>
+            </li>
+          ))}
+        </ul>
+      )}
+    </section>
+  );
+};
+
 export const App = () => {
   if (window.location.pathname === "/download") return <DownloadCompanion />;
   if (window.location.pathname === "/setup") return <SetupCompanion />;
@@ -599,11 +655,15 @@ export const App = () => {
     [activeCode],
   );
 
+  const openChannel = (channelCode: string) => {
+    window.history.pushState({}, "", `/channel/${channelCode}`);
+    setActiveCode(channelCode);
+  };
+
   const submit = (submitEvent: FormEvent) => {
     submitEvent.preventDefault();
     if (!/^\d{5}$/.test(code)) return;
-    window.history.pushState({}, "", `/channel/${code}`);
-    setActiveCode(code);
+    openChannel(code);
   };
 
   if (!activeCode)
@@ -611,6 +671,7 @@ export const App = () => {
       <main className="entry">
         <p className="eyebrow">IronMON Live</p>
         <h1>Follow a live run</h1>
+        <ActiveChannels onSelect={openChannel} />
         <form onSubmit={submit}>
           <label htmlFor="channel">Five-digit channel code</label>
           <input
