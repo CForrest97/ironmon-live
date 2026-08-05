@@ -128,7 +128,8 @@ local function IronMONLive()
 
 	local function pokemonStatus(pokemon)
 		local status = MiscData.StatusCodeMap[pokemon.status]
-		if not status or status == "" then return unavailable() end
+		if not status then return unavailable() end
+		if status == "" then return available("healthy") end
 		return available(status)
 	end
 
