@@ -41,6 +41,19 @@ export const downloadUrl = (version: string, architecture: "aarch64" | "x86_64")
 export const checksumUrl = (version: string, architecture: "aarch64" | "x86_64") =>
   `${downloadUrl(version, architecture)}.sha256`;
 
+const SetupLink = () => (
+  <section className="setup-callout" aria-label="Set up your Tracker">
+    <div>
+      <p className="eyebrow">After downloading</p>
+      <h2>Set up your Tracker</h2>
+      <p>Install and enable the bundled extension, then confirm your run is live.</p>
+    </div>
+    <a className="button" href="/setup">
+      Open setup guide
+    </a>
+  </section>
+);
+
 export const DownloadCompanion = ({ available = true }: { readonly available?: boolean }) => {
   const [release, setRelease] = useState<CompanionRelease | null>(null);
 
@@ -58,6 +71,7 @@ export const DownloadCompanion = ({ available = true }: { readonly available?: b
           <p className="lede">
             The quiet macOS menu-bar utility that connects IronMON Tracker to your live channel.
           </p>
+          <SetupLink />
           <div className="download-grid">
             <article className="download-card">
               <h2>Apple Silicon</h2>
@@ -84,6 +98,7 @@ export const DownloadCompanion = ({ available = true }: { readonly available?: b
         <p className="lede">
           The quiet macOS menu-bar utility that connects IronMON Tracker to your live channel.
         </p>
+        <SetupLink />
         <div className="download-grid">
           <article className="download-card">
             <h2>Apple Silicon</h2>

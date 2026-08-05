@@ -6,9 +6,9 @@ export const TopBar = ({
   readonly connected?: boolean;
 }) => (
   <div className="topbar">
-    <div className="wordmark">
+    <a className="wordmark" href="/" aria-label="IronMON Live home">
       IRONMON<span>LIVE</span>
-    </div>
+    </a>
     {channelCode && (
       <div className="topbar-right">
         <span className={`badge ${connected ? "badge-live" : "badge-warning"}`}>

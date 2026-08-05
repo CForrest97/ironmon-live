@@ -145,6 +145,18 @@ local function IronMONLive()
 		return availableString(TrackerAPI.getItemName(itemId))
 	end
 
+	-- pokemonID is the Gen III internal Dex number. speciesId is consumed by
+	-- PokéAPI, which expects the National Dex number (for example, Swellow is
+	-- internal ID 305 and National Dex ID 277).
+	local function nationalDexId(pokemonId)
+		if not PokemonData or type(PokemonData.dexMapInternalToNational) ~= "function" then
+			return unavailable()
+		end
+		local nationalId = tonumber(PokemonData.dexMapInternalToNational(pokemonId)) or 0
+		if nationalId <= 0 then return unavailable() end
+		return available(tostring(nationalId))
+	end
+
 	local function partyMember(pokemon)
 		if not pokemon or (pokemon.pokemonID or 0) <= 0 then return nil end
 		local pokemonId = tonumber(pokemon.pokemonID) or 0
@@ -153,7 +165,7 @@ local function IronMONLive()
 		return {
 			id = tostring(pokemonId),
 			name = nonEmptyString(pokemon.nickname, nonEmptyString(info.name, "Unknown Pokemon")),
-			speciesId = available(tostring(pokemonId)),
+			speciesId = nationalDexId(pokemonId),
 			level = availableNumber(pokemon.level),
 			currentHp = availableNumber(pokemon.curHP),
 			maximumHp = availableNumber((pokemon.stats or {}).hp),
@@ -205,7 +217,7 @@ local function IronMONLive()
 		return {
 			id = tostring(pokemonId),
 			name = nonEmptyString(info.name, "Unknown Pokemon"),
-			speciesId = available(tostring(pokemonId)),
+			speciesId = nationalDexId(pokemonId),
 			level = availableNumber(pokemon.level),
 			currentHp = unavailable(),
 			maximumHp = unavailable(),

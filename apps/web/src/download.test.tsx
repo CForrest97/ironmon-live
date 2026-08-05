@@ -54,13 +54,22 @@ describe("companion download", () => {
       checksumUrl("0.1.15", "x86_64"),
     );
     expect(screen.getByLabelText("System requirement")).toHaveTextContent("13");
+    expect(
+      screen.getByRole("link", {
+        name: "Open setup guide",
+      }),
+    ).toHaveAttribute("href", "/setup");
   });
 
   it("does not offer dead links when a release is unavailable", async () => {
     render(<DownloadCompanion available={false} />);
     await waitFor(() => {
-      expect(screen.queryAllByRole("link")).toHaveLength(0);
+      expect(screen.queryByRole("link", { name: "Download for Apple Silicon" })).toBeNull();
     });
+    expect(screen.getByRole("link", { name: "Open setup guide" })).toHaveAttribute(
+      "href",
+      "/setup",
+    );
     expect(screen.getAllByText("Temporarily unavailable")).toHaveLength(2);
   });
 });

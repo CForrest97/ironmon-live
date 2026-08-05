@@ -9,6 +9,7 @@ import type {
 } from "@ironmon-live/contracts";
 import { subscribeToChannel } from "./channel.ts";
 import { DownloadCompanion } from "./download.tsx";
+import { SetupCompanion } from "./setup.tsx";
 import { TopBar } from "./TopBar.tsx";
 
 const Unavailable = () => <span className="unavailable">Unavailable</span>;
@@ -587,6 +588,7 @@ const channelFromPath = () => /^\/channel\/(\d{5})$/.exec(window.location.pathna
 
 export const App = () => {
   if (window.location.pathname === "/download") return <DownloadCompanion />;
+  if (window.location.pathname === "/setup") return <SetupCompanion />;
   const [code, setCode] = useState(channelFromPath() ?? "");
   const [activeCode, setActiveCode] = useState(channelFromPath());
   const [event, setEvent] = useState<ChannelEvent>({ type: "inactive" });
