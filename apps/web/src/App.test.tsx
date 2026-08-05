@@ -2,7 +2,7 @@
 import "@testing-library/jest-dom/vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it } from "vitest";
-import { ExpandedRunView } from "./App";
+import { ExpandedRunView, trainerPortraitUrl } from "./App";
 
 afterEach(cleanup);
 
@@ -142,5 +142,39 @@ describe("expanded run dashboard", () => {
     render(<ExpandedRunView snapshot={snapshot()} />);
     fireEvent.click(screen.getByRole("button", { name: "Route" }));
     expect(screen.getAllByText("R1")[0]).toBeInTheDocument();
+  });
+
+  it("renders a Showdown trainer portrait when the producer supplies a safe slug", () => {
+    const run = snapshot();
+    const routeTrainer = run.route.value.trainers.at(0);
+    if (!routeTrainer) throw new Error("test snapshot must include a route trainer");
+    render(
+      <ExpandedRunView
+        snapshot={{
+          ...run,
+          route: available({
+            ...run.route.value,
+            trainers: [
+              {
+                ...routeTrainer,
+                portraitId: available("acetrainer-gen3"),
+              },
+            ],
+          }),
+        }}
+      />,
+    );
+    fireEvent.click(screen.getByRole("button", { name: "Route" }));
+    expect(screen.getByAltText("R1 Trainer portrait")).toHaveAttribute(
+      "src",
+      "https://play.pokemonshowdown.com/sprites/trainers/acetrainer-gen3.png",
+    );
+  });
+
+  it("does not resolve unsafe trainer portrait IDs", () => {
+    expect(trainerPortraitUrl("acetrainer-gen3")).toBe(
+      "https://play.pokemonshowdown.com/sprites/trainers/acetrainer-gen3.png",
+    );
+    expect(trainerPortraitUrl("../../untrusted")).toBeUndefined();
   });
 });

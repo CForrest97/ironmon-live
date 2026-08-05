@@ -28,7 +28,18 @@ describe("expanded companion state", () => {
       party: [{ name: "Bulbasaur", types: legacy.party[0]?.types }],
       location: { availability: "available", value: { name: "Sample Route" } },
       battle: { availability: "available", value: { active: true, kind: "trainer" } },
-      route: { availability: "available", value: { name: "Sample Route" } },
+      route: {
+        availability: "available",
+        value: {
+          name: "Sample Route",
+          trainers: [
+            {
+              trainerClass: { availability: "available", value: "Ace Trainer" },
+              portraitId: { availability: "available", value: "acetrainer-gen3" },
+            },
+          ],
+        },
+      },
     });
     expect(expandLegacySnapshot(legacy)).toEqual(expanded);
   });

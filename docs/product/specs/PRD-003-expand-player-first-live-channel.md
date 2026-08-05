@@ -102,7 +102,9 @@ non-spoiler data:
    pause state, playtime, badges, centre heals, and wild-battle, trainer-battle,
    fishing, and Rock Smash counters.
 8. The page shall use game-inspired Pokémon sprites and trainer portraits when
-   the selected external asset source supplies them. Missing, failed, or
+   the selected external asset source supplies them. Pokémon sprites use
+   PokéAPI; trainer portraits use the Pokémon Showdown trainer-sprite
+   directory when a producer supplies a valid source slug. Missing, failed, or
    unavailable images shall fall back to readable text and type or status
    iconography without changing the factual state shown.
 9. At a viewport width of 640 CSS pixels, the page shall have no horizontal
@@ -174,8 +176,9 @@ None.
 
 ## Open Questions
 
-- Does the selected PokéAPI sprite source satisfy the required availability,
-  licensing, and fallback expectations under representative player use?
+- Do the selected PokéAPI and Pokémon Showdown image sources satisfy the
+  required availability, licensing, attribution, and fallback expectations
+  under representative player use?
 - Which supported Tracker, game, emulator, and operating conditions can
   consistently provide the expanded state and retain the live-update target?
 - What scenario-test findings and success threshold are sufficient to accept

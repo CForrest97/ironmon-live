@@ -53,7 +53,7 @@ fallback behavior.
 ## Validation
 
 `npm run check` passes Markdown and TypeScript checks, governed-document and
-workflow validation, 31 repository tests, 17 companion tests, 10 web component
+workflow validation, 31 repository tests, 17 companion tests, 12 web component
 tests, 5 contract tests, and the Chromium 640-CSS-pixel viewport test.
 
 ## Agent Notes
@@ -120,3 +120,14 @@ issues, both fixed before merge:
   plus `aria-controls`/`id` linking each toggle to its panel content.
 
 Human approval is required per the review gate (rating 2) before merging.
+
+### 2026-08-02: trainer portrait source
+
+The companion bridge now supplies the deterministic `acetrainer-gen3` portrait
+slug for its existing synthesized Ace Trainer. The web view resolves valid
+slugs against Pokémon Showdown's public trainer-sprite directory and otherwise
+keeps its readable initials fallback. Native version 2 producers may supply
+their own source slug; this change does not infer one from a trainer name or
+Tracker ID. Pokémon Showdown attributes some directory assets to individual
+artists, so adoption remains best-effort pending validation of availability,
+licensing, and attribution requirements.

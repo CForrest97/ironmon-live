@@ -36,6 +36,19 @@ resource "cloudflare_r2_bucket" "companion_releases" {
   storage_class = "Standard"
 }
 
+resource "cloudflare_r2_bucket_cors" "companion_releases" {
+  account_id  = var.cloudflare_account_id
+  bucket_name = cloudflare_r2_bucket.companion_releases.name
+
+  rules = [{
+    id = "allow-official-download-page"
+    allowed = {
+      methods = ["GET"]
+      origins = ["https://${var.hostname}"]
+    }
+  }]
+}
+
 resource "cloudflare_r2_custom_domain" "companion_releases" {
   account_id  = var.cloudflare_account_id
   bucket_name = cloudflare_r2_bucket.companion_releases.name
