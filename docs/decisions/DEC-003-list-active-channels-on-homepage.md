@@ -39,9 +39,12 @@ snapshot-derived detail — the acceptance criteria in
 [PRD-004](../product/specs/PRD-004-list-active-channels-on-homepage.md)
 govern the exact fields.
 
-This decision supersedes the "searching, browsing, or publicly listing
+This decision replaces the prior "searching, browsing, or publicly listing
 players or live channels" non-goal recorded in the product brief; that
-document is updated in the same change as this record.
+document, and the domain narrative's matching invariant, are updated in the
+same change as this record. (The `## Supersedes` section below concerns only
+prior `DEC-###` decision records, per this document type's convention; this
+record supersedes none.)
 
 ## Consequences
 

@@ -13,15 +13,18 @@ export class ChannelRegistry extends DurableObject {
     } catch (error) {
       return json({ error: String(error) }, 400);
     }
+    const record = body as Record<string, unknown>;
     if (
       typeof body !== "object" ||
       body === null ||
-      !isChannelCode(String((body as Record<string, unknown>).code)) ||
-      typeof (body as Record<string, unknown>).expiresAt !== "number"
+      typeof record.code !== "string" ||
+      !isChannelCode(record.code) ||
+      typeof record.expiresAt !== "number" ||
+      !Number.isFinite(record.expiresAt)
     ) {
       return json({ error: "code and expiresAt are required" }, 400);
     }
-    const { code, expiresAt } = body as { code: string; expiresAt: number };
+    const { code, expiresAt } = record as { code: string; expiresAt: number };
     await this.ctx.storage.put(code, expiresAt);
     return new Response(null, { status: 204 });
   }
@@ -38,7 +41,10 @@ export class ChannelRegistry extends DurableObject {
     const now = Date.now();
     const expired = [...entries].filter(([, expiresAt]) => expiresAt <= now).map(([code]) => code);
     if (expired.length > 0) await this.ctx.storage.delete(expired);
-    return json({ channels: activeCodes(entries, now) });
+    return Response.json(
+      { channels: activeCodes(entries, now) },
+      { headers: { "cache-control": "public, max-age=5" } },
+    );
   }
 
   override async fetch(request: Request) {

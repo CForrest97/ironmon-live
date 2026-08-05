@@ -9,6 +9,8 @@ type Env = {
 const snapshotKey = "snapshot";
 const expiresAtKey = "expiresAt";
 const sessionIdKey = "sessionId";
+const lastRegisteredAtKey = "lastRegisteredAt";
+const registryRefreshMilliseconds = 60_000;
 
 const json = (value: unknown, status = 200) =>
   Response.json(value, { status, headers: { "cache-control": "no-store" } });
@@ -36,21 +38,34 @@ export class LiveChannel extends DurableObject<Env> {
   private async registerActive(expiresAt: number) {
     const code = this.ctx.id.name;
     if (!code) return;
-    await this.registryStub().fetch("https://registry/register", {
-      method: "PUT",
-      body: JSON.stringify({ code, expiresAt }),
-    });
+    const lastRegisteredAt = await this.ctx.storage.get<number>(lastRegisteredAtKey);
+    const now = Date.now();
+    if (lastRegisteredAt !== undefined && now - lastRegisteredAt < registryRefreshMilliseconds)
+      return;
+    await this.ctx.storage.put(lastRegisteredAtKey, now);
+    this.ctx.waitUntil(
+      this.registryStub()
+        .fetch("https://registry/register", {
+          method: "PUT",
+          body: JSON.stringify({ code, expiresAt }),
+        })
+        .catch(() => undefined),
+    );
   }
 
-  private async unregisterActive() {
+  private unregisterActive() {
     const code = this.ctx.id.name;
     if (!code) return;
-    await this.registryStub().fetch(`https://registry/register?code=${code}`, { method: "DELETE" });
+    this.ctx.waitUntil(
+      this.registryStub()
+        .fetch(`https://registry/register?code=${code}`, { method: "DELETE" })
+        .catch(() => undefined),
+    );
   }
 
   private async inactive() {
     await this.ctx.storage.deleteAll();
-    await this.unregisterActive();
+    this.unregisterActive();
     this.broadcast({ type: "inactive" });
   }
 

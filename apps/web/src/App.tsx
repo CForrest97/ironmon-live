@@ -618,6 +618,16 @@ const ActiveChannels = ({ onSelect }: { readonly onSelect: (channelCode: string)
               <a
                 href={`/channel/${channelCode}`}
                 onClick={(clickEvent) => {
+                  if (
+                    clickEvent.defaultPrevented ||
+                    clickEvent.button !== 0 ||
+                    clickEvent.metaKey ||
+                    clickEvent.ctrlKey ||
+                    clickEvent.shiftKey ||
+                    clickEvent.altKey
+                  ) {
+                    return;
+                  }
                   clickEvent.preventDefault();
                   onSelect(channelCode);
                 }}

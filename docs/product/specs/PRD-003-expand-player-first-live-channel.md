@@ -54,8 +54,11 @@ spectator presentation.
 - Bag inventory, encounter history, and uncollected-item progress.
 - Randomizer-log data, including randomized encounters, future trainer teams,
   evolutions, TM compatibility, seeds, or settings.
-- Accounts, authentication, secure channel ownership, public channel discovery,
-  run history, or retained final snapshots.
+- Accounts, authentication, secure channel ownership, run history, or
+  retained final snapshots. (Public discovery of active channel codes is now
+  in scope for the homepage under
+  [DEC-003](../../decisions/DEC-003-list-active-channels-on-homepage.md); this
+  specification's scope remains the single already-known channel's page.)
 - A distinct spectator layout or mobile-first product surface.
 - A compatibility promise for a particular game, Tracker, emulator, operating
   system, image provider, or asset license before it has been validated.

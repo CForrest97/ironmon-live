@@ -83,8 +83,11 @@ prefers to type it, or whose channel is not yet active).
 - The list response and rendered homepage never include player names, run
   snapshots, or any field beyond the channel code.
 - `npm run check` passes, including new coverage for the registry's
-  register/remove/list behavior and the homepage's active/empty list
-  rendering.
+  active/expired code-filtering logic and the homepage's active/empty list
+  rendering. Consistent with the existing `LiveChannel` Durable Object, the
+  `ChannelRegistry` Durable Object's own request routing is not exercised by
+  an automated test, since this repository has no Workers-runtime test
+  harness; it is verified manually against `wrangler`/Vite dev.
 
 ## Affected Contexts
 
