@@ -113,6 +113,13 @@ const ProgressTrack = ({
 export const pokemonSpriteUrl = (speciesId: string) =>
   `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${speciesId}.png`;
 
+const validTrainerPortraitId = /^[a-z0-9]+(?:-[a-z0-9]+)*$/u;
+
+export const trainerPortraitUrl = (portraitId: string) =>
+  validTrainerPortraitId.test(portraitId)
+    ? `https://play.pokemonshowdown.com/sprites/trainers/${portraitId}.png`
+    : undefined;
+
 const Sprite = ({ member }: { readonly member: ExpandedPartyMember }) => {
   const [failed, setFailed] = useState(false);
   if (failed || member.speciesId.availability === "unavailable") {
@@ -136,7 +143,11 @@ const TrainerPortrait = ({
   readonly trainer: { readonly portraitId: Available<string>; readonly name: string };
 }) => {
   const [failed, setFailed] = useState(false);
-  if (failed || trainer.portraitId.availability !== "available") {
+  const source =
+    trainer.portraitId.availability === "available"
+      ? trainerPortraitUrl(trainer.portraitId.value)
+      : undefined;
+  if (failed || !source) {
     return (
       <span className="sprite-fallback trainer-fallback">
         {trainer.name.slice(0, 2).toUpperCase()}
@@ -146,7 +157,7 @@ const TrainerPortrait = ({
   return (
     <img
       className="sprite trainer-portrait"
-      src={`https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/trainers/${trainer.portraitId.value}.png`}
+      src={source}
       alt={`${trainer.name} portrait`}
       onError={() => {
         setFailed(true);

@@ -144,6 +144,11 @@ delegate the complete diff to the independent reviewer.
 - The scoped HTTP permission grants only fetch creation; it does not grant the
   send, read, or cancellation lifecycle commands. The companion now grants the
   complete fetch lifecycle while retaining the two-domain fetch allowlist.
+- The release bucket now allows `GET` requests from the official website origin
+  so that the download page can read `companion/latest.json`. `tofu fmt -check`
+  passed; `tofu validate` remains blocked by the existing local Cloudflare
+  provider handshake failure. `npm run check` passed, including the local
+  Playwright check after it was permitted to bind `127.0.0.1:4173`.
 
 ## Agent Notes
 

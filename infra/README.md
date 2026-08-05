@@ -50,6 +50,12 @@ versioned companion artifacts through Wrangler using the same Cloudflare API
 token as the application deployment. The private state backend continues to
 use its separate S3-compatible credentials.
 
+The bucket's CORS policy permits read requests from the official website origin
+only. This lets the website read `companion/latest.json` while keeping the
+release bucket as the artifact origin; direct download links do not require a
+CORS exception. After changing this policy in production, purge the downloads
+hostname cache so already-cached objects receive the new CORS headers.
+
 The protected `prod` environment must provide the
 `CLOUDFLARE_DEPLOY_API_TOKEN` secret with access to deploy the application and
 write release objects, plus the `R2_RELEASE_BUCKET` and

@@ -14,6 +14,7 @@ const unavailable = (): Available<never> => ({ availability: "unavailable" });
 
 const demoStats = { hp: 100, atk: 72, def: 64, spa: 81, spd: 68, spe: 75 } as const;
 const demoStages = { atk: 0, def: 0, spa: 0, spd: 0, spe: 0, accuracy: 0, evasion: 0 } as const;
+const demoTrainerPortraitId = "acetrainer-gen3";
 
 const demoPartyMember = (id: string, name: string): ExpandedPartyMember => ({
   id,
@@ -65,7 +66,7 @@ const demoTrainer = (id: string, name: string, battled: Available<boolean>): Exp
   id,
   name,
   trainerClass: available("Ace Trainer"),
-  portraitId: unavailable(),
+  portraitId: available(demoTrainerPortraitId),
   battled,
   party: available([demoPartyMember("262", "Mightyena")]),
   battleItems: available(["Hyper Potion"]),
