@@ -1,13 +1,14 @@
 import { Fragment, useEffect, useState, type FormEvent, type ReactNode } from "react";
-import type {
-  ActiveChannelSummary,
-  Available,
-  ChannelEvent,
-  ChannelPreviewLead,
-  ExpandedPartyMember,
-  ExpandedRunSnapshot,
-  LegacyRunSnapshot,
-  RunSnapshot,
+import {
+  natureStatEffect,
+  type ActiveChannelSummary,
+  type Available,
+  type ChannelEvent,
+  type ChannelPreviewLead,
+  type ExpandedPartyMember,
+  type ExpandedRunSnapshot,
+  type LegacyRunSnapshot,
+  type RunSnapshot,
 } from "@ironmon-live/contracts";
 import { fetchActiveChannels, subscribeToChannel } from "./channel.ts";
 import { DownloadCompanion } from "./download.tsx";
@@ -29,6 +30,92 @@ const Values = ({ value }: { readonly value: Available<Readonly<Record<string, n
       ))}
     </dl>
   ));
+
+const STAT_LABELS: Readonly<Record<string, string>> = {
+  hp: "HP",
+  atk: "Atk",
+  def: "Def",
+  spa: "SpA",
+  spd: "SpD",
+  spe: "Spe",
+};
+
+// Highlights the stat a Pokemon's nature raises (green) and lowers (red) so
+// players can read nature impact without memorizing all 25 natures.
+const StatValues = ({
+  value,
+  nature,
+}: {
+  readonly value: Available<Readonly<Record<string, number>>>;
+  readonly nature: Available<string>;
+}) => {
+  const effect = nature.availability === "available" ? natureStatEffect(nature.value) : undefined;
+  return availableValue(value, (values) => (
+    <dl className="values">
+      {Object.entries(values).map(([label, amount]) => (
+        <div
+          key={label}
+          className={
+            effect?.boosted === label
+              ? "stat-boosted"
+              : effect?.lowered === label
+                ? "stat-lowered"
+                : ""
+          }
+        >
+          <dt>{label}</dt>
+          <dd>{amount}</dd>
+        </div>
+      ))}
+    </dl>
+  ));
+};
+
+const NatureBadge = ({ value }: { readonly value: Available<string> }) =>
+  availableValue(value, (nature) => {
+    const effect = natureStatEffect(nature);
+    if (!effect) return <span className="nature-badge">{nature}</span>;
+    return (
+      <span className="nature-badge">
+        {nature}
+        <span className="nature-boost"> ▲{STAT_LABELS[effect.boosted] ?? effect.boosted}</span>
+        <span className="nature-lower"> ▼{STAT_LABELS[effect.lowered] ?? effect.lowered}</span>
+      </span>
+    );
+  });
+
+// Base stat total and per-stat distribution communicate a mon's raw potential
+// under Ironmon's per-species randomized base stats, independent of the
+// nature/IV/EV/level modifiers baked into `stats`.
+const BaseStatPotential = ({
+  value,
+}: {
+  readonly value: Available<Readonly<Record<string, number>>>;
+}) =>
+  availableValue(value, (values) => {
+    const entries = Object.entries(values);
+    const total = entries.reduce((sum, [, amount]) => sum + amount, 0);
+    const max = Math.max(1, ...entries.map(([, amount]) => amount));
+    return (
+      <div className="bst-block">
+        <div className="bst-total">
+          <span>Base stat total</span>
+          <span className="bst-total-value">{total}</span>
+        </div>
+        <div className="bst-bars">
+          {entries.map(([label, amount]) => (
+            <div className="bst-row" key={label}>
+              <span className="bst-label">{STAT_LABELS[label] ?? label}</span>
+              <div className="bst-track">
+                <div className="bst-fill" style={{ width: `${String((amount / max) * 100)}%` }} />
+              </div>
+              <span className="bst-value">{amount}</span>
+            </div>
+          ))}
+        </div>
+      </div>
+    );
+  });
 
 const TypeTags = ({ value }: { readonly value: Available<readonly string[]> }) =>
   availableValue(value, (types) =>
@@ -192,6 +279,12 @@ const PartyDetails = ({ member }: { readonly member: ExpandedPartyMember }) => (
         <dt>Held item</dt>
         <dd>{availableValue(member.heldItem, String)}</dd>
       </div>
+      <div>
+        <dt>Nature</dt>
+        <dd>
+          <NatureBadge value={member.nature} />
+        </dd>
+      </div>
     </dl>
     <h4>Moves</h4>
     {availableValue(member.moves, (moves) => (
@@ -203,13 +296,11 @@ const PartyDetails = ({ member }: { readonly member: ExpandedPartyMember }) => (
         ))}
       </div>
     ))}
+    <h4>Potential</h4>
+    <BaseStatPotential value={member.baseStats} />
     <details className="party-more">
       <summary>More details</summary>
       <dl className="facts">
-        <div>
-          <dt>Nature</dt>
-          <dd>{availableValue(member.nature, String)}</dd>
-        </div>
         <div>
           <dt>Experience</dt>
           <dd>{availableValue(member.experience, String)}</dd>
@@ -232,9 +323,7 @@ const PartyDetails = ({ member }: { readonly member: ExpandedPartyMember }) => (
         </div>
       </dl>
       <h4>Stats</h4>
-      <Values value={member.stats} />
-      <h4>Stat stages</h4>
-      <Values value={member.statStages} />
+      <StatValues value={member.stats} nature={member.nature} />
       <h4>IVs</h4>
       <Values value={member.ivs} />
       <h4>EVs</h4>

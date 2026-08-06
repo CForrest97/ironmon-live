@@ -13,6 +13,7 @@ const available = <T>(value: T): Available<T> => ({ availability: "available", v
 const unavailable = (): Available<never> => ({ availability: "unavailable" });
 
 const demoStats = { hp: 100, atk: 72, def: 64, spa: 81, spd: 68, spe: 75 } as const;
+const demoBaseStats = { hp: 65, atk: 65, def: 60, spa: 110, spd: 95, spe: 65 } as const;
 const demoStages = { atk: 0, def: 0, spa: 0, spd: 0, spe: 0, accuracy: 0, evasion: 0 } as const;
 const demoTrainerPortraitId = "acetrainer-gen3";
 
@@ -32,6 +33,7 @@ const demoPartyMember = (id: string, name: string): ExpandedPartyMember => ({
     { id: "growl", name: "Growl", pp: available(40) },
   ]),
   stats: available(demoStats),
+  baseStats: available(demoBaseStats),
   statStages: available(demoStages),
   ivs: available({ hp: 15, atk: 15, def: 15, spa: 15, spd: 15, spe: 15 }),
   evs: available({ hp: 0, atk: 0, def: 0, spa: 0, spd: 0, spe: 0 }),
