@@ -296,7 +296,6 @@ const PartyDetails = ({ member }: { readonly member: ExpandedPartyMember }) => (
         ))}
       </div>
     ))}
-    <h4>Potential</h4>
     <BaseStatPotential value={member.baseStats} />
     <details className="party-more">
       <summary>More details</summary>
