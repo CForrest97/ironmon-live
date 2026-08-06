@@ -52,7 +52,8 @@ export const createCompanionController = (options: ControllerOptions) => {
       recommendedAction: undefined,
     });
   };
-  const scheduleRetry = (error: unknown) => {
+  const retryCeilingMs = { snapshot: 8_000, heartbeat: 30_000 } as const;
+  const scheduleRetry = (error: unknown, kind: "snapshot" | "heartbeat") => {
     retryAttempt += 1;
     const detail =
       error instanceof Error
@@ -65,8 +66,9 @@ export const createCompanionController = (options: ControllerOptions) => {
       status: "offline_retrying",
       explanation: `IronMON Live is unavailable. The companion will retry automatically.${detail}`,
       recommendedAction: "retry",
+      retryAttempt,
     });
-    const base = Math.min(30_000, 1_000 * 2 ** Math.min(retryAttempt - 1, 5));
+    const base = Math.min(retryCeilingMs[kind], 1_000 * 2 ** Math.min(retryAttempt - 1, 5));
     schedule(Math.round(base * (0.8 + random() * 0.4)), () => void publishLatest());
   };
   const publishHeartbeat = async (): Promise<void> => {
@@ -80,7 +82,7 @@ export const createCompanionController = (options: ControllerOptions) => {
       retryAttempt = 0;
       schedule(heartbeatMs, () => void publishHeartbeat());
     } catch (error) {
-      scheduleRetry(error);
+      scheduleRetry(error, "heartbeat");
     }
   };
   const publishLatest = async (): Promise<void> => {
@@ -95,10 +97,11 @@ export const createCompanionController = (options: ControllerOptions) => {
         explanation: "Your current run is live.",
         recommendedAction: undefined,
         lastPublishedAt: new Date(options.scheduler.now()).toISOString(),
+        retryAttempt: undefined,
       });
       schedule(heartbeatMs, () => void publishHeartbeat());
     } catch (error) {
-      scheduleRetry(error);
+      scheduleRetry(error, "snapshot");
     }
   };
 

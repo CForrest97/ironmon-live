@@ -54,7 +54,9 @@ export class LiveChannel extends DurableObject<Env> {
           method: "PUT",
           body: JSON.stringify({ code, expiresAt, preview: derivePreview(snapshot) }),
         })
-        .catch(() => undefined),
+        .catch((error: unknown) => {
+          console.error("registry PUT failed", { code, error: String(error) });
+        }),
     );
   }
 
@@ -86,6 +88,7 @@ export class LiveChannel extends DurableObject<Env> {
       if (body.length > 262_144) return json({ error: "publication too large" }, 413);
       publication = parsePublication(JSON.parse(body) as unknown);
     } catch (error) {
+      console.error("publish parse failed", { error: String(error) });
       return json({ error: String(error) }, 400);
     }
 
@@ -108,9 +111,15 @@ export class LiveChannel extends DurableObject<Env> {
         this.ctx.storage.get<string>(sessionIdKey),
       ]);
       if (!snapshot || sessionId !== publication.sessionId) {
+        console.warn("heartbeat dropped: sessionId mismatch", {
+          code: this.ctx.id.name,
+          expected: sessionId,
+          got: publication.sessionId,
+        });
         return new Response(null, { status: 204 });
       }
       await this.ctx.storage.put(expiresAtKey, expiresAt);
+      this.broadcast({ type: "heartbeat", observedAt: publication.message.observedAt });
     }
     const currentSnapshot = await this.ctx.storage.get<RunSnapshot>(snapshotKey);
     if (currentSnapshot) {
