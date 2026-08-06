@@ -14,6 +14,7 @@ keep completed items as durable delivery history.
 - [WORK-010: Implement the expanded player-first live channel](WORK-010-implement-expanded-player-first-live-channel.md)
 - [WORK-011: List active channels on the homepage](WORK-011-list-active-channels-on-homepage.md)
 - [WORK-012: Add a run preview to homepage channel cards](WORK-012-add-a-run-preview-to-homepage-channel-cards.md)
+- [WORK-013: Fix silent publish desyncs in channel view](WORK-013-fix-silent-publish-desyncs-in-channel-view.md)
 
 ## Completed
 

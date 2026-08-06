@@ -129,6 +129,60 @@ describe("companion controller", () => {
     });
   });
 
+  it("surfaces and clears the retry attempt count on state", async () => {
+    const publish = vi
+      .fn<() => Promise<void>>()
+      .mockRejectedValueOnce(new Error("offline"))
+      .mockResolvedValue(undefined);
+    const controller = createCompanionController({
+      initialState: baseState,
+      startedAt: 0,
+      publish,
+      scheduler: scheduler(),
+      random: () => 0.5,
+    });
+    await controller.receive(snapshot());
+    expect(controller.getState().retryAttempt).toBe(1);
+    controller.retry();
+    await vi.waitFor(() => {
+      expect(controller.getState().status).toBe("live");
+    });
+    expect(controller.getState().retryAttempt).toBeUndefined();
+  });
+
+  it("caps retry backoff tighter once a snapshot publish is pending delivery", async () => {
+    const publish = vi.fn(() => Promise.resolve());
+    const scheduled: Array<{ delay: number; callback: () => void }> = [];
+    const controller = createCompanionController({
+      initialState: baseState,
+      startedAt: 0,
+      publish,
+      scheduler: {
+        now: () => Date.parse("2026-08-01T10:00:00Z"),
+        setTimeout: (callback, delay) => {
+          scheduled.push({ delay, callback });
+          return scheduled.length;
+        },
+        clearTimeout: vi.fn(),
+      },
+      random: () => 0.5,
+    });
+
+    await controller.receive(snapshot());
+    publish.mockRejectedValue(new Error("offline"));
+    for (let attempt = 0; attempt < 6; attempt += 1) {
+      controller.retry();
+      await vi.waitFor(() => {
+        expect(controller.getState().status).toBe("offline_retrying");
+      });
+    }
+    // Uncapped, attempt 6 would compute 1000 * 2**5 = 32_000ms; the old
+    // shared 30s ceiling would only just cap it. The tighter 8s snapshot
+    // ceiling must cap it well below that.
+    const delay = scheduled.at(-1)?.delay ?? 0;
+    expect(delay).toBeLessThanOrEqual(8_000 * 1.2);
+  });
+
   it("reports unsupported input locally without deleting remote state", async () => {
     const publish = vi.fn(() => Promise.resolve());
     const controller = createCompanionController({

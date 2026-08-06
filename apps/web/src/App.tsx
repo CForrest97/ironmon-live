@@ -694,6 +694,8 @@ const ActiveChannels = ({ onSelect }: { readonly onSelect: (channelCode: string)
   );
 };
 
+const STALE_THRESHOLD_MS = 8_000;
+
 export const App = () => {
   if (window.location.pathname === "/download") return <DownloadCompanion />;
   if (window.location.pathname === "/setup") return <SetupCompanion />;
@@ -701,11 +703,27 @@ export const App = () => {
   const [activeCode, setActiveCode] = useState(channelFromPath());
   const [event, setEvent] = useState<ChannelEvent>({ type: "inactive" });
   const [connected, setConnected] = useState(false);
+  const [lastMessageAt, setLastMessageAt] = useState<number | undefined>(undefined);
+  const [stale, setStale] = useState(false);
 
   useEffect(
-    () => (activeCode ? subscribeToChannel(activeCode, setEvent, setConnected) : undefined),
+    () =>
+      activeCode
+        ? subscribeToChannel(activeCode, setEvent, setConnected, setLastMessageAt)
+        : undefined,
     [activeCode],
   );
+
+  useEffect(() => {
+    setStale(false);
+    if (lastMessageAt === undefined) return;
+    const interval = setInterval(() => {
+      setStale(Date.now() - lastMessageAt > STALE_THRESHOLD_MS);
+    }, 1_000);
+    return () => {
+      clearInterval(interval);
+    };
+  }, [lastMessageAt]);
 
   const openChannel = (channelCode: string) => {
     window.history.pushState({}, "", `/channel/${channelCode}`);
@@ -749,6 +767,9 @@ export const App = () => {
       <TopBar channelCode={activeCode} connected={connected} />
       {!connected && (
         <div className="connection">Reconnecting to tracker — showing the last known state.</div>
+      )}
+      {connected && stale && (
+        <div className="connection">Run data may be out of date — waiting for an update.</div>
       )}
       {event.type === "active" ? (
         <RunView snapshot={event.snapshot} />

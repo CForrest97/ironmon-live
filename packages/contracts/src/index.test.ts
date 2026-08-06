@@ -103,6 +103,19 @@ describe("tracker contract", () => {
     ).toThrow(ContractError);
   });
 
+  it("validates channel event heartbeats", () => {
+    expect(
+      parseChannelEvent({ type: "heartbeat", observedAt: "2024-01-01T00:00:00.000Z" }),
+    ).toEqual({ type: "heartbeat", observedAt: "2024-01-01T00:00:00.000Z" });
+    expect(() => parseChannelEvent({ type: "heartbeat", observedAt: "not-a-date" })).toThrow(
+      ContractError,
+    );
+  });
+
+  it("rejects unknown channel event types", () => {
+    expect(() => parseChannelEvent({ type: "unknown" })).toThrow(ContractError);
+  });
+
   it("validates channel codes", () => {
     expect(isChannelCode("00001")).toBe(true);
     expect(isChannelCode("1234")).toBe(false);

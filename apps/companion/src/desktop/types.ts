@@ -24,6 +24,7 @@ export type CompanionState = {
   readonly trackerExtensionDirectory?: string;
   readonly trackerExtensionStatus: TrackerExtensionStatus;
   readonly lastPublishedAt?: string;
+  readonly retryAttempt?: number;
 };
 
 export type DesktopConfig = {

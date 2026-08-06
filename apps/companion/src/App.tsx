@@ -21,7 +21,10 @@ export const App = ({ state, actions }: { state: CompanionState; actions: Compan
         <h1>{state.status.replaceAll("_", " ")}</h1>
       </div>
     </header>
-    <p>{state.explanation}</p>
+    <p>
+      {state.explanation}
+      {state.retryAttempt !== undefined && ` (retry ${String(state.retryAttempt)})`}
+    </p>
     {!state.disclosureAccepted && (
       <section className="notice">
         <h2>Before publishing</h2>

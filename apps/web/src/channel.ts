@@ -20,6 +20,7 @@ export const subscribeToChannel = (
   code: string,
   onEvent: (event: ChannelEvent) => void,
   onConnection: (connected: boolean) => void,
+  onActivity?: (lastMessageAt: number) => void,
 ) => {
   let stopped = false;
   let socket: WebSocket | undefined;
@@ -34,11 +35,14 @@ export const subscribeToChannel = (
       onConnection(true);
     });
     socket.addEventListener("message", (message) => {
+      let event: ChannelEvent;
       try {
-        onEvent(parseChannelEvent(JSON.parse(String(message.data)) as unknown));
+        event = parseChannelEvent(JSON.parse(String(message.data)) as unknown);
       } catch {
-        socket?.close();
+        return;
       }
+      onActivity?.(Date.now());
+      if (event.type !== "heartbeat") onEvent(event);
     });
     socket.addEventListener("close", () => {
       onConnection(false);

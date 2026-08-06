@@ -164,7 +164,9 @@ export type TrackerMessage = RunSnapshot | Heartbeat | Unsupported;
 
 export type Publication = { readonly sessionId: string; readonly message: TrackerMessage };
 export type ChannelEvent =
-  { readonly type: "active"; readonly snapshot: RunSnapshot } | { readonly type: "inactive" };
+  | { readonly type: "active"; readonly snapshot: RunSnapshot }
+  | { readonly type: "inactive" }
+  | { readonly type: "heartbeat"; readonly observedAt: string };
 
 export class ContractError extends Error {}
 
@@ -473,8 +475,9 @@ export const parsePublication = (value: unknown): Publication => {
 export const parseChannelEvent = (value: unknown): ChannelEvent => {
   if (!isRecord(value)) throw new ContractError("channel event must be an object");
   if (value.type === "inactive") return { type: "inactive" };
+  if (value.type === "heartbeat") return { type: "heartbeat", observedAt: parseObservedAt(value) };
   if (value.type !== "active")
-    throw new ContractError("channel event type must be active or inactive");
+    throw new ContractError("channel event type must be active, inactive, or heartbeat");
   const snapshot = parseTrackerMessage(value.snapshot);
   if (snapshot.kind !== "snapshot")
     throw new ContractError("active channel event must include snapshot");
