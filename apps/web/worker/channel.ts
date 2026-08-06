@@ -1,5 +1,10 @@
 import { DurableObject } from "cloudflare:workers";
-import { parsePublication, type ChannelEvent, type RunSnapshot } from "@ironmon-live/contracts";
+import {
+  derivePreview,
+  parsePublication,
+  type ChannelEvent,
+  type RunSnapshot,
+} from "@ironmon-live/contracts";
 
 type Env = {
   readonly EXPIRY_MINUTES: string;
@@ -35,7 +40,7 @@ export class LiveChannel extends DurableObject<Env> {
     return this.env.REGISTRY.get(this.env.REGISTRY.idFromName("singleton"));
   }
 
-  private async registerActive(expiresAt: number) {
+  private async registerActive(expiresAt: number, snapshot: RunSnapshot) {
     const code = this.ctx.id.name;
     if (!code) return;
     const lastRegisteredAt = await this.ctx.storage.get<number>(lastRegisteredAtKey);
@@ -47,7 +52,7 @@ export class LiveChannel extends DurableObject<Env> {
       this.registryStub()
         .fetch("https://registry/register", {
           method: "PUT",
-          body: JSON.stringify({ code, expiresAt }),
+          body: JSON.stringify({ code, expiresAt, preview: derivePreview(snapshot) }),
         })
         .catch(() => undefined),
     );
@@ -107,9 +112,10 @@ export class LiveChannel extends DurableObject<Env> {
       }
       await this.ctx.storage.put(expiresAtKey, expiresAt);
     }
-    if (await this.ctx.storage.get(snapshotKey)) {
+    const currentSnapshot = await this.ctx.storage.get<RunSnapshot>(snapshotKey);
+    if (currentSnapshot) {
       await this.ctx.storage.setAlarm(expiresAt);
-      await this.registerActive(expiresAt);
+      await this.registerActive(expiresAt, currentSnapshot);
     }
     return new Response(null, { status: 204 });
   }

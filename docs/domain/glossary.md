@@ -12,7 +12,7 @@ differ between bounded contexts, record each context-qualified definition.
 | Channel code | The five-digit identifier retained by a companion and used to publish and view a live channel; it is not a security credential. | Product | Draft |
 | Run state | The current information about an IronMON challenge that is observable through the IronMON Tracker. | Shared | Draft |
 | Active run | A run whose companion has supplied a heartbeat within the expiry window. | Product | Draft |
-| Active channel | A live channel currently showing an active run; listed by code on the homepage per DEC-003. | Product | Draft |
+| Active channel | A live channel currently showing an active run; listed on the homepage with a bounded run preview per DEC-003 and DEC-004. | Product | Draft |
 | Route-trainer progress | The trainers reported for the current route and whether each has been battled. | Product | Draft |
 | Publishing session | The period beginning when a local companion launches, during which it publishes schema-compliant run state to a live channel. | Product | Draft |
 

@@ -1,7 +1,7 @@
 ---
 id: DEC-003
 title: List active channels on the homepage by default
-status: accepted
+status: superseded
 category: product
 supersedes: []
 ---

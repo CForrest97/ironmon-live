@@ -184,14 +184,35 @@ describe("homepage active channels", () => {
     vi.unstubAllGlobals();
   });
 
-  it("renders active channels as links into their live view", async () => {
+  it("renders active channels as links into their live view, with a lead preview", async () => {
     vi.stubGlobal(
       "fetch",
-      vi.fn().mockResolvedValue({ ok: true, json: () => Promise.resolve({ channels: ["12345"] }) }),
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            channels: [
+              {
+                code: "12345",
+                preview: {
+                  lead: available({ name: "Bulbasaur", speciesId: available("1") }),
+                  location: available("Route 3"),
+                  game: available("Pokemon FireRed"),
+                },
+              },
+            ],
+          }),
+      }),
     );
     render(<App />);
-    const link = await screen.findByRole("link", { name: "Channel 12345" });
+    const link = await screen.findByRole("link", { name: /Channel 12345/ });
     expect(link).toHaveAttribute("href", "/channel/12345");
+    expect(screen.getByText("Bulbasaur")).toBeInTheDocument();
+    expect(screen.getByAltText("Bulbasaur sprite")).toHaveAttribute(
+      "src",
+      "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/1.png",
+    );
+    expect(screen.getByText("Route 3 · Pokemon FireRed")).toBeInTheDocument();
   });
 
   it("shows an explicit empty state when no channels are active", async () => {
@@ -202,5 +223,32 @@ describe("homepage active channels", () => {
     render(<App />);
     expect(await screen.findByText("No channels are live right now.")).toBeInTheDocument();
     expect(screen.getByLabelText("Five-digit channel code")).toBeInTheDocument();
+  });
+
+  it("shows a waiting placeholder for a channel with no party data yet", async () => {
+    vi.stubGlobal(
+      "fetch",
+      vi.fn().mockResolvedValue({
+        ok: true,
+        json: () =>
+          Promise.resolve({
+            channels: [
+              {
+                code: "54321",
+                preview: {
+                  lead: { availability: "unavailable" },
+                  location: { availability: "unavailable" },
+                  game: { availability: "unavailable" },
+                },
+              },
+            ],
+          }),
+      }),
+    );
+    render(<App />);
+    const link = await screen.findByRole("link", { name: /Channel 54321/ });
+    expect(link).toHaveAttribute("href", "/channel/54321");
+    expect(screen.getByText("Waiting for data")).toBeInTheDocument();
+    expect(screen.queryByAltText(/sprite/)).not.toBeInTheDocument();
   });
 });

@@ -120,6 +120,17 @@ export type ExpandedRunSnapshot = {
 
 export type RunSnapshot = LegacyRunSnapshot | ExpandedRunSnapshot;
 
+export type ChannelPreviewLead = {
+  readonly name: string;
+  readonly speciesId: Available<string>;
+};
+
+export type ChannelPreview = {
+  readonly lead: Available<ChannelPreviewLead>;
+  readonly location: Available<string>;
+  readonly game: Available<string>;
+};
+
 export type LegacyHeartbeat = {
   readonly kind: "heartbeat";
   readonly schemaVersion: typeof schemaVersion;
@@ -472,16 +483,71 @@ export const parseChannelEvent = (value: unknown): ChannelEvent => {
 
 export const isChannelCode = (value: string) => /^\d{5}$/.test(value);
 
-export type ActiveChannelsResponse = { readonly channels: readonly string[] };
+export const derivePreview = (snapshot: RunSnapshot): ChannelPreview => {
+  const lead: Available<ChannelPreviewLead> =
+    snapshot.schemaVersion === schemaVersion
+      ? snapshot.party[0]
+        ? {
+            availability: "available",
+            value: { name: snapshot.party[0].name, speciesId: { availability: "unavailable" } },
+          }
+        : { availability: "unavailable" }
+      : snapshot.party[0]
+        ? {
+            availability: "available",
+            value: { name: snapshot.party[0].name, speciesId: snapshot.party[0].speciesId },
+          }
+        : { availability: "unavailable" };
+
+  const location: Available<string> =
+    snapshot.schemaVersion === schemaVersion
+      ? snapshot.route.availability === "available"
+        ? { availability: "available", value: snapshot.route.value.name }
+        : { availability: "unavailable" }
+      : snapshot.location.availability === "available"
+        ? { availability: "available", value: snapshot.location.value.name }
+        : { availability: "unavailable" };
+
+  const game: Available<string> =
+    snapshot.schemaVersion === schemaVersion
+      ? { availability: "unavailable" }
+      : snapshot.progress.availability === "available"
+        ? snapshot.progress.value.romName
+        : { availability: "unavailable" };
+
+  return { lead, location, game };
+};
+
+const parseChannelPreviewLead = (value: unknown): ChannelPreviewLead => {
+  if (!isRecord(value)) throw new ContractError("preview lead must be an object");
+  return {
+    name: requiredString(value, "name"),
+    speciesId: parseAvailable(value.speciesId, requiredStringValue),
+  };
+};
+
+export const parseChannelPreview = (value: unknown): ChannelPreview => {
+  if (!isRecord(value)) throw new ContractError("channel preview must be an object");
+  return {
+    lead: parseAvailable(value.lead, parseChannelPreviewLead),
+    location: parseAvailable(value.location, requiredStringValue),
+    game: parseAvailable(value.game, requiredStringValue),
+  };
+};
+
+export type ActiveChannelSummary = { readonly code: string; readonly preview: ChannelPreview };
+export type ActiveChannelsResponse = { readonly channels: readonly ActiveChannelSummary[] };
 
 export const parseActiveChannels = (value: unknown): ActiveChannelsResponse => {
   if (!isRecord(value)) throw new ContractError("active channels response must be an object");
   const { channels } = value;
-  if (
-    !Array.isArray(channels) ||
-    channels.some((code) => typeof code !== "string" || !isChannelCode(code))
-  ) {
-    throw new ContractError("channels must be an array of five-digit channel codes");
-  }
-  return { channels };
+  if (!Array.isArray(channels)) throw new ContractError("channels must be an array");
+  return {
+    channels: channels.map((entry) => {
+      if (!isRecord(entry) || typeof entry.code !== "string" || !isChannelCode(entry.code)) {
+        throw new ContractError("each channel entry must include a five-digit code");
+      }
+      return { code: entry.code, preview: parseChannelPreview(entry.preview) };
+    }),
+  };
 };

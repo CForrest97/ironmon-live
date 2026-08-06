@@ -13,6 +13,7 @@ keep completed items as durable delivery history.
 - [WORK-008: Ship the TypeScript-owned Tauri companion](WORK-008-ship-tauri-companion.md)
 - [WORK-010: Implement the expanded player-first live channel](WORK-010-implement-expanded-player-first-live-channel.md)
 - [WORK-011: List active channels on the homepage](WORK-011-list-active-channels-on-homepage.md)
+- [WORK-012: Add a run preview to homepage channel cards](WORK-012-add-a-run-preview-to-homepage-channel-cards.md)
 
 ## Completed
 
