@@ -54,6 +54,7 @@ export type ExpandedPartyMember = {
   readonly heldItem: Available<string>;
   readonly moves: Available<readonly ExpandedMove[]>;
   readonly stats: Available<Readonly<Record<string, number>>>;
+  readonly baseStats: Available<Readonly<Record<string, number>>>;
   readonly statStages: Available<Readonly<Record<string, number>>>;
   readonly ivs: Available<Readonly<Record<string, number>>>;
   readonly evs: Available<Readonly<Record<string, number>>>;
@@ -294,6 +295,7 @@ const parseExpandedPartyMember = (value: unknown): ExpandedPartyMember => {
     heldItem: parseAvailable(value.heldItem, requiredStringValue),
     moves: parseAvailable(value.moves, parseExpandedMoveArray),
     stats: parseAvailable(value.stats, parseNumberRecord),
+    baseStats: parseAvailable(value.baseStats, parseNumberRecord),
     statStages: parseAvailable(value.statStages, parseNumberRecord),
     ivs: parseAvailable(value.ivs, parseNumberRecord),
     evs: parseAvailable(value.evs, parseNumberRecord),
@@ -554,3 +556,34 @@ export const parseActiveChannels = (value: unknown): ActiveChannelsResponse => {
     }),
   };
 };
+
+export type NatureStatEffect = { readonly boosted: string; readonly lowered: string };
+
+// The 25 natures each raise one stat 10% and lower another 10%, except for the
+// five neutral natures (Hardy, Docile, Serious, Bashful, Quirky). Unaffected by
+// Ironmon's base-stat randomization, which only reshuffles species base stats.
+const NATURE_STAT_EFFECTS: Readonly<Record<string, NatureStatEffect>> = {
+  Lonely: { boosted: "atk", lowered: "def" },
+  Brave: { boosted: "atk", lowered: "spe" },
+  Adamant: { boosted: "atk", lowered: "spa" },
+  Naughty: { boosted: "atk", lowered: "spd" },
+  Bold: { boosted: "def", lowered: "atk" },
+  Relaxed: { boosted: "def", lowered: "spe" },
+  Impish: { boosted: "def", lowered: "spa" },
+  Lax: { boosted: "def", lowered: "spd" },
+  Timid: { boosted: "spe", lowered: "atk" },
+  Hasty: { boosted: "spe", lowered: "def" },
+  Jolly: { boosted: "spe", lowered: "spa" },
+  Naive: { boosted: "spe", lowered: "spd" },
+  Modest: { boosted: "spa", lowered: "atk" },
+  Mild: { boosted: "spa", lowered: "def" },
+  Quiet: { boosted: "spa", lowered: "spe" },
+  Rash: { boosted: "spa", lowered: "spd" },
+  Calm: { boosted: "spd", lowered: "atk" },
+  Gentle: { boosted: "spd", lowered: "def" },
+  Sassy: { boosted: "spd", lowered: "spe" },
+  Careful: { boosted: "spd", lowered: "spa" },
+};
+
+export const natureStatEffect = (nature: string): NatureStatEffect | undefined =>
+  NATURE_STAT_EFFECTS[nature];

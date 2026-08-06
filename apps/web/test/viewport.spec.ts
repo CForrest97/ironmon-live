@@ -15,6 +15,7 @@ const member = {
   heldItem: unavailable,
   moves: available([{ id: "tackle", name: "Tackle", pp: available(35) }]),
   stats: available({ hp: 20 }),
+  baseStats: available({ hp: 20 }),
   statStages: available({ atk: 0 }),
   ivs: available({ hp: 0 }),
   evs: available({ hp: 0 }),

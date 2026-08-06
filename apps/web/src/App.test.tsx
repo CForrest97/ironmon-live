@@ -20,11 +20,12 @@ const member = {
   ability: unavailable,
   heldItem: unavailable,
   moves: available([{ id: "tackle", name: "Tackle", pp: available(35) }]),
-  stats: available({ hp: 20 }),
+  stats: available({ hp: 20, atk: 10, def: 10, spa: 15, spd: 10, spe: 10 }),
+  baseStats: available({ hp: 45, atk: 49, def: 49, spa: 65, spd: 65, spe: 45 }),
   statStages: available({ atk: 0 }),
   ivs: available({ hp: 0 }),
   evs: available({ hp: 0 }),
-  nature: unavailable,
+  nature: available("Modest"),
   experience: available(0),
   friendship: available(0),
   gender: unavailable,
@@ -119,9 +120,23 @@ describe("expanded run dashboard", () => {
   it("hides deep party stats behind a more-details disclosure", () => {
     render(<ExpandedRunView snapshot={snapshot()} />);
     fireEvent.click(screen.getByRole("button", { name: "Party" }));
-    expect(screen.getByText("Stat stages")).not.toBeVisible();
-    fireEvent.click(screen.getByText("More details"));
-    expect(screen.getByText("Stat stages")).toBeVisible();
+    expect(screen.getAllByText("Stats")[0]).not.toBeVisible();
+    fireEvent.click(screen.getAllByText("More details")[0] as HTMLElement);
+    expect(screen.getAllByText("Stats")[0]).toBeVisible();
+  });
+
+  it("highlights the nature-boosted and nature-lowered stat rows", () => {
+    render(<ExpandedRunView snapshot={snapshot()} />);
+    fireEvent.click(screen.getByRole("button", { name: "Party" }));
+    fireEvent.click(screen.getAllByText("More details")[0] as HTMLElement);
+    expect(screen.getAllByText("spa")[0]?.closest("div")).toHaveClass("stat-boosted");
+    expect(screen.getAllByText("atk")[0]?.closest("div")).toHaveClass("stat-lowered");
+  });
+
+  it("shows the species base stat total as the mon's potential", () => {
+    render(<ExpandedRunView snapshot={snapshot()} />);
+    fireEvent.click(screen.getByRole("button", { name: "Party" }));
+    expect(screen.getAllByText("318")[0]).toBeInTheDocument();
   });
 
   it("does not reserve a battle panel for an inactive battle", () => {
