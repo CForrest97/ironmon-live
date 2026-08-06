@@ -1,11 +1,14 @@
 import { describe, expect, it } from "vitest";
 import {
   ContractError,
+  derivePreview,
   isChannelCode,
   parseActiveChannels,
   parseChannelEvent,
+  parseChannelPreview,
   parseTrackerMessage,
   type ExpandedRunSnapshot,
+  type LegacyRunSnapshot,
 } from "./index.ts";
 
 const base = {
@@ -105,11 +108,78 @@ describe("tracker contract", () => {
     expect(isChannelCode("1234")).toBe(false);
   });
 
-  it("validates active-channels responses", () => {
-    expect(parseActiveChannels({ channels: ["12345", "00001"] })).toEqual({
-      channels: ["12345", "00001"],
+  it("derives a bounded preview from a legacy snapshot with no game data", () => {
+    expect(derivePreview(base as LegacyRunSnapshot)).toEqual({
+      lead: available({ name: "Bulbasaur", speciesId: unavailable }),
+      location: unavailable,
+      game: unavailable,
     });
-    expect(() => parseActiveChannels({ channels: ["1234"] })).toThrow(ContractError);
+  });
+
+  it("falls back to the legacy route name for location", () => {
+    const withRoute = {
+      ...base,
+      route: {
+        availability: "available",
+        value: { name: "Route 22", trainers: [], completed: 0, total: 0 },
+      },
+    } as LegacyRunSnapshot;
+    expect(derivePreview(withRoute).location).toEqual(available("Route 22"));
+  });
+
+  it("derives a bounded preview from an expanded snapshot, dropping unlisted fields", () => {
+    expect(derivePreview(expanded)).toEqual({
+      lead: available({ name: "Bulbasaur", speciesId: available("1") }),
+      location: available("Route 1"),
+      game: unavailable,
+    });
+  });
+
+  it("surfaces the ROM name as the game field when available", () => {
+    const withGame: ExpandedRunSnapshot = {
+      ...expanded,
+      progress: available({
+        romName: available("Pokemon FireRed"),
+        gameCode: unavailable,
+        trackerVersion: unavailable,
+        timer: unavailable,
+        paused: available(false),
+        playtime: unavailable,
+        badges: available([]),
+        centreHeals: available(0),
+        wildBattles: available(0),
+        trainerBattles: available(0),
+        fishing: available(0),
+        rockSmash: available(0),
+      }),
+    };
+    expect(derivePreview(withGame).game).toEqual(available("Pokemon FireRed"));
+  });
+
+  it("round-trips a parsed channel preview", () => {
+    const preview = derivePreview(expanded);
+    expect(parseChannelPreview(preview)).toEqual(preview);
+    expect(() => parseChannelPreview({ lead: "nope" })).toThrow(ContractError);
+  });
+
+  it("validates active-channels responses", () => {
+    const preview = derivePreview(expanded);
+    expect(
+      parseActiveChannels({
+        channels: [
+          { code: "12345", preview },
+          { code: "00001", preview },
+        ],
+      }),
+    ).toEqual({
+      channels: [
+        { code: "12345", preview },
+        { code: "00001", preview },
+      ],
+    });
+    expect(() => parseActiveChannels({ channels: [{ code: "1234", preview }] })).toThrow(
+      ContractError,
+    );
     expect(() => parseActiveChannels({ channels: "12345" })).toThrow(ContractError);
   });
 });

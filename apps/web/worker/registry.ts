@@ -1,6 +1,6 @@
 import { DurableObject } from "cloudflare:workers";
-import { isChannelCode } from "@ironmon-live/contracts";
-import { activeCodes } from "./registry-store.ts";
+import { isChannelCode, parseChannelPreview } from "@ironmon-live/contracts";
+import { activeCodes, type RegistryEntry } from "./registry-store.ts";
 
 const json = (value: unknown, status = 200) =>
   Response.json(value, { status, headers: { "cache-control": "no-store" } });
@@ -22,10 +22,16 @@ export class ChannelRegistry extends DurableObject {
       typeof record.expiresAt !== "number" ||
       !Number.isFinite(record.expiresAt)
     ) {
-      return json({ error: "code and expiresAt are required" }, 400);
+      return json({ error: "code, expiresAt, and preview are required" }, 400);
+    }
+    let preview;
+    try {
+      preview = parseChannelPreview(record.preview);
+    } catch (error) {
+      return json({ error: String(error) }, 400);
     }
     const { code, expiresAt } = record as { code: string; expiresAt: number };
-    await this.ctx.storage.put(code, expiresAt);
+    await this.ctx.storage.put(code, { expiresAt, preview } satisfies RegistryEntry);
     return new Response(null, { status: 204 });
   }
 
@@ -37,9 +43,11 @@ export class ChannelRegistry extends DurableObject {
   }
 
   private async list() {
-    const entries = await this.ctx.storage.list<number>();
+    const entries = await this.ctx.storage.list<RegistryEntry>();
     const now = Date.now();
-    const expired = [...entries].filter(([, expiresAt]) => expiresAt <= now).map(([code]) => code);
+    const expired = [...entries]
+      .filter(([, entry]) => entry.expiresAt <= now)
+      .map(([code]) => code);
     if (expired.length > 0) await this.ctx.storage.delete(expired);
     return Response.json(
       { channels: activeCodes(entries, now) },

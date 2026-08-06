@@ -1,11 +1,16 @@
-import { parseActiveChannels, parseChannelEvent, type ChannelEvent } from "@ironmon-live/contracts";
+import {
+  parseActiveChannels,
+  parseChannelEvent,
+  type ActiveChannelSummary,
+  type ChannelEvent,
+} from "@ironmon-live/contracts";
 
 export const channelSocketUrl = (code: string, location: Location = window.location) => {
   const protocol = location.protocol === "https:" ? "wss:" : "ws:";
   return `${protocol}//${location.host}/api/channels/${code}/connect`;
 };
 
-export const fetchActiveChannels = async (): Promise<readonly string[]> => {
+export const fetchActiveChannels = async (): Promise<readonly ActiveChannelSummary[]> => {
   const response = await fetch("/api/channels");
   if (!response.ok) throw new Error(`failed to fetch active channels: ${String(response.status)}`);
   return parseActiveChannels(await response.json()).channels;

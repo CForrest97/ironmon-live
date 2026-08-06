@@ -1,7 +1,9 @@
 import { Fragment, useEffect, useState, type FormEvent, type ReactNode } from "react";
 import type {
+  ActiveChannelSummary,
   Available,
   ChannelEvent,
+  ChannelPreviewLead,
   ExpandedPartyMember,
   ExpandedRunSnapshot,
   LegacyRunSnapshot,
@@ -586,8 +588,53 @@ const RunView = ({ snapshot }: { readonly snapshot: RunSnapshot }) =>
 
 const channelFromPath = () => /^\/channel\/(\d{5})$/.exec(window.location.pathname)?.[1];
 
+const PreviewSprite = ({ lead }: { readonly lead: ChannelPreviewLead }) => {
+  const [failed, setFailed] = useState(false);
+  if (failed || lead.speciesId.availability === "unavailable") {
+    return (
+      <span className="sprite-fallback preview-sprite-fallback">
+        {lead.name.slice(0, 2).toUpperCase()}
+      </span>
+    );
+  }
+  return (
+    <img
+      className="sprite preview-sprite"
+      src={pokemonSpriteUrl(lead.speciesId.value)}
+      alt={`${lead.name} sprite`}
+      onError={() => {
+        setFailed(true);
+      }}
+    />
+  );
+};
+
+const ChannelPreviewCard = ({ summary }: { readonly summary: ActiveChannelSummary }) => {
+  const { lead, location, game } = summary.preview;
+  const meta = [
+    location.availability === "available" ? location.value : undefined,
+    game.availability === "available" ? game.value : undefined,
+  ].filter((value): value is string => value !== undefined);
+  return (
+    <div className="channel-preview">
+      {lead.availability === "available" ? (
+        <div className="channel-preview-lead">
+          <PreviewSprite lead={lead.value} />
+          <span className="channel-preview-name">{lead.value.name}</span>
+        </div>
+      ) : (
+        <div className="channel-preview-lead">
+          <span className="sprite-fallback preview-sprite-fallback">?</span>
+          <span className="channel-preview-name channel-preview-name-empty">Waiting for data</span>
+        </div>
+      )}
+      {meta.length > 0 && <p className="channel-preview-meta">{meta.join(" · ")}</p>}
+    </div>
+  );
+};
+
 const ActiveChannels = ({ onSelect }: { readonly onSelect: (channelCode: string) => void }) => {
-  const [channels, setChannels] = useState<readonly string[] | "error">();
+  const [channels, setChannels] = useState<readonly ActiveChannelSummary[] | "error">();
 
   useEffect(() => {
     let cancelled = false;
@@ -612,11 +659,12 @@ const ActiveChannels = ({ onSelect }: { readonly onSelect: (channelCode: string)
       {channels.length === 0 ? (
         <p className="active-channels-empty">No channels are live right now.</p>
       ) : (
-        <ul>
-          {channels.map((channelCode) => (
-            <li key={channelCode}>
+        <ul className="channel-cards">
+          {channels.map((summary) => (
+            <li key={summary.code}>
               <a
-                href={`/channel/${channelCode}`}
+                className="channel-card"
+                href={`/channel/${summary.code}`}
                 onClick={(clickEvent) => {
                   if (
                     clickEvent.defaultPrevented ||
@@ -629,10 +677,14 @@ const ActiveChannels = ({ onSelect }: { readonly onSelect: (channelCode: string)
                     return;
                   }
                   clickEvent.preventDefault();
-                  onSelect(channelCode);
+                  onSelect(summary.code);
                 }}
               >
-                Channel {channelCode}
+                <div className="channel-card-heading">
+                  <span className="badge badge-live">Live</span>
+                  <span className="channel-card-code">Channel {summary.code}</span>
+                </div>
+                <ChannelPreviewCard summary={summary} />
               </a>
             </li>
           ))}

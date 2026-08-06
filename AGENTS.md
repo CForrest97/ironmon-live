@@ -66,6 +66,9 @@ of learning.
 - Exclude Tauri build output from repository-wide linting.
 - Pass repository-absolute file paths to tools launched through a selected npm
   workspace.
+- Confirm the exact field set directly with the requester before building a
+  preview or summary surface; do not infer one from a related but different
+  view.
 
 ## Independent review gate
 

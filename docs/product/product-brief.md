@@ -46,9 +46,10 @@ targets beyond the one-second update target supplied by the maintainer.
 
 ## Non-goals
 
-- Searching or filtering live channels, or listing anything about a channel
-  beyond its code (see [DEC-003](../decisions/DEC-003-list-active-channels-on-homepage.md)
-  for the homepage's default listing of active channel codes).
+- Searching or filtering live channels, or showing more than a bounded run
+  preview per channel (see [DEC-003](../decisions/DEC-003-list-active-channels-on-homepage.md)
+  and [DEC-004](../decisions/DEC-004-show-a-bounded-run-preview-on-homepage-channel-cards.md)
+  for the homepage's default listing of active channels and their preview).
 - Player accounts or authenticated spectator access in the initial product.
 - Permanent run history or a retained final run snapshot.
 - Encounter and battle guidance in the initial product.
