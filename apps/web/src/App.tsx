@@ -244,6 +244,7 @@ const TrainerPortrait = ({
       </span>
     );
   }
+
   return (
     <img
       className="sprite trainer-portrait"
