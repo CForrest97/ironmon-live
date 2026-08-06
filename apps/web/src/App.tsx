@@ -193,6 +193,7 @@ const PartyDetails = ({ member }: { readonly member: ExpandedPartyMember }) => (
         <dd>{availableValue(member.heldItem, String)}</dd>
       </div>
     </dl>
+
     <h4>Moves</h4>
     {availableValue(member.moves, (moves) => (
       <div className="move-chips">
