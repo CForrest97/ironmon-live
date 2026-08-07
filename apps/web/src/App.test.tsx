@@ -2,9 +2,13 @@
 import "@testing-library/jest-dom/vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { App, ExpandedRunView, trainerPortraitUrl } from "./App";
+import type { LegacyRunSnapshot } from "@ironmon-live/contracts";
+import { App, ExpandedRunView, LegacyRunView, trainerPortraitUrl } from "./App";
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.restoreAllMocks();
+});
 
 const available = <T,>(value: T) => ({ availability: "available" as const, value });
 const unavailable = { availability: "unavailable" as const };
@@ -85,6 +89,15 @@ const snapshot = (active = true, badges: readonly string[] = []) => ({
     rockSmash: available(0),
   }),
 });
+
+const legacyStartupSnapshot = {
+  kind: "snapshot",
+  schemaVersion: 1,
+  observedAt: "2026-08-01T10:00:00Z",
+  status: "startup",
+  party: [],
+  route: unavailable,
+} satisfies LegacyRunSnapshot;
 
 describe("expanded run dashboard", () => {
   it("shows party HP and badge state in the overview without opening a panel", () => {
@@ -194,6 +207,56 @@ describe("expanded run dashboard", () => {
       "https://play.pokemonshowdown.com/sprites/trainers/acetrainer-gen3.png",
     );
     expect(trainerPortraitUrl("../../untrusted")).toBeUndefined();
+  });
+});
+
+describe("empty-party startup ball prompt", () => {
+  it("shows one stable random recommendation in the expanded view", () => {
+    const random = vi.spyOn(Math, "random").mockReturnValue(0.5);
+    const run = { ...snapshot(false), status: "startup", party: [] };
+    const { container, rerender } = render(<ExpandedRunView snapshot={run} />);
+
+    expect(screen.getByRole("heading", { name: "A first pick, just for fun" })).toBeVisible();
+    expect(screen.getByRole("list", { name: "Starter ball choices" })).toBeVisible();
+    expect(screen.getAllByRole("listitem")).toHaveLength(3);
+    for (const position of ["Left", "Centre", "Right"]) {
+      expect(screen.getByText(position)).toBeVisible();
+    }
+    expect(screen.getByText("Recommended pick")).toBeVisible();
+
+    const choices = [...container.querySelectorAll<HTMLElement>(".starter-ball-choice")];
+    expect(choices).toHaveLength(3);
+    expect(choices[1]).toHaveClass("starter-ball-choice-recommended");
+    expect(
+      choices.filter((choice) => choice.classList.contains("starter-ball-choice-unselected")),
+    ).toHaveLength(2);
+
+    rerender(<ExpandedRunView snapshot={{ ...run, observedAt: "2026-08-01T10:00:01Z" }} />);
+    expect(random).toHaveBeenCalledOnce();
+    expect(choices[1]).toHaveClass("starter-ball-choice-recommended");
+  });
+
+  it("shows the same prompt for a legacy startup snapshot", () => {
+    vi.spyOn(Math, "random").mockReturnValue(0);
+    render(<LegacyRunView snapshot={legacyStartupSnapshot} />);
+
+    expect(screen.getByRole("heading", { name: "A first pick, just for fun" })).toBeVisible();
+    expect(screen.getAllByRole("listitem")).toHaveLength(3);
+    expect(screen.getByText("Left").closest("li")).toHaveClass("starter-ball-choice-recommended");
+  });
+
+  it("hides the prompt outside an empty-party startup episode", () => {
+    const run = { ...snapshot(false), status: "startup", party: [] };
+    const { rerender } = render(<ExpandedRunView snapshot={run} />);
+    expect(screen.getByRole("heading", { name: "A first pick, just for fun" })).toBeVisible();
+
+    rerender(<ExpandedRunView snapshot={{ ...run, party: [member] }} />);
+    expect(screen.queryByRole("heading", { name: "A first pick, just for fun" })).toBeNull();
+
+    for (const status of ["active", "battle", "game_over", "completed"]) {
+      rerender(<ExpandedRunView snapshot={{ ...run, status }} />);
+      expect(screen.queryByRole("heading", { name: "A first pick, just for fun" })).toBeNull();
+    }
   });
 });
 

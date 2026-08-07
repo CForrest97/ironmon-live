@@ -343,12 +343,72 @@ const PartyDetails = ({ member }: { readonly member: ExpandedPartyMember }) => (
   </article>
 );
 
-const LegacyRunView = ({ snapshot }: { readonly snapshot: LegacyRunSnapshot }) => (
+const STARTER_BALL_POSITIONS = ["Left", "Centre", "Right"] as const;
+
+const StarterBallRecommendation = () => {
+  const [recommendedIndex] = useState(() =>
+    Math.floor(Math.random() * STARTER_BALL_POSITIONS.length),
+  );
+
+  return (
+    <section className="starter-pick" aria-labelledby="starter-pick-heading">
+      <div className="starter-pick-copy">
+        <p className="eyebrow">Startup pick</p>
+        <h2 id="starter-pick-heading">A first pick, just for fun</h2>
+        <p className="starter-pick-description">
+          One ball is highlighted at random. It does not reveal what is inside.
+        </p>
+      </div>
+      <ol className="starter-ball-options" aria-label="Starter ball choices">
+        {STARTER_BALL_POSITIONS.map((position, index) => {
+          const isRecommended = index === recommendedIndex;
+          return (
+            <li
+              className={`starter-ball-choice ${isRecommended ? "starter-ball-choice-recommended" : "starter-ball-choice-unselected"}`}
+              key={position}
+            >
+              <div className="starter-ball-stage">
+                {isRecommended && (
+                  <span className="starter-selection-arrow" aria-hidden="true">
+                    ▼
+                  </span>
+                )}
+                <span className="starter-ball" aria-hidden="true">
+                  <span className="starter-ball-button" />
+                </span>
+                {isRecommended && (
+                  <span className="starter-sparkles" aria-hidden="true">
+                    {[0, 1, 2, 3].map((sparkle) => (
+                      <span className="starter-sparkle" key={sparkle} />
+                    ))}
+                  </span>
+                )}
+              </div>
+              <span className="starter-ball-position">{position}</span>
+              {isRecommended && <span className="starter-ball-badge">Recommended pick</span>}
+            </li>
+          );
+        })}
+      </ol>
+    </section>
+  );
+};
+
+const StarterBallPrompt = ({
+  status,
+  partySize,
+}: {
+  readonly status: string;
+  readonly partySize: number;
+}) => (status === "startup" && partySize === 0 ? <StarterBallRecommendation /> : null);
+
+export const LegacyRunView = ({ snapshot }: { readonly snapshot: LegacyRunSnapshot }) => (
   <main>
     <header className="run-header">
       <p className="eyebrow">Run status</p>
       <h1>{snapshot.status}</h1>
     </header>
+    <StarterBallPrompt status={snapshot.status} partySize={snapshot.party.length} />
     <section>
       <h2>Current party</h2>
       <div className="party-grid">
@@ -460,6 +520,7 @@ export const ExpandedRunView = ({ snapshot }: { readonly snapshot: ExpandedRunSn
         <p className="eyebrow">Live run</p>
         <h1>{snapshot.status}</h1>
       </header>
+      <StarterBallPrompt status={snapshot.status} partySize={snapshot.party.length} />
       <section aria-label="Run overview" className="overview-grid">
         <article className="overview-card">
           <h2>Location</h2>

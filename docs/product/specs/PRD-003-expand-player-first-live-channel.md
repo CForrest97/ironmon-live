@@ -6,6 +6,7 @@ contexts: []
 decisions:
   - DEC-001
   - DEC-002
+  - DEC-005
 ---
 
 # Expand the player-first live channel
@@ -50,7 +51,9 @@ spectator presentation.
 ## Non-goals
 
 - Battle, route, or team advice; encounter recommendations; or any inferred
-  gameplay fact.
+  gameplay fact, except the random, presentation-only startup-ball prompt
+  bounded by DEC-005. That prompt is not advice and does not claim a ball's
+  contents or strategic value.
 - Bag inventory, encounter history, and uncollected-item progress.
 - Randomizer-log data, including randomized encounters, future trainer teams,
   evolutions, TM compatibility, seeds, or settings.
@@ -78,6 +81,10 @@ non-spoiler data:
 - current location, route, route trainers, and their reported parties;
 - game and Tracker status, badges, timer/playtime, centre heals, and gameplay
   counters.
+
+When Tracker reports `startup` with an empty party, the page may additionally
+show DEC-005's presentation-only random starter-ball prompt. It is not
+snapshot-derived gameplay information.
 
 ## Requirements
 
@@ -117,8 +124,9 @@ non-spoiler data:
 10. The website shall distinguish reported zero, `false`, and empty values
     from unavailable values throughout the overview and every panel.
 11. An expanded canonical Tracker snapshot shall use a new schema version.
-    Schema version 1 messages and their current behavior shall remain valid and
-    unchanged; producers and consumers shall reject unsupported versions rather
+    Schema version 1 messages and their current data behavior shall remain
+    valid; shared presentation-only behaviour may apply without a schema
+    change. Producers and consumers shall reject unsupported versions rather
     than silently guessing a field's meaning.
 12. The expanded contract shall carry only full current state needed by this
     page, not historical event streams or randomizer-log data. Live delivery,
@@ -129,6 +137,13 @@ non-spoiler data:
     state defined by DEC-002 as ordinary available version 2 values. It shall
     retain version 1 facts where available and remove this bridge when the
     extension emits version 2.
+14. When, and only when, reported status is `startup` and the reported party
+    is empty, the channel shall show exactly three labelled, CSS-rendered
+    standard balls and randomly mark one stable, presentation-only
+    "Recommended pick" for that empty-party startup episode. It shall provide
+    no interaction, reroll, persistence, Tracker write, external asset, or
+    claim about contents, encounters, or gameplay value; it shall disappear
+    when either condition no longer holds.
 
 ## Acceptance Criteria
 
@@ -146,6 +161,9 @@ non-spoiler data:
   inferred facts.
 - A failed or absent external image does not hide a Pokémon's, trainer's, or
   state information.
+- An empty-party `startup` snapshot in either supported schema view shows one
+  stable random recommended ball out of three; an empty non-`startup` snapshot
+  and every non-empty party hide the prompt.
 - Automated layout coverage verifies the overview and panel operation at 640
   CSS pixels; component coverage verifies disclosure and image fallbacks.
 - Contract and transport coverage verifies version 1 compatibility, the new
@@ -163,6 +181,7 @@ None.
 
 - [DEC-001: Use ephemeral, unauthenticated live channels](../../decisions/DEC-001-unauthenticated-live-channels.md)
 - [DEC-002: Temporarily publish companion-expanded demo state](../../decisions/DEC-002-temporary-companion-expanded-demo-state.md)
+- [DEC-005: Show a random startup ball prompt](../../decisions/DEC-005-show-a-random-startup-ball-prompt.md)
 
 ## Risks
 
@@ -176,6 +195,9 @@ None.
   latency target under supported conditions.
 - Detailed opponent information can be useful tactical context but must not be
   presented as advice or extend to spoiler-sensitive randomizer-log data.
+- A playful recommendation could be mistaken for strategic advice if its
+  random, presentation-only nature is obscured; DEC-005 limits it to the
+  empty-party startup moment and forbids content or value claims.
 
 ## Open Questions
 
