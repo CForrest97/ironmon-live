@@ -163,6 +163,25 @@ describe("expanded run dashboard", () => {
     );
   });
 
+  it("does not render trainer markers or rows beyond the reported route total", () => {
+    const run = snapshot(false);
+    const { container } = render(
+      <ExpandedRunView
+        snapshot={{
+          ...run,
+          route: available({ ...run.route.value, total: 0 }),
+        }}
+      />,
+    );
+
+    expect(container.querySelectorAll(".progress-step")).toHaveLength(0);
+    expect(container.querySelectorAll(".progress-track")).toHaveLength(0);
+    fireEvent.click(screen.getByRole("button", { name: "Route" }));
+    expect(container.querySelectorAll(".progress-step")).toHaveLength(0);
+    expect(container.querySelectorAll(".progress-track")).toHaveLength(0);
+    expect(container.querySelectorAll(".trainer-row")).toHaveLength(0);
+  });
+
   it("falls back to readable text when a sprite fails", () => {
     render(<ExpandedRunView snapshot={snapshot()} />);
     fireEvent.error(screen.getAllByAltText("Bulbasaur sprite")[0] as HTMLImageElement);

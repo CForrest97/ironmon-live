@@ -193,23 +193,48 @@ const ProgressTrack = ({
   steps,
 }: {
   readonly steps: ReadonlyArray<{ readonly name: string; readonly state: string }>;
-}) => (
-  <div className="progress-track">
-    {steps.map((step, index) => (
-      <Fragment key={step.name}>
-        <div
-          title={step.name}
-          className={`progress-step ${step.state === "battled" ? "progress-defeated" : step.state === "current" ? "progress-current" : ""}`}
-        />
-        {index < steps.length - 1 && (
+}) => {
+  if (steps.length === 0) return null;
+  return (
+    <div className="progress-track">
+      {steps.map((step, index) => (
+        <Fragment key={step.name}>
           <div
-            className={`progress-connector ${step.state === "battled" ? "progress-defeated" : ""}`}
+            title={step.name}
+            className={`progress-step ${step.state === "battled" ? "progress-defeated" : step.state === "current" ? "progress-current" : ""}`}
           />
-        )}
-      </Fragment>
-    ))}
-  </div>
-);
+          {index < steps.length - 1 && (
+            <div
+              className={`progress-connector ${step.state === "battled" ? "progress-defeated" : ""}`}
+            />
+          )}
+        </Fragment>
+      ))}
+    </div>
+  );
+};
+
+type ReportedRouteTrainer = {
+  readonly name: string;
+  readonly battled: Available<boolean>;
+};
+
+const routeTrainersForDisplay = <T extends ReportedRouteTrainer>(route: {
+  readonly trainers: readonly T[];
+  readonly total: number;
+}): readonly T[] => route.trainers.slice(0, Math.max(0, route.total));
+
+const routeProgressSteps = (route: {
+  readonly trainers: readonly ReportedRouteTrainer[];
+  readonly total: number;
+}) =>
+  routeTrainersForDisplay(route).map((trainer) => ({
+    name: trainer.name,
+    state:
+      trainer.battled.availability === "available" && trainer.battled.value
+        ? "battled"
+        : "upcoming",
+  }));
 
 export const pokemonSpriteUrl = (speciesId: string) =>
   `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${speciesId}.png`;
@@ -450,40 +475,36 @@ const LegacyRunContent = ({ snapshot }: { readonly snapshot: LegacyRunSnapshot }
     </section>
     <section>
       <h2>Current route</h2>
-      {availableValue(snapshot.route, (route) => (
-        <div className="route-card">
-          <div className="route-top">
-            <h3>{route.name}</h3>
-            <span className="badge badge-live">
-              {route.completed}/{route.total}
-            </span>
+      {availableValue(snapshot.route, (route) => {
+        const trainers = routeTrainersForDisplay(route);
+        return (
+          <div className="route-card">
+            <div className="route-top">
+              <h3>{route.name}</h3>
+              <span className="badge badge-live">
+                {route.completed}/{route.total}
+              </span>
+            </div>
+            <ProgressTrack steps={routeProgressSteps(route)} />
+            <div className="trainer-list">
+              {trainers.map((trainer) => {
+                const battled =
+                  trainer.battled.availability === "available" && trainer.battled.value;
+                return (
+                  <div className="trainer-row" key={trainer.id}>
+                    <span>{trainer.name}</span>
+                    <span className={`badge ${battled ? "badge-success" : ""}`}>
+                      {availableValue(trainer.battled, (value) =>
+                        value ? "Battled" : "Not battled",
+                      )}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-          <ProgressTrack
-            steps={route.trainers.map((trainer) => ({
-              name: trainer.name,
-              state:
-                trainer.battled.availability === "available" && trainer.battled.value
-                  ? "battled"
-                  : "upcoming",
-            }))}
-          />
-          <div className="trainer-list">
-            {route.trainers.map((trainer) => {
-              const battled = trainer.battled.availability === "available" && trainer.battled.value;
-              return (
-                <div className="trainer-row" key={trainer.id}>
-                  <span>{trainer.name}</span>
-                  <span className={`badge ${battled ? "badge-success" : ""}`}>
-                    {availableValue(trainer.battled, (value) =>
-                      value ? "Battled" : "Not battled",
-                    )}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      ))}
+        );
+      })}
     </section>
   </>
 );
@@ -545,15 +566,7 @@ const ExpandedRunContent = ({ snapshot }: { readonly snapshot: ExpandedRunSnapsh
           <h2>Location</h2>
           <p>{availableValue(snapshot.location, (location) => location.name)}</p>
           {availableValue(snapshot.route, (route) => (
-            <ProgressTrack
-              steps={route.trainers.map((trainer) => ({
-                name: trainer.name,
-                state:
-                  trainer.battled.availability === "available" && trainer.battled.value
-                    ? "battled"
-                    : "upcoming",
-              }))}
-            />
+            <ProgressTrack steps={routeProgressSteps(route)} />
           ))}
           <span className="badge-count">{routeProgress} trainers</span>
         </article>
@@ -641,47 +654,42 @@ const ExpandedRunContent = ({ snapshot }: { readonly snapshot: ExpandedRunSnapsh
             togglePanel("Route");
           }}
         >
-          {availableValue(snapshot.route, (route) => (
-            <>
-              <div className="route-top">
-                <h2>{route.name}</h2>
-                <span className="badge badge-live">
-                  {route.completed}/{route.total}
-                </span>
-              </div>
-              <ProgressTrack
-                steps={route.trainers.map((trainer) => ({
-                  name: trainer.name,
-                  state:
-                    trainer.battled.availability === "available" && trainer.battled.value
-                      ? "battled"
-                      : "upcoming",
-                }))}
-              />
-              <div className="trainer-list">
-                {route.trainers.map((trainer) => {
-                  const battled =
-                    trainer.battled.availability === "available" && trainer.battled.value;
-                  return (
-                    <div className="trainer-row" key={trainer.id}>
-                      <span className="trainer-heading">
-                        <TrainerPortrait trainer={trainer} />
-                        {trainer.name}
-                        {trainer.trainerClass.availability === "available"
-                          ? ` · ${trainer.trainerClass.value}`
-                          : ""}
-                      </span>
-                      <span className={`badge ${battled ? "badge-success" : ""}`}>
-                        {availableValue(trainer.battled, (value) =>
-                          value ? "Battled" : "Not battled",
-                        )}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </>
-          ))}
+          {availableValue(snapshot.route, (route) => {
+            const trainers = routeTrainersForDisplay(route);
+            return (
+              <>
+                <div className="route-top">
+                  <h2>{route.name}</h2>
+                  <span className="badge badge-live">
+                    {route.completed}/{route.total}
+                  </span>
+                </div>
+                <ProgressTrack steps={routeProgressSteps(route)} />
+                <div className="trainer-list">
+                  {trainers.map((trainer) => {
+                    const battled =
+                      trainer.battled.availability === "available" && trainer.battled.value;
+                    return (
+                      <div className="trainer-row" key={trainer.id}>
+                        <span className="trainer-heading">
+                          <TrainerPortrait trainer={trainer} />
+                          {trainer.name}
+                          {trainer.trainerClass.availability === "available"
+                            ? ` · ${trainer.trainerClass.value}`
+                            : ""}
+                        </span>
+                        <span className={`badge ${battled ? "badge-success" : ""}`}>
+                          {availableValue(trainer.battled, (value) =>
+                            value ? "Battled" : "Not battled",
+                          )}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            );
+          })}
         </Panel>
         <Panel
           title="Progress"

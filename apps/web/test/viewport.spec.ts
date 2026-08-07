@@ -83,6 +83,8 @@ test("the expanded channel remains operable at 640 CSS pixels", async ({ page })
   await page.goto("/channel/00042");
   await expect(page.getByRole("region", { name: "Run overview" })).toBeVisible();
   await expect(page.getByText("Route 1").first()).toBeVisible();
+  await expect(page.locator(".progress-step")).toHaveCount(0);
+  await expect(page.locator(".progress-track")).toHaveCount(0);
   for (const panel of ["Party", "Battle", "Route", "Progress"]) {
     await expect(page.getByRole("button", { name: panel })).toBeVisible();
   }
