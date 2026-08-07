@@ -70,3 +70,14 @@ operators must not overwrite or delete an existing version during routine
 release work. Rollback means republishing `companion/latest.json` so it points
 to a previously verified updater archive. The matching versioned DMGs,
 signatures, checksums, and notes remain available throughout the rollback.
+
+To trigger a companion release from any branch, create and push its Git tag
+with the repository helper:
+
+```sh
+npm run release:tag -- 0.1.19
+```
+
+The helper accepts a version with or without the `v` prefix, refuses duplicate
+local or `origin` tags, then pushes the normalized `v0.1.19` tag. It does not
+push the current branch or change the working tree.

@@ -26,7 +26,8 @@
     "test:latency": "npm run test:latency --workspace=@ironmon-live/companion",
     "check": "npm run lint:markdown && npm run format:check && npm run lint:ts && npm run check:types && npm run validate:docs && npm run validate:workflows && npm test",
     "check:external": "node scripts/check-external-links.ts",
-    "configure:github": "scripts/configure-github.sh"
+    "configure:github": "scripts/configure-github.sh",
+    "release:tag": "scripts/push-release-tag.sh"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

@@ -302,6 +302,28 @@ test("requires all Tauri HTTP fetch lifecycle permissions", () => {
   );
 });
 
+test("does not require HTTP permissions when the companion does not use the HTTP plugin", () => {
+  const root = createWorkflowRepository(validWorkflow);
+  const capabilityDirectory = path.join(root, "apps/companion/src-tauri/capabilities");
+  fs.mkdirSync(capabilityDirectory, { recursive: true });
+  fs.writeFileSync(
+    path.join(capabilityDirectory, "default.json"),
+    JSON.stringify({
+      permissions: [
+        "core:window:allow-hide",
+        "core:window:allow-set-focus",
+        "core:window:allow-show",
+      ],
+    }),
+  );
+
+  assert(
+    !validateWorkflows(root, { requireAgentSystem: false }).errors.some((error) =>
+      error.includes("scoped HTTP fetch requires all fetch lifecycle permissions"),
+    ),
+  );
+});
+
 test("requires Tauri menu-bar window permissions", () => {
   const root = createWorkflowRepository(validWorkflow);
   const capabilityDirectory = path.join(root, "apps/companion/src-tauri/capabilities");

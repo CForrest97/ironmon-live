@@ -21,7 +21,7 @@ const member = {
   heldItem: unavailable,
   moves: available([{ id: "tackle", name: "Tackle", pp: available(35) }]),
   stats: available({ hp: 20, atk: 10, def: 10, spa: 15, spd: 10, spe: 10 }),
-  baseStats: available({ hp: 45, atk: 49, def: 49, spa: 65, spd: 65, spe: 45 }),
+  baseStats: available({ spe: 45, spa: 65, hp: 45, spd: 65, def: 49, atk: 49 }),
   statStages: available({ atk: 0 }),
   ivs: available({ hp: 0 }),
   evs: available({ hp: 0 }),
@@ -134,9 +134,12 @@ describe("expanded run dashboard", () => {
   });
 
   it("shows the species base stat total as the mon's potential", () => {
-    render(<ExpandedRunView snapshot={snapshot()} />);
+    const { container } = render(<ExpandedRunView snapshot={snapshot()} />);
     fireEvent.click(screen.getByRole("button", { name: "Party" }));
     expect(screen.getAllByText("318")[0]).toBeInTheDocument();
+    expect([...container.querySelectorAll(".bst-label")].map((label) => label.textContent)).toEqual(
+      ["HP", "Atk", "Def", "SpA", "SpD", "Spe"],
+    );
   });
 
   it("does not reserve a battle panel for an inactive battle", () => {

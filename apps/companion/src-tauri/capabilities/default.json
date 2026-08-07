@@ -19,17 +19,6 @@
     "fs:allow-rename",
     "fs:allow-copy-file",
     "fs:allow-watch",
-    {
-      "identifier": "http:allow-fetch",
-      "allow": [
-        { "url": "https://live.craigforrest.co.uk/**" },
-        { "url": "https://downloads.live.craigforrest.co.uk/**" }
-      ]
-    },
-    "http:allow-fetch-send",
-    "http:allow-fetch-read-body",
-    "http:allow-fetch-cancel",
-    "http:allow-fetch-cancel-body",
     "notification:default",
     "process:allow-exit",
     "updater:default",

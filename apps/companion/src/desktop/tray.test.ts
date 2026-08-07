@@ -17,4 +17,18 @@ describe("tray menu", () => {
     expect(items.find(({ id }) => id === "pause")?.text).toBe("Resume Publishing");
     expect(items.find(({ id }) => id === "autostart")?.checked).toBe(true);
   });
+
+  it("offers an immediate retry while publishing is offline", () => {
+    const items = trayItems({
+      status: "offline_retrying",
+      explanation: "Offline",
+      channelCode: "00042",
+      appVersion: "0.1.0",
+      startAtLogin: false,
+      paused: false,
+      disclosureAccepted: true,
+      trackerExtensionStatus: "current",
+    });
+    expect(items.find(({ id }) => id === "retry")?.text).toBe("Retry Now");
+  });
 });

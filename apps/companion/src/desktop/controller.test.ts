@@ -67,7 +67,7 @@ describe("companion controller", () => {
     await controller.receive(snapshot());
     expect(controller.getState().status).toBe("offline_retrying");
     expect(controller.getState().explanation).toContain("Details: offline");
-    controller.retry();
+    await controller.retry();
     await vi.waitFor(() => {
       expect(controller.getState().status).toBe("live");
     });
@@ -143,11 +143,38 @@ describe("companion controller", () => {
     });
     await controller.receive(snapshot());
     expect(controller.getState().retryAttempt).toBe(1);
-    controller.retry();
+    await controller.retry();
     await vi.waitFor(() => {
       expect(controller.getState().status).toBe("live");
     });
     expect(controller.getState().retryAttempt).toBeUndefined();
+  });
+
+  it("cancels the scheduled backoff and retries immediately on request", async () => {
+    const publish = vi
+      .fn<() => Promise<void>>()
+      .mockRejectedValueOnce(new Error("offline"))
+      .mockResolvedValueOnce(undefined);
+    const clearTimeout = vi.fn();
+    const controller = createCompanionController({
+      initialState: baseState,
+      startedAt: 0,
+      publish,
+      scheduler: {
+        now: () => Date.parse("2026-08-01T10:00:00Z"),
+        setTimeout: () => 42,
+        clearTimeout,
+      },
+      random: () => 0.5,
+    });
+    await controller.receive(snapshot());
+    expect(controller.getState().status).toBe("offline_retrying");
+
+    await controller.retry();
+
+    expect(clearTimeout).toHaveBeenCalledWith(42);
+    expect(publish).toHaveBeenCalledTimes(2);
+    expect(controller.getState().status).toBe("live");
   });
 
   it("caps retry backoff tighter once a snapshot publish is pending delivery", async () => {
@@ -171,7 +198,7 @@ describe("companion controller", () => {
     await controller.receive(snapshot());
     publish.mockRejectedValue(new Error("offline"));
     for (let attempt = 0; attempt < 6; attempt += 1) {
-      controller.retry();
+      await controller.retry();
       await vi.waitFor(() => {
         expect(controller.getState().status).toBe("offline_retrying");
       });
