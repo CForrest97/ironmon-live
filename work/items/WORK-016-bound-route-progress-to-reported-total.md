@@ -63,12 +63,15 @@ inconsistent-state boundary observed in the screenshot.
 - `npm run validate:docs` and `npm run check` reach only the pre-existing
   untracked `WORK-014` omission from `work/items/README.md`; this item leaves
   that unrelated work untouched.
-- Initial product-fit review: `aligned`, high confidence, no blocking findings.
+- Final product-fit review: `aligned`, high confidence, no blocking findings.
 - Initial domain-consistency review found one blocking finding: the precedence
   between two conflicting reported route values was undocumented. DEC-006
-  resolves that presentation boundary; final reviews are in progress.
+  resolves that presentation boundary; final review: `consistent`, high
+  confidence, no blocking findings.
 - Initial merge-risk review: rating 1, high confidence, no blocking findings
-  and no human approval required for this incremental fix.
+  and no human approval required for this incremental fix. The final
+  merge-risk review found no blocking findings and rated the documented product
+  rule 2 with high confidence, so human approval is required before merge.
 
 ## Agent Notes
 
