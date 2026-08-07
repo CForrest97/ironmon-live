@@ -3,7 +3,7 @@ import "@testing-library/jest-dom/vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import type { LegacyRunSnapshot } from "@ironmon-live/contracts";
-import { App, ExpandedRunView, LegacyRunView, trainerPortraitUrl } from "./App";
+import { App, ExpandedRunView, LegacyRunView, RunView, trainerPortraitUrl } from "./App";
 
 afterEach(() => {
   cleanup();
@@ -243,6 +243,21 @@ describe("empty-party active-run ball prompt", () => {
     expect(screen.getByRole("heading", { name: "A first pick, just for fun" })).toBeVisible();
     expect(screen.getAllByRole("listitem")).toHaveLength(3);
     expect(screen.getByText("Left").closest("li")).toHaveClass("starter-ball-choice-recommended");
+  });
+
+  it("keeps the recommendation through an active empty-party schema transition", () => {
+    const random = vi.spyOn(Math, "random").mockReturnValue(0.5);
+    const expandedRun = { ...snapshot(false), party: [] };
+    const { rerender } = render(<RunView snapshot={expandedRun} />);
+    expect(screen.getByText("Centre").closest("li")).toHaveClass("starter-ball-choice-recommended");
+
+    rerender(
+      <RunView
+        snapshot={{ ...legacyActiveEmptyPartySnapshot, observedAt: "2026-08-01T10:00:01Z" }}
+      />,
+    );
+    expect(random).toHaveBeenCalledOnce();
+    expect(screen.getByText("Centre").closest("li")).toHaveClass("starter-ball-choice-recommended");
   });
 
   it("hides the prompt outside an empty-party active-run episode", () => {

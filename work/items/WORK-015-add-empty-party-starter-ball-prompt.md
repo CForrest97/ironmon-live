@@ -55,11 +55,12 @@ Tracker write, contract, Worker, or live-delivery change.
 
 ## Plan
 
-Render the conditionally mounted prompt directly from `LegacyRunView` and
-`ExpandedRunView`, using component-local random state so the recommendation is
-stable only for the current display episode. Cover its state conditions and
-selection classes with component tests, its reduced-motion CSS with a focused
-style test, and the 640-pixel layout with the existing browser fixture.
+Render the conditionally mounted prompt in the shared `RunFrame`, using
+component-local random state so the recommendation is stable only for the
+current display episode, including a version-1/version-2 schema transition.
+Cover its state conditions and selection classes with component tests, its
+reduced-motion CSS with a focused style test, and the 640-pixel layout with the
+existing browser fixture.
 
 ## Validation
 
@@ -71,8 +72,10 @@ style test, and the 640-pixel layout with the existing browser fixture.
   untracked `WORK-014` omission from `work/items/README.md`; this item leaves
   that unrelated work untouched. An isolated repository copy excluding that
   file validates this item's governed documents successfully.
-- Product-fit, domain-consistency, and independent merge-risk reviews are in
-  progress before merge.
+- Product-fit and domain-consistency review found no issues. The initial
+  merge-risk review found a schema-version transition could reroll the prompt;
+  `RunFrame` now owns it, and a regression test verifies the recommendation
+  remains stable. Final independent review is in progress before merge.
 
 ## Agent Notes
 

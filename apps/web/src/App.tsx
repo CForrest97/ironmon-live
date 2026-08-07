@@ -402,13 +402,31 @@ const StarterBallPrompt = ({
   readonly partySize: number;
 }) => (status === "active" && partySize === 0 ? <StarterBallRecommendation /> : null);
 
-export const LegacyRunView = ({ snapshot }: { readonly snapshot: LegacyRunSnapshot }) => (
-  <main>
+const RunFrame = ({
+  status,
+  partySize,
+  eyebrow,
+  className,
+  children,
+}: {
+  readonly status: string;
+  readonly partySize: number;
+  readonly eyebrow: string;
+  readonly className?: string;
+  readonly children: ReactNode;
+}) => (
+  <main className={className}>
     <header className="run-header">
-      <p className="eyebrow">Run status</p>
-      <h1>{snapshot.status}</h1>
+      <p className="eyebrow">{eyebrow}</p>
+      <h1>{status}</h1>
     </header>
-    <StarterBallPrompt status={snapshot.status} partySize={snapshot.party.length} />
+    <StarterBallPrompt status={status} partySize={partySize} />
+    {children}
+  </main>
+);
+
+const LegacyRunContent = ({ snapshot }: { readonly snapshot: LegacyRunSnapshot }) => (
+  <>
     <section>
       <h2>Current party</h2>
       <div className="party-grid">
@@ -467,7 +485,13 @@ export const LegacyRunView = ({ snapshot }: { readonly snapshot: LegacyRunSnapsh
         </div>
       ))}
     </section>
-  </main>
+  </>
+);
+
+export const LegacyRunView = ({ snapshot }: { readonly snapshot: LegacyRunSnapshot }) => (
+  <RunFrame status={snapshot.status} partySize={snapshot.party.length} eyebrow="Run status">
+    <LegacyRunContent snapshot={snapshot} />
+  </RunFrame>
 );
 
 const Panel = ({
@@ -499,7 +523,7 @@ const Panel = ({
   </section>
 );
 
-export const ExpandedRunView = ({ snapshot }: { readonly snapshot: ExpandedRunSnapshot }) => {
+const ExpandedRunContent = ({ snapshot }: { readonly snapshot: ExpandedRunSnapshot }) => {
   const [openPanel, setOpenPanel] = useState<string | undefined>(undefined);
   const togglePanel = (title: string) => {
     setOpenPanel((current) => (current === title ? undefined : title));
@@ -515,12 +539,7 @@ export const ExpandedRunView = ({ snapshot }: { readonly snapshot: ExpandedRunSn
       : undefined;
 
   return (
-    <main className="dashboard">
-      <header className="run-header">
-        <p className="eyebrow">Live run</p>
-        <h1>{snapshot.status}</h1>
-      </header>
-      <StarterBallPrompt status={snapshot.status} partySize={snapshot.party.length} />
+    <>
       <section aria-label="Run overview" className="overview-grid">
         <article className="overview-card">
           <h2>Location</h2>
@@ -736,16 +755,35 @@ export const ExpandedRunView = ({ snapshot }: { readonly snapshot: ExpandedRunSn
           ))}
         </Panel>
       </section>
-    </main>
+    </>
   );
 };
 
-const RunView = ({ snapshot }: { readonly snapshot: RunSnapshot }) =>
-  snapshot.schemaVersion === 1 ? (
-    <LegacyRunView snapshot={snapshot} />
-  ) : (
-    <ExpandedRunView snapshot={snapshot} />
-  );
+export const ExpandedRunView = ({ snapshot }: { readonly snapshot: ExpandedRunSnapshot }) => (
+  <RunFrame
+    status={snapshot.status}
+    partySize={snapshot.party.length}
+    eyebrow="Live run"
+    className="dashboard"
+  >
+    <ExpandedRunContent snapshot={snapshot} />
+  </RunFrame>
+);
+
+export const RunView = ({ snapshot }: { readonly snapshot: RunSnapshot }) => (
+  <RunFrame
+    status={snapshot.status}
+    partySize={snapshot.party.length}
+    eyebrow={snapshot.schemaVersion === 1 ? "Run status" : "Live run"}
+    className={snapshot.schemaVersion === 1 ? undefined : "dashboard"}
+  >
+    {snapshot.schemaVersion === 1 ? (
+      <LegacyRunContent snapshot={snapshot} />
+    ) : (
+      <ExpandedRunContent snapshot={snapshot} />
+    )}
+  </RunFrame>
+);
 
 const channelFromPath = () => /^\/channel\/(\d{5})$/.exec(window.location.pathname)?.[1];
 
