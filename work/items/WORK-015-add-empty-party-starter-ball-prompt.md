@@ -72,10 +72,14 @@ existing browser fixture.
   untracked `WORK-014` omission from `work/items/README.md`; this item leaves
   that unrelated work untouched. An isolated repository copy excluding that
   file validates this item's governed documents successfully.
-- Product-fit and domain-consistency review found no issues. The initial
-  merge-risk review found a schema-version transition could reroll the prompt;
-  `RunFrame` now owns it, and a regression test verifies the recommendation
-  remains stable. Final independent review is in progress before merge.
+- Product-fit review: `aligned`, high confidence, no blocking findings.
+- Domain-consistency review: `consistent`, high confidence, no blocking
+  findings.
+- The initial merge-risk review found a schema-version transition could reroll
+  the prompt; `RunFrame` now owns it, and a regression test verifies the
+  recommendation remains stable. The final merge-risk review found no blocking
+  findings and rated the change 2 with high confidence, so human approval is
+  required before merge.
 
 ## Agent Notes
 
