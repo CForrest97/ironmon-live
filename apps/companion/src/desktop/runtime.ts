@@ -16,7 +16,7 @@ import {
   watch,
   writeTextFile,
 } from "@tauri-apps/plugin-fs";
-import { fetch } from "@tauri-apps/plugin-http";
+import { invoke } from "@tauri-apps/api/core";
 import {
   isPermissionGranted,
   requestPermission,
@@ -39,6 +39,8 @@ type Runtime = {
   readonly subscribe: Controller["subscribe"];
   readonly actions: CompanionActions;
 };
+
+type PublishResponse = { readonly status: number };
 
 const configPath = async () => join(await homeDir(), ".ironmon-live", "config.json");
 const loadConfig = async (): Promise<DesktopConfig> => {
@@ -86,15 +88,13 @@ export const startRuntime = async (): Promise<Runtime> => {
     },
     publish: async (trackerMessage) => {
       const publication: Publication = { sessionId, message: trackerMessage };
-      const response = await fetch(
-        new URL(`/api/channels/${config.channelCode}/publish`, config.publishUrl),
-        {
-          method: "PUT",
-          headers: { "content-type": "application/json" },
+      await invoke<PublishResponse>("publish_to_live_channel", {
+        request: {
+          url: new URL(`/api/channels/${config.channelCode}/publish`, config.publishUrl).toString(),
           body: JSON.stringify(publication),
+          occurredAt: Date.now(),
         },
-      );
-      if (!response.ok) throw new Error(`Publication failed with HTTP ${String(response.status)}.`);
+      });
     },
   });
 
@@ -215,6 +215,17 @@ export const startRuntime = async (): Promise<Runtime> => {
     },
     openLiveView: async () => openUrl(`${config.publishUrl}/channel/${config.channelCode}`),
     copyChannelCode: async () => writeText(config.channelCode),
+    copyPublishDiagnostics: async () => {
+      try {
+        const diagnostics = await readTextFile(
+          await join(await homeDir(), ".ironmon-live", "publish-diagnostics.jsonl"),
+        );
+        await writeText(diagnostics);
+        await message("Publish diagnostics copied to your clipboard.", { title: "Diagnostics" });
+      } catch {
+        await message("No publish diagnostics have been saved yet.", { title: "Diagnostics" });
+      }
+    },
     checkForUpdates: () => checkForUpdate(true),
     resetChannelCode: async () => {
       const approved = await confirm(

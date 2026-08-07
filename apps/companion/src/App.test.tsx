@@ -10,6 +10,7 @@ const actions = Object.fromEntries(
     "setStartAtLogin",
     "openLiveView",
     "copyChannelCode",
+    "copyPublishDiagnostics",
     "checkForUpdates",
     "resetChannelCode",
   ].map((name) => [name, vi.fn(() => Promise.resolve())]),
@@ -34,5 +35,6 @@ describe("companion settings", () => {
     );
     expect(screen.getByText(/not a password/u)).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "I understand" })).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "Copy publish diagnostics" })).toBeInTheDocument();
   });
 });

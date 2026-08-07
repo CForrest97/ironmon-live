@@ -110,7 +110,10 @@ function validateTauriCapabilities(root: string, errors: string[]): void {
       "http:allow-fetch-cancel",
       "http:allow-fetch-cancel-body",
     ];
-    if (requiredHttpPermissions.some((permission) => !identifiers.includes(permission))) {
+    if (
+      identifiers.includes("http:allow-fetch") &&
+      requiredHttpPermissions.some((permission) => !identifiers.includes(permission))
+    ) {
       errors.push(
         "apps/companion/src-tauri/capabilities/default.json: scoped HTTP fetch requires all fetch lifecycle permissions",
       );

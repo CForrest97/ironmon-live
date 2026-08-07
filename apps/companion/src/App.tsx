@@ -8,6 +8,7 @@ export type CompanionActions = {
   readonly setStartAtLogin: (enabled: boolean) => Promise<void>;
   readonly openLiveView: () => Promise<void>;
   readonly copyChannelCode: () => Promise<void>;
+  readonly copyPublishDiagnostics: () => Promise<void>;
   readonly checkForUpdates: () => Promise<void>;
   readonly resetChannelCode: () => Promise<void>;
 };
@@ -78,6 +79,9 @@ export const App = ({ state, actions }: { state: CompanionState; actions: Compan
     <footer>
       <button className="link" onClick={() => void actions.checkForUpdates()}>
         Check for updates
+      </button>
+      <button className="link" onClick={() => void actions.copyPublishDiagnostics()}>
+        Copy publish diagnostics
       </button>
       <button className="link danger" onClick={() => void actions.resetChannelCode()}>
         Reset channel code
