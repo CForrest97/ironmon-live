@@ -7,6 +7,7 @@ decisions:
   - DEC-001
   - DEC-002
   - DEC-005
+  - DEC-006
 ---
 
 # Expand the player-first live channel
@@ -107,7 +108,9 @@ snapshot-derived gameplay information.
 6. The Route panel shall show the reported current location or route,
    completed and total trainer count, trainer battle status, and reported
    trainer class, identity, portrait where available, party, moves, held
-   items, battle items, and double-battle flag.
+   items, battle items, and double-battle flag. The reported non-negative total
+   bounds route-progress markers and trainer rows; a reported zero shows none,
+   as defined by DEC-006.
 7. The Progress panel shall show reported ROM and Tracker context, timer or
    pause state, playtime, badges, centre heals, and wild-battle, trainer-battle,
    fishing, and Rock Smash counters.
@@ -164,6 +167,8 @@ snapshot-derived gameplay information.
 - An empty-party `active` snapshot in either supported schema view shows one
   stable random recommended ball out of three; an empty non-`active` snapshot
   and every non-empty party hide the prompt.
+- A route with reported `total: 0` shows no trainer-progress markers or trainer
+  rows; no route surface shows more trainers than its reported total.
 - Automated layout coverage verifies the overview and panel operation at 640
   CSS pixels; component coverage verifies disclosure and image fallbacks.
 - Contract and transport coverage verifies version 1 compatibility, the new
@@ -182,6 +187,7 @@ None.
 - [DEC-001: Use ephemeral, unauthenticated live channels](../../decisions/DEC-001-unauthenticated-live-channels.md)
 - [DEC-002: Temporarily publish companion-expanded demo state](../../decisions/DEC-002-temporary-companion-expanded-demo-state.md)
 - [DEC-005: Show a random empty-party ball prompt](../../decisions/DEC-005-show-a-random-startup-ball-prompt.md)
+- [DEC-006: Bound route display to the reported trainer total](../../decisions/DEC-006-bound-route-display-to-reported-trainer-total.md)
 
 ## Risks
 
@@ -198,6 +204,9 @@ None.
 - A playful recommendation could be mistaken for strategic advice if its
   random, presentation-only nature is obscured; DEC-005 limits it to the
   empty-party active-run moment and forbids content or value claims.
+- Conflicting route count and trainer-list values can suppress detailed trainer
+  entries under DEC-006; upstream cause remains unestablished and must not be
+  replaced with inferred route state.
 
 ## Open Questions
 
