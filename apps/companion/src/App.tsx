@@ -4,6 +4,7 @@ import "./styles.css";
 export type CompanionActions = {
   readonly acceptDisclosure: () => Promise<void>;
   readonly chooseTrackerFolder: () => Promise<void>;
+  readonly retry: () => Promise<void>;
   readonly setPaused: (paused: boolean) => Promise<void>;
   readonly setStartAtLogin: (enabled: boolean) => Promise<void>;
   readonly openLiveView: () => Promise<void>;
@@ -26,6 +27,9 @@ export const App = ({ state, actions }: { state: CompanionState; actions: Compan
       {state.explanation}
       {state.retryAttempt !== undefined && ` (retry ${String(state.retryAttempt)})`}
     </p>
+    {state.status === "offline_retrying" && (
+      <button onClick={() => void actions.retry()}>Retry now</button>
+    )}
     {!state.disclosureAccepted && (
       <section className="notice">
         <h2>Before publishing</h2>

@@ -209,6 +209,7 @@ export const startRuntime = async (): Promise<Runtime> => {
       await persist({ paused });
       controller.setPaused(paused);
     },
+    retry: () => controller.retry(),
     setStartAtLogin: async (enabled) => {
       await (enabled ? enable() : disable());
       controller.patchState({ startAtLogin: enabled });
@@ -280,6 +281,7 @@ const handleTrayAction = async (controller: Controller, id: string) => {
   const runtimeState = controller.getState();
   if (id === "open-live") await runtimeActions?.openLiveView();
   if (id === "copy-code") await runtimeActions?.copyChannelCode();
+  if (id === "retry") await controller.retry();
   if (id === "pause") await runtimeActions?.setPaused(!runtimeState.paused);
   if (id === "settings") {
     await getCurrentWindow().show();

@@ -61,7 +61,10 @@ distinct from the existing disconnect banner. Do not add a new logging
 vendor/service or a delta/patch sync protocol. At the maintainer's explicit
 request, retain a bounded companion-side persistent diagnostic log at
 `~/.ironmon-live/publish-diagnostics.jsonl`; it contains no Tracker snapshot
-or publication body and redacts the channel code from the endpoint.
+or publication body and redacts the channel code from the endpoint. Expose an
+immediate retry in the companion and menu-bar tray when publishing is retrying;
+it cancels the scheduled backoff and sends the latest valid snapshot without
+creating a new publishing session.
 
 ## Acceptance Criteria
 
@@ -81,6 +84,9 @@ or publication body and redacts the channel code from the endpoint.
   and a redacted endpoint to `~/.ironmon-live/publish-diagnostics.jsonl`.
   The log is kept below 256 KiB by retaining its newest complete entries, and
   the companion can copy it to the clipboard for sharing.
+- While publishing is retrying, the companion and its menu-bar tray offer
+  "Retry now"; it cancels the pending backoff and immediately republishes the
+  latest valid snapshot.
 - `npm run check` passes.
 
 ## Plan
@@ -94,7 +100,8 @@ See `packages/contracts/src/index.ts` (`ChannelEvent` heartbeat variant),
 ceiling, surfaced `retryAttempt`). The native companion command in
 `apps/companion/src-tauri/src/lib.rs` now publishes only to the existing
 production endpoint and writes bounded diagnostics; `runtime.ts` invokes it
-and exposes a copy action.
+and exposes a copy action. The controller, companion view, and menu-bar tray
+now expose a manual retry that cancels the pending backoff.
 
 ## Validation
 
@@ -107,10 +114,13 @@ After adding persistent companion diagnostics:
 - `cargo test --manifest-path apps/companion/src-tauri/Cargo.toml` passes,
   including the production-endpoint boundary and bounded JSON-log retention.
 - `npm run check` passes, including the added workflow-validator regression
-  case for a companion that no longer uses the Tauri HTTP plugin.
+  case for a companion that no longer uses the Tauri HTTP plugin and manual
+  retry coverage in the controller, view, and tray.
 - `CI=true npm run tauri:build --workspace=@ironmon-live/companion -- --bundles app`
-  succeeds, and the resulting macOS app bundle passes
-  `codesign --verify --deep --strict` with its expected local ad-hoc signature.
+  creates the macOS app bundle, which passes `codesign --verify --deep --strict`
+  with its expected local ad-hoc signature. The local build then stops before
+  signing its updater archive because the release private key is intentionally
+  unavailable outside release automation.
 
 Manually verified against `wrangler dev` (via the web app's Vite dev
 server) and a live channel:

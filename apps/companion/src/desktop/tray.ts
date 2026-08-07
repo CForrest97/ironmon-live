@@ -21,6 +21,7 @@ export const trayItems = (state: CompanionState): readonly TrayItem[] => [
   { id: "status", text: statusLabel[state.status], enabled: false },
   { id: "open-live", text: "Open Live View" },
   { id: "copy-code", text: "Copy Channel Code" },
+  ...(state.status === "offline_retrying" ? [{ id: "retry", text: "Retry Now" }] : []),
   { id: "pause", text: state.paused ? "Resume Publishing" : "Pause Publishing" },
   { id: "settings", text: "Settings…" },
   { id: "update", text: "Check for Updates…" },

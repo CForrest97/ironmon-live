@@ -172,8 +172,9 @@ export const createCompanionController = (options: ControllerOptions) => {
       });
     },
     sourceEnded: markWaiting,
-    retry: () => {
-      void publishLatest();
+    retry: async () => {
+      clearTimer();
+      await publishLatest();
     },
     stop: () => {
       stopped = true;
