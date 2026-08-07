@@ -69,6 +69,8 @@ of learning.
 - Confirm the exact field set directly with the requester before building a
   preview or summary surface; do not infer one from a related but different
   view.
+- Bound route-progress markers and rows to the Tracker-reported trainer total;
+  a reported zero must render no trainers even if a stale list is present.
 
 ## Independent review gate
 

@@ -193,23 +193,48 @@ const ProgressTrack = ({
   steps,
 }: {
   readonly steps: ReadonlyArray<{ readonly name: string; readonly state: string }>;
-}) => (
-  <div className="progress-track">
-    {steps.map((step, index) => (
-      <Fragment key={step.name}>
-        <div
-          title={step.name}
-          className={`progress-step ${step.state === "battled" ? "progress-defeated" : step.state === "current" ? "progress-current" : ""}`}
-        />
-        {index < steps.length - 1 && (
+}) => {
+  if (steps.length === 0) return null;
+  return (
+    <div className="progress-track">
+      {steps.map((step, index) => (
+        <Fragment key={step.name}>
           <div
-            className={`progress-connector ${step.state === "battled" ? "progress-defeated" : ""}`}
+            title={step.name}
+            className={`progress-step ${step.state === "battled" ? "progress-defeated" : step.state === "current" ? "progress-current" : ""}`}
           />
-        )}
-      </Fragment>
-    ))}
-  </div>
-);
+          {index < steps.length - 1 && (
+            <div
+              className={`progress-connector ${step.state === "battled" ? "progress-defeated" : ""}`}
+            />
+          )}
+        </Fragment>
+      ))}
+    </div>
+  );
+};
+
+type ReportedRouteTrainer = {
+  readonly name: string;
+  readonly battled: Available<boolean>;
+};
+
+const routeTrainersForDisplay = <T extends ReportedRouteTrainer>(route: {
+  readonly trainers: readonly T[];
+  readonly total: number;
+}): readonly T[] => route.trainers.slice(0, Math.max(0, route.total));
+
+const routeProgressSteps = (route: {
+  readonly trainers: readonly ReportedRouteTrainer[];
+  readonly total: number;
+}) =>
+  routeTrainersForDisplay(route).map((trainer) => ({
+    name: trainer.name,
+    state:
+      trainer.battled.availability === "available" && trainer.battled.value
+        ? "battled"
+        : "upcoming",
+  }));
 
 export const pokemonSpriteUrl = (speciesId: string) =>
   `https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/${speciesId}.png`;
@@ -343,12 +368,90 @@ const PartyDetails = ({ member }: { readonly member: ExpandedPartyMember }) => (
   </article>
 );
 
-const LegacyRunView = ({ snapshot }: { readonly snapshot: LegacyRunSnapshot }) => (
-  <main>
+const STARTER_BALL_POSITIONS = ["Left", "Centre", "Right"] as const;
+
+const StarterBallRecommendation = () => {
+  const [recommendedIndex] = useState(() =>
+    Math.floor(Math.random() * STARTER_BALL_POSITIONS.length),
+  );
+
+  return (
+    <section className="starter-pick" aria-labelledby="starter-pick-heading">
+      <div className="starter-pick-copy">
+        <p className="eyebrow">First pick</p>
+        <h2 id="starter-pick-heading">A first pick, just for fun</h2>
+        <p className="starter-pick-description">
+          One ball is highlighted at random. It does not reveal what is inside.
+        </p>
+      </div>
+      <ol className="starter-ball-options" aria-label="Starter ball choices">
+        {STARTER_BALL_POSITIONS.map((position, index) => {
+          const isRecommended = index === recommendedIndex;
+          return (
+            <li
+              className={`starter-ball-choice ${isRecommended ? "starter-ball-choice-recommended" : "starter-ball-choice-unselected"}`}
+              key={position}
+            >
+              <div className="starter-ball-stage">
+                {isRecommended && (
+                  <span className="starter-selection-arrow" aria-hidden="true">
+                    ▼
+                  </span>
+                )}
+                <span className="starter-ball" aria-hidden="true">
+                  <span className="starter-ball-button" />
+                </span>
+                {isRecommended && (
+                  <span className="starter-sparkles" aria-hidden="true">
+                    {[0, 1, 2, 3].map((sparkle) => (
+                      <span className="starter-sparkle" key={sparkle} />
+                    ))}
+                  </span>
+                )}
+              </div>
+              <span className="starter-ball-position">{position}</span>
+              {isRecommended && <span className="starter-ball-badge">Recommended pick</span>}
+            </li>
+          );
+        })}
+      </ol>
+    </section>
+  );
+};
+
+const StarterBallPrompt = ({
+  status,
+  partySize,
+}: {
+  readonly status: string;
+  readonly partySize: number;
+}) => (status === "active" && partySize === 0 ? <StarterBallRecommendation /> : null);
+
+const RunFrame = ({
+  status,
+  partySize,
+  eyebrow,
+  className,
+  children,
+}: {
+  readonly status: string;
+  readonly partySize: number;
+  readonly eyebrow: string;
+  readonly className?: string;
+  readonly children: ReactNode;
+}) => (
+  <main className={className}>
     <header className="run-header">
-      <p className="eyebrow">Run status</p>
-      <h1>{snapshot.status}</h1>
+      <p className="eyebrow">{eyebrow}</p>
+      <h1>{status}</h1>
     </header>
+    <StarterBallPrompt status={status} partySize={partySize} />
+    {children}
+  </main>
+);
+
+const LegacyRunContent = ({ snapshot }: { readonly snapshot: LegacyRunSnapshot }) => (
+  <>
     <section>
       <h2>Current party</h2>
       <div className="party-grid">
@@ -372,42 +475,44 @@ const LegacyRunView = ({ snapshot }: { readonly snapshot: LegacyRunSnapshot }) =
     </section>
     <section>
       <h2>Current route</h2>
-      {availableValue(snapshot.route, (route) => (
-        <div className="route-card">
-          <div className="route-top">
-            <h3>{route.name}</h3>
-            <span className="badge badge-live">
-              {route.completed}/{route.total}
-            </span>
+      {availableValue(snapshot.route, (route) => {
+        const trainers = routeTrainersForDisplay(route);
+        return (
+          <div className="route-card">
+            <div className="route-top">
+              <h3>{route.name}</h3>
+              <span className="badge badge-live">
+                {route.completed}/{route.total}
+              </span>
+            </div>
+            <ProgressTrack steps={routeProgressSteps(route)} />
+            <div className="trainer-list">
+              {trainers.map((trainer) => {
+                const battled =
+                  trainer.battled.availability === "available" && trainer.battled.value;
+                return (
+                  <div className="trainer-row" key={trainer.id}>
+                    <span>{trainer.name}</span>
+                    <span className={`badge ${battled ? "badge-success" : ""}`}>
+                      {availableValue(trainer.battled, (value) =>
+                        value ? "Battled" : "Not battled",
+                      )}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
           </div>
-          <ProgressTrack
-            steps={route.trainers.map((trainer) => ({
-              name: trainer.name,
-              state:
-                trainer.battled.availability === "available" && trainer.battled.value
-                  ? "battled"
-                  : "upcoming",
-            }))}
-          />
-          <div className="trainer-list">
-            {route.trainers.map((trainer) => {
-              const battled = trainer.battled.availability === "available" && trainer.battled.value;
-              return (
-                <div className="trainer-row" key={trainer.id}>
-                  <span>{trainer.name}</span>
-                  <span className={`badge ${battled ? "badge-success" : ""}`}>
-                    {availableValue(trainer.battled, (value) =>
-                      value ? "Battled" : "Not battled",
-                    )}
-                  </span>
-                </div>
-              );
-            })}
-          </div>
-        </div>
-      ))}
+        );
+      })}
     </section>
-  </main>
+  </>
+);
+
+export const LegacyRunView = ({ snapshot }: { readonly snapshot: LegacyRunSnapshot }) => (
+  <RunFrame status={snapshot.status} partySize={snapshot.party.length} eyebrow="Run status">
+    <LegacyRunContent snapshot={snapshot} />
+  </RunFrame>
 );
 
 const Panel = ({
@@ -439,7 +544,7 @@ const Panel = ({
   </section>
 );
 
-export const ExpandedRunView = ({ snapshot }: { readonly snapshot: ExpandedRunSnapshot }) => {
+const ExpandedRunContent = ({ snapshot }: { readonly snapshot: ExpandedRunSnapshot }) => {
   const [openPanel, setOpenPanel] = useState<string | undefined>(undefined);
   const togglePanel = (title: string) => {
     setOpenPanel((current) => (current === title ? undefined : title));
@@ -455,25 +560,13 @@ export const ExpandedRunView = ({ snapshot }: { readonly snapshot: ExpandedRunSn
       : undefined;
 
   return (
-    <main className="dashboard">
-      <header className="run-header">
-        <p className="eyebrow">Live run</p>
-        <h1>{snapshot.status}</h1>
-      </header>
+    <>
       <section aria-label="Run overview" className="overview-grid">
         <article className="overview-card">
           <h2>Location</h2>
           <p>{availableValue(snapshot.location, (location) => location.name)}</p>
           {availableValue(snapshot.route, (route) => (
-            <ProgressTrack
-              steps={route.trainers.map((trainer) => ({
-                name: trainer.name,
-                state:
-                  trainer.battled.availability === "available" && trainer.battled.value
-                    ? "battled"
-                    : "upcoming",
-              }))}
-            />
+            <ProgressTrack steps={routeProgressSteps(route)} />
           ))}
           <span className="badge-count">{routeProgress} trainers</span>
         </article>
@@ -561,47 +654,42 @@ export const ExpandedRunView = ({ snapshot }: { readonly snapshot: ExpandedRunSn
             togglePanel("Route");
           }}
         >
-          {availableValue(snapshot.route, (route) => (
-            <>
-              <div className="route-top">
-                <h2>{route.name}</h2>
-                <span className="badge badge-live">
-                  {route.completed}/{route.total}
-                </span>
-              </div>
-              <ProgressTrack
-                steps={route.trainers.map((trainer) => ({
-                  name: trainer.name,
-                  state:
-                    trainer.battled.availability === "available" && trainer.battled.value
-                      ? "battled"
-                      : "upcoming",
-                }))}
-              />
-              <div className="trainer-list">
-                {route.trainers.map((trainer) => {
-                  const battled =
-                    trainer.battled.availability === "available" && trainer.battled.value;
-                  return (
-                    <div className="trainer-row" key={trainer.id}>
-                      <span className="trainer-heading">
-                        <TrainerPortrait trainer={trainer} />
-                        {trainer.name}
-                        {trainer.trainerClass.availability === "available"
-                          ? ` · ${trainer.trainerClass.value}`
-                          : ""}
-                      </span>
-                      <span className={`badge ${battled ? "badge-success" : ""}`}>
-                        {availableValue(trainer.battled, (value) =>
-                          value ? "Battled" : "Not battled",
-                        )}
-                      </span>
-                    </div>
-                  );
-                })}
-              </div>
-            </>
-          ))}
+          {availableValue(snapshot.route, (route) => {
+            const trainers = routeTrainersForDisplay(route);
+            return (
+              <>
+                <div className="route-top">
+                  <h2>{route.name}</h2>
+                  <span className="badge badge-live">
+                    {route.completed}/{route.total}
+                  </span>
+                </div>
+                <ProgressTrack steps={routeProgressSteps(route)} />
+                <div className="trainer-list">
+                  {trainers.map((trainer) => {
+                    const battled =
+                      trainer.battled.availability === "available" && trainer.battled.value;
+                    return (
+                      <div className="trainer-row" key={trainer.id}>
+                        <span className="trainer-heading">
+                          <TrainerPortrait trainer={trainer} />
+                          {trainer.name}
+                          {trainer.trainerClass.availability === "available"
+                            ? ` · ${trainer.trainerClass.value}`
+                            : ""}
+                        </span>
+                        <span className={`badge ${battled ? "badge-success" : ""}`}>
+                          {availableValue(trainer.battled, (value) =>
+                            value ? "Battled" : "Not battled",
+                          )}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </>
+            );
+          })}
         </Panel>
         <Panel
           title="Progress"
@@ -675,16 +763,35 @@ export const ExpandedRunView = ({ snapshot }: { readonly snapshot: ExpandedRunSn
           ))}
         </Panel>
       </section>
-    </main>
+    </>
   );
 };
 
-const RunView = ({ snapshot }: { readonly snapshot: RunSnapshot }) =>
-  snapshot.schemaVersion === 1 ? (
-    <LegacyRunView snapshot={snapshot} />
-  ) : (
-    <ExpandedRunView snapshot={snapshot} />
-  );
+export const ExpandedRunView = ({ snapshot }: { readonly snapshot: ExpandedRunSnapshot }) => (
+  <RunFrame
+    status={snapshot.status}
+    partySize={snapshot.party.length}
+    eyebrow="Live run"
+    className="dashboard"
+  >
+    <ExpandedRunContent snapshot={snapshot} />
+  </RunFrame>
+);
+
+export const RunView = ({ snapshot }: { readonly snapshot: RunSnapshot }) => (
+  <RunFrame
+    status={snapshot.status}
+    partySize={snapshot.party.length}
+    eyebrow={snapshot.schemaVersion === 1 ? "Run status" : "Live run"}
+    className={snapshot.schemaVersion === 1 ? undefined : "dashboard"}
+  >
+    {snapshot.schemaVersion === 1 ? (
+      <LegacyRunContent snapshot={snapshot} />
+    ) : (
+      <ExpandedRunContent snapshot={snapshot} />
+    )}
+  </RunFrame>
+);
 
 const channelFromPath = () => /^\/channel\/(\d{5})$/.exec(window.location.pathname)?.[1];
 

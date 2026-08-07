@@ -2,9 +2,13 @@
 import "@testing-library/jest-dom/vitest";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
-import { App, ExpandedRunView, trainerPortraitUrl } from "./App";
+import type { LegacyRunSnapshot } from "@ironmon-live/contracts";
+import { App, ExpandedRunView, LegacyRunView, RunView, trainerPortraitUrl } from "./App";
 
-afterEach(cleanup);
+afterEach(() => {
+  cleanup();
+  vi.restoreAllMocks();
+});
 
 const available = <T,>(value: T) => ({ availability: "available" as const, value });
 const unavailable = { availability: "unavailable" as const };
@@ -86,6 +90,15 @@ const snapshot = (active = true, badges: readonly string[] = []) => ({
   }),
 });
 
+const legacyActiveEmptyPartySnapshot = {
+  kind: "snapshot",
+  schemaVersion: 1,
+  observedAt: "2026-08-01T10:00:00Z",
+  status: "active",
+  party: [],
+  route: unavailable,
+} satisfies LegacyRunSnapshot;
+
 describe("expanded run dashboard", () => {
   it("shows party HP and badge state in the overview without opening a panel", () => {
     render(<ExpandedRunView snapshot={snapshot()} />);
@@ -150,6 +163,25 @@ describe("expanded run dashboard", () => {
     );
   });
 
+  it("does not render trainer markers or rows beyond the reported route total", () => {
+    const run = snapshot(false);
+    const { container } = render(
+      <ExpandedRunView
+        snapshot={{
+          ...run,
+          route: available({ ...run.route.value, total: 0 }),
+        }}
+      />,
+    );
+
+    expect(container.querySelectorAll(".progress-step")).toHaveLength(0);
+    expect(container.querySelectorAll(".progress-track")).toHaveLength(0);
+    fireEvent.click(screen.getByRole("button", { name: "Route" }));
+    expect(container.querySelectorAll(".progress-step")).toHaveLength(0);
+    expect(container.querySelectorAll(".progress-track")).toHaveLength(0);
+    expect(container.querySelectorAll(".trainer-row")).toHaveLength(0);
+  });
+
   it("falls back to readable text when a sprite fails", () => {
     render(<ExpandedRunView snapshot={snapshot()} />);
     fireEvent.error(screen.getAllByAltText("Bulbasaur sprite")[0] as HTMLImageElement);
@@ -194,6 +226,71 @@ describe("expanded run dashboard", () => {
       "https://play.pokemonshowdown.com/sprites/trainers/acetrainer-gen3.png",
     );
     expect(trainerPortraitUrl("../../untrusted")).toBeUndefined();
+  });
+});
+
+describe("empty-party active-run ball prompt", () => {
+  it("shows one stable random recommendation in the expanded view", () => {
+    const random = vi.spyOn(Math, "random").mockReturnValue(0.5);
+    const run = { ...snapshot(false), party: [] };
+    const { container, rerender } = render(<ExpandedRunView snapshot={run} />);
+
+    expect(screen.getByRole("heading", { name: "A first pick, just for fun" })).toBeVisible();
+    expect(screen.getByRole("list", { name: "Starter ball choices" })).toBeVisible();
+    expect(screen.getAllByRole("listitem")).toHaveLength(3);
+    for (const position of ["Left", "Centre", "Right"]) {
+      expect(screen.getByText(position)).toBeVisible();
+    }
+    expect(screen.getByText("Recommended pick")).toBeVisible();
+
+    const choices = [...container.querySelectorAll<HTMLElement>(".starter-ball-choice")];
+    expect(choices).toHaveLength(3);
+    expect(choices[1]).toHaveClass("starter-ball-choice-recommended");
+    expect(
+      choices.filter((choice) => choice.classList.contains("starter-ball-choice-unselected")),
+    ).toHaveLength(2);
+
+    rerender(<ExpandedRunView snapshot={{ ...run, observedAt: "2026-08-01T10:00:01Z" }} />);
+    expect(random).toHaveBeenCalledOnce();
+    expect(choices[1]).toHaveClass("starter-ball-choice-recommended");
+  });
+
+  it("shows the same prompt for a legacy active snapshot", () => {
+    vi.spyOn(Math, "random").mockReturnValue(0);
+    render(<LegacyRunView snapshot={legacyActiveEmptyPartySnapshot} />);
+
+    expect(screen.getByRole("heading", { name: "A first pick, just for fun" })).toBeVisible();
+    expect(screen.getAllByRole("listitem")).toHaveLength(3);
+    expect(screen.getByText("Left").closest("li")).toHaveClass("starter-ball-choice-recommended");
+  });
+
+  it("keeps the recommendation through an active empty-party schema transition", () => {
+    const random = vi.spyOn(Math, "random").mockReturnValue(0.5);
+    const expandedRun = { ...snapshot(false), party: [] };
+    const { rerender } = render(<RunView snapshot={expandedRun} />);
+    expect(screen.getByText("Centre").closest("li")).toHaveClass("starter-ball-choice-recommended");
+
+    rerender(
+      <RunView
+        snapshot={{ ...legacyActiveEmptyPartySnapshot, observedAt: "2026-08-01T10:00:01Z" }}
+      />,
+    );
+    expect(random).toHaveBeenCalledOnce();
+    expect(screen.getByText("Centre").closest("li")).toHaveClass("starter-ball-choice-recommended");
+  });
+
+  it("hides the prompt outside an empty-party active-run episode", () => {
+    const run = { ...snapshot(false), party: [] };
+    const { rerender } = render(<ExpandedRunView snapshot={run} />);
+    expect(screen.getByRole("heading", { name: "A first pick, just for fun" })).toBeVisible();
+
+    rerender(<ExpandedRunView snapshot={{ ...run, party: [member] }} />);
+    expect(screen.queryByRole("heading", { name: "A first pick, just for fun" })).toBeNull();
+
+    for (const status of ["startup", "battle", "game_over", "completed"]) {
+      rerender(<ExpandedRunView snapshot={{ ...run, status }} />);
+      expect(screen.queryByRole("heading", { name: "A first pick, just for fun" })).toBeNull();
+    }
   });
 });
 

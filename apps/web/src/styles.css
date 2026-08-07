@@ -282,6 +282,248 @@ button:active {
   margin-bottom: 6px;
 }
 
+/* empty-party start-of-run scene */
+.starter-pick {
+  background: var(--bg-panel);
+  border: var(--border-w-box) solid var(--navy-950);
+  box-shadow: var(--shadow-box-md);
+  margin-bottom: var(--space-4);
+  overflow: hidden;
+  padding: var(--space-5);
+  position: relative;
+}
+.starter-pick::before {
+  background: repeating-linear-gradient(90deg, transparent 0 8px, rgba(13, 13, 26, 0.28) 8px 10px);
+  content: "";
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+}
+.starter-pick-copy,
+.starter-ball-options {
+  position: relative;
+}
+.starter-pick-copy {
+  text-align: center;
+}
+.starter-pick-copy .eyebrow {
+  margin-bottom: var(--space-2);
+}
+.starter-pick h2 {
+  font-size: var(--text-display-sm);
+  margin: 0;
+}
+.starter-pick-description {
+  color: var(--text-secondary);
+  font-size: var(--text-body-sm);
+  margin: var(--space-3) auto 0;
+  max-width: 34rem;
+}
+.starter-ball-options {
+  display: grid;
+  gap: var(--space-3);
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  list-style: none;
+  margin: var(--space-5) 0 0;
+  padding: 0;
+}
+.starter-ball-choice {
+  align-items: center;
+  background: var(--bg-inset);
+  border: var(--border-w-box) solid var(--navy-950);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  padding: var(--space-3) var(--space-2);
+  position: relative;
+}
+.starter-ball-choice-unselected {
+  opacity: 0.64;
+}
+.starter-ball-choice-recommended {
+  animation: starter-pick-glow 900ms steps(2, end) infinite;
+  border-color: var(--cream-100);
+  outline: 2px solid var(--crimson-500);
+  z-index: 1;
+}
+.starter-ball-stage {
+  align-items: center;
+  display: flex;
+  height: 7.5rem;
+  justify-content: center;
+  position: relative;
+  width: 100%;
+}
+.starter-ball-choice-recommended .starter-ball-stage {
+  animation: starter-ball-bounce 720ms steps(4, end) infinite;
+}
+.starter-ball {
+  align-items: center;
+  aspect-ratio: 1;
+  background: linear-gradient(
+    to bottom,
+    var(--crimson-500) 0 43%,
+    var(--navy-950) 43% 57%,
+    var(--cream-100) 57% 100%
+  );
+  border: 3px solid var(--navy-950);
+  border-radius: 50%;
+  box-shadow:
+    inset -7px -7px 0 rgba(13, 13, 26, 0.25),
+    inset 6px 6px 0 rgba(255, 255, 255, 0.18);
+  display: flex;
+  justify-content: center;
+  position: relative;
+  width: clamp(4.75rem, 15vw, 7rem);
+  z-index: 1;
+}
+.starter-ball::after {
+  background: var(--navy-950);
+  content: "";
+  height: 3px;
+  left: -3px;
+  position: absolute;
+  right: -3px;
+  top: calc(50% - 2px);
+}
+.starter-ball-button {
+  background: var(--cream-100);
+  border: 3px solid var(--navy-950);
+  box-shadow: 0 0 0 2px var(--cream-100);
+  height: 1.45rem;
+  position: relative;
+  width: 1.45rem;
+  z-index: 1;
+}
+.starter-ball-button::after {
+  background: var(--navy-300);
+  content: "";
+  inset: 4px;
+  position: absolute;
+}
+.starter-ball-position {
+  color: var(--text-primary);
+  font-family: var(--font-pixel-data);
+  font-size: var(--text-data-lg);
+  line-height: 1;
+  margin-top: var(--space-1);
+}
+.starter-ball-badge {
+  background: var(--crimson-500);
+  border: var(--border-w-hair) solid var(--navy-950);
+  color: var(--text-on-accent);
+  font-family: var(--font-sans);
+  font-size: var(--text-micro);
+  font-weight: 800;
+  letter-spacing: var(--tracking-label);
+  margin-top: var(--space-2);
+  padding: 3px 6px;
+  text-transform: uppercase;
+}
+.starter-selection-arrow {
+  animation: starter-arrow 720ms steps(2, end) infinite;
+  color: var(--amber-400);
+  font-family: var(--font-pixel-display);
+  font-size: var(--text-display-sm);
+  left: 50%;
+  line-height: 1;
+  position: absolute;
+  top: -0.15rem;
+  transform: translateX(-50%);
+  z-index: 3;
+}
+.starter-sparkles {
+  inset: 0;
+  pointer-events: none;
+  position: absolute;
+  z-index: 2;
+}
+.starter-sparkle {
+  animation: starter-sparkle 880ms steps(2, end) infinite;
+  height: 0.65rem;
+  position: absolute;
+  width: 0.65rem;
+}
+.starter-sparkle::before,
+.starter-sparkle::after {
+  background: var(--amber-400);
+  content: "";
+  left: 50%;
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+}
+.starter-sparkle::before {
+  height: 100%;
+  width: 3px;
+}
+.starter-sparkle::after {
+  height: 3px;
+  width: 100%;
+}
+.starter-sparkle:nth-child(1) {
+  animation-delay: 0ms;
+  left: 14%;
+  top: 23%;
+}
+.starter-sparkle:nth-child(2) {
+  animation-delay: 220ms;
+  right: 12%;
+  top: 34%;
+}
+.starter-sparkle:nth-child(3) {
+  animation-delay: 440ms;
+  bottom: 15%;
+  left: 20%;
+}
+.starter-sparkle:nth-child(4) {
+  animation-delay: 660ms;
+  bottom: 22%;
+  right: 18%;
+}
+@keyframes starter-ball-bounce {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+@keyframes starter-pick-glow {
+  0%,
+  100% {
+    box-shadow:
+      3px 3px 0 var(--navy-950),
+      0 0 0 2px var(--crimson-500);
+  }
+  50% {
+    box-shadow:
+      3px 3px 0 var(--navy-950),
+      0 0 0 5px var(--amber-400);
+  }
+}
+@keyframes starter-arrow {
+  0%,
+  100% {
+    transform: translate(-50%, 0);
+  }
+  50% {
+    transform: translate(-50%, 4px);
+  }
+}
+@keyframes starter-sparkle {
+  0%,
+  100% {
+    opacity: 0;
+    transform: scale(0);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 .party-grid {
   display: grid;
   gap: var(--space-3);
@@ -1002,5 +1244,35 @@ a:hover {
     align-items: flex-start;
     flex-direction: column;
     gap: 6px;
+  }
+}
+@media (max-width: 420px) {
+  .starter-pick {
+    padding: var(--space-4) var(--space-3);
+  }
+  .starter-ball-options {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  .starter-ball-choice {
+    flex-direction: row;
+    justify-content: center;
+    gap: var(--space-3);
+  }
+  .starter-ball-stage {
+    flex: 0 0 6rem;
+    height: 6rem;
+  }
+  .starter-ball-badge {
+    margin-top: 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .starter-ball-choice-recommended,
+  .starter-ball-choice-recommended .starter-ball-stage,
+  .starter-selection-arrow {
+    animation: none;
+  }
+  .starter-sparkles {
+    display: none;
   }
 }
