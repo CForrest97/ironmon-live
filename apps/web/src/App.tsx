@@ -39,6 +39,17 @@ const STAT_LABELS: Readonly<Record<string, string>> = {
   spd: "SpD",
   spe: "Spe",
 };
+const STAT_DISPLAY_ORDER: readonly string[] = ["hp", "atk", "def", "spa", "spd", "spe"];
+
+const orderedStatEntries = (stats: Readonly<Record<string, number>>) =>
+  Object.entries(stats).sort(([left], [right]) => {
+    const leftIndex = STAT_DISPLAY_ORDER.indexOf(left);
+    const rightIndex = STAT_DISPLAY_ORDER.indexOf(right);
+    if (leftIndex === -1 && rightIndex === -1) return left.localeCompare(right);
+    if (leftIndex === -1) return 1;
+    if (rightIndex === -1) return -1;
+    return leftIndex - rightIndex;
+  });
 
 // Highlights the stat a Pokemon's nature raises (green) and lowers (red) so
 // players can read nature impact without memorizing all 25 natures.
@@ -93,7 +104,7 @@ const BaseStatPotential = ({
   readonly value: Available<Readonly<Record<string, number>>>;
 }) =>
   availableValue(value, (values) => {
-    const entries = Object.entries(values);
+    const entries = orderedStatEntries(values);
     const total = entries.reduce((sum, [, amount]) => sum + amount, 0);
     const max = Math.max(1, ...entries.map(([, amount]) => amount));
     return (
