@@ -90,11 +90,11 @@ const snapshot = (active = true, badges: readonly string[] = []) => ({
   }),
 });
 
-const legacyStartupSnapshot = {
+const legacyActiveEmptyPartySnapshot = {
   kind: "snapshot",
   schemaVersion: 1,
   observedAt: "2026-08-01T10:00:00Z",
-  status: "startup",
+  status: "active",
   party: [],
   route: unavailable,
 } satisfies LegacyRunSnapshot;
@@ -210,10 +210,10 @@ describe("expanded run dashboard", () => {
   });
 });
 
-describe("empty-party startup ball prompt", () => {
+describe("empty-party active-run ball prompt", () => {
   it("shows one stable random recommendation in the expanded view", () => {
     const random = vi.spyOn(Math, "random").mockReturnValue(0.5);
-    const run = { ...snapshot(false), status: "startup", party: [] };
+    const run = { ...snapshot(false), party: [] };
     const { container, rerender } = render(<ExpandedRunView snapshot={run} />);
 
     expect(screen.getByRole("heading", { name: "A first pick, just for fun" })).toBeVisible();
@@ -236,24 +236,24 @@ describe("empty-party startup ball prompt", () => {
     expect(choices[1]).toHaveClass("starter-ball-choice-recommended");
   });
 
-  it("shows the same prompt for a legacy startup snapshot", () => {
+  it("shows the same prompt for a legacy active snapshot", () => {
     vi.spyOn(Math, "random").mockReturnValue(0);
-    render(<LegacyRunView snapshot={legacyStartupSnapshot} />);
+    render(<LegacyRunView snapshot={legacyActiveEmptyPartySnapshot} />);
 
     expect(screen.getByRole("heading", { name: "A first pick, just for fun" })).toBeVisible();
     expect(screen.getAllByRole("listitem")).toHaveLength(3);
     expect(screen.getByText("Left").closest("li")).toHaveClass("starter-ball-choice-recommended");
   });
 
-  it("hides the prompt outside an empty-party startup episode", () => {
-    const run = { ...snapshot(false), status: "startup", party: [] };
+  it("hides the prompt outside an empty-party active-run episode", () => {
+    const run = { ...snapshot(false), party: [] };
     const { rerender } = render(<ExpandedRunView snapshot={run} />);
     expect(screen.getByRole("heading", { name: "A first pick, just for fun" })).toBeVisible();
 
     rerender(<ExpandedRunView snapshot={{ ...run, party: [member] }} />);
     expect(screen.queryByRole("heading", { name: "A first pick, just for fun" })).toBeNull();
 
-    for (const status of ["active", "battle", "game_over", "completed"]) {
+    for (const status of ["startup", "battle", "game_over", "completed"]) {
       rerender(<ExpandedRunView snapshot={{ ...run, status }} />);
       expect(screen.queryByRole("heading", { name: "A first pick, just for fun" })).toBeNull();
     }

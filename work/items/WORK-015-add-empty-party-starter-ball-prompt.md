@@ -12,13 +12,14 @@ artifacts:
 
 ## Intent
 
-Give a player a small, playful first-pick moment at startup without presenting
+Give a player a small, playful first-pick moment at the start of an active run
+without presenting
 strategy, inferred game knowledge, or a claim about unreported ball contents.
 
 ## Outcome
 
 An empty-party live channel shows a classic pixel-style scene with three
-CSS-rendered balls only while Tracker reports `startup`. One ball is randomly
+CSS-rendered balls only while Tracker reports `active`. One ball is randomly
 and stably marked "Recommended pick" for that display episode. The prompt is
 absent in every other run state and after the party gains a member.
 
@@ -40,9 +41,9 @@ Tracker write, contract, Worker, or live-delivery change.
 ## Acceptance Criteria
 
 - Exactly three accessible Left, Centre, and Right ball cards appear only for
-  an empty-party `startup` snapshot in both supported schema views.
+  an empty-party `active` snapshot in both supported schema views.
 - Exactly one card is randomly selected on mount and remains selected through
-  rerenders of the same empty-party startup episode.
+  rerenders of the same empty-party active-run episode.
 - The selected card has a recommendation badge, stepped bounce, glow,
   sparkles, and selection arrow; unselected cards are dimmer and static.
 - Reduced-motion preferences retain the badge and disable the animated
@@ -77,4 +78,6 @@ style test, and the 640-pixel layout with the existing browser fixture.
 
 The maintainer confirmed that the balls should be CSS-built sprite-like art,
 not image assets. This preserves crisp pixel scaling and avoids an external
-asset dependency.
+asset dependency. The Tracker's actual start-of-run snapshot has
+`status: "active"` with an empty party, so this item corrects its initial
+`startup` assumption to that observed condition.

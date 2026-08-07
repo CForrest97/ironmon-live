@@ -93,12 +93,13 @@ test("the expanded channel remains operable at 640 CSS pixels", async ({ page })
   ).resolves.toBe(true);
 });
 
-test("the empty-party starter scene remains three columns at 640 CSS pixels", async ({ page }) => {
-  const startupEvent = {
+test("the empty-party active-run scene remains three columns at 640 CSS pixels", async ({
+  page,
+}) => {
+  const emptyPartyEvent = {
     ...event,
     snapshot: {
       ...event.snapshot,
-      status: "startup",
       party: [],
       battle: available({ active: false }),
     },
@@ -119,7 +120,7 @@ test("the empty-party starter scene remains three columns at 640 CSS pixels", as
       }
     }
     Object.assign(window, { WebSocket: FixtureSocket });
-  }, startupEvent);
+  }, emptyPartyEvent);
   await page.goto("/channel/00042");
   await expect(page.getByRole("heading", { name: "A first pick, just for fun" })).toBeVisible();
   await expect(

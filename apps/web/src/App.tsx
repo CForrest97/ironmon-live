@@ -353,7 +353,7 @@ const StarterBallRecommendation = () => {
   return (
     <section className="starter-pick" aria-labelledby="starter-pick-heading">
       <div className="starter-pick-copy">
-        <p className="eyebrow">Startup pick</p>
+        <p className="eyebrow">First pick</p>
         <h2 id="starter-pick-heading">A first pick, just for fun</h2>
         <p className="starter-pick-description">
           One ball is highlighted at random. It does not reveal what is inside.
@@ -400,7 +400,7 @@ const StarterBallPrompt = ({
 }: {
   readonly status: string;
   readonly partySize: number;
-}) => (status === "startup" && partySize === 0 ? <StarterBallRecommendation /> : null);
+}) => (status === "active" && partySize === 0 ? <StarterBallRecommendation /> : null);
 
 export const LegacyRunView = ({ snapshot }: { readonly snapshot: LegacyRunSnapshot }) => (
   <main>

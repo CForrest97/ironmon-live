@@ -14,4 +14,4 @@ agent workflow, or CI policy.
 - [DEC-002: Temporarily publish companion-expanded demo state](DEC-002-temporary-companion-expanded-demo-state.md)
 - [DEC-003: List active channels on the homepage by default](DEC-003-list-active-channels-on-homepage.md)
 - [DEC-004: Show a bounded run preview on homepage channel cards](DEC-004-show-a-bounded-run-preview-on-homepage-channel-cards.md)
-- [DEC-005: Show a random startup ball prompt](DEC-005-show-a-random-startup-ball-prompt.md)
+- [DEC-005: Show a random empty-party ball prompt](DEC-005-show-a-random-startup-ball-prompt.md)

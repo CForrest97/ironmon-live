@@ -282,7 +282,7 @@ button:active {
   margin-bottom: 6px;
 }
 
-/* empty-party startup scene */
+/* empty-party start-of-run scene */
 .starter-pick {
   background: var(--bg-panel);
   border: var(--border-w-box) solid var(--navy-950);

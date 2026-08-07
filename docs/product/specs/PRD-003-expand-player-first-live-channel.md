@@ -51,7 +51,7 @@ spectator presentation.
 ## Non-goals
 
 - Battle, route, or team advice; encounter recommendations; or any inferred
-  gameplay fact, except the random, presentation-only startup-ball prompt
+  gameplay fact, except the random, presentation-only empty-party ball prompt
   bounded by DEC-005. That prompt is not advice and does not claim a ball's
   contents or strategic value.
 - Bag inventory, encounter history, and uncollected-item progress.
@@ -82,7 +82,7 @@ non-spoiler data:
 - game and Tracker status, badges, timer/playtime, centre heals, and gameplay
   counters.
 
-When Tracker reports `startup` with an empty party, the page may additionally
+When Tracker reports `active` with an empty party, the page may additionally
 show DEC-005's presentation-only random starter-ball prompt. It is not
 snapshot-derived gameplay information.
 
@@ -137,10 +137,10 @@ snapshot-derived gameplay information.
     state defined by DEC-002 as ordinary available version 2 values. It shall
     retain version 1 facts where available and remove this bridge when the
     extension emits version 2.
-14. When, and only when, reported status is `startup` and the reported party
+14. When, and only when, reported status is `active` and the reported party
     is empty, the channel shall show exactly three labelled, CSS-rendered
     standard balls and randomly mark one stable, presentation-only
-    "Recommended pick" for that empty-party startup episode. It shall provide
+    "Recommended pick" for that empty-party active-run episode. It shall provide
     no interaction, reroll, persistence, Tracker write, external asset, or
     claim about contents, encounters, or gameplay value; it shall disappear
     when either condition no longer holds.
@@ -161,8 +161,8 @@ snapshot-derived gameplay information.
   inferred facts.
 - A failed or absent external image does not hide a Pokémon's, trainer's, or
   state information.
-- An empty-party `startup` snapshot in either supported schema view shows one
-  stable random recommended ball out of three; an empty non-`startup` snapshot
+- An empty-party `active` snapshot in either supported schema view shows one
+  stable random recommended ball out of three; an empty non-`active` snapshot
   and every non-empty party hide the prompt.
 - Automated layout coverage verifies the overview and panel operation at 640
   CSS pixels; component coverage verifies disclosure and image fallbacks.
@@ -181,7 +181,7 @@ None.
 
 - [DEC-001: Use ephemeral, unauthenticated live channels](../../decisions/DEC-001-unauthenticated-live-channels.md)
 - [DEC-002: Temporarily publish companion-expanded demo state](../../decisions/DEC-002-temporary-companion-expanded-demo-state.md)
-- [DEC-005: Show a random startup ball prompt](../../decisions/DEC-005-show-a-random-startup-ball-prompt.md)
+- [DEC-005: Show a random empty-party ball prompt](../../decisions/DEC-005-show-a-random-startup-ball-prompt.md)
 
 ## Risks
 
@@ -197,7 +197,7 @@ None.
   presented as advice or extend to spoiler-sensitive randomizer-log data.
 - A playful recommendation could be mistaken for strategic advice if its
   random, presentation-only nature is obscured; DEC-005 limits it to the
-  empty-party startup moment and forbids content or value claims.
+  empty-party active-run moment and forbids content or value claims.
 
 ## Open Questions
 
