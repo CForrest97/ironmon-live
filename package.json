@@ -24,6 +24,7 @@
     "validate:workflows": "node scripts/validate-workflows.ts",
     "test": "node --test test/*.test.ts && npm run test --workspaces --if-present",
     "test:latency": "npm run test:latency --workspace=@ironmon-live/companion",
+    "review:visual": "npm run review:visual --workspace=@ironmon-live/web --",
     "check": "npm run lint:markdown && npm run format:check && npm run lint:ts && npm run check:types && npm run validate:docs && npm run validate:workflows && npm test",
     "check:external": "node scripts/check-external-links.ts",
     "configure:github": "scripts/configure-github.sh",

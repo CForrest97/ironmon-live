@@ -19,6 +19,7 @@ keep completed items as durable delivery history.
 - [WORK-015: Add an empty-party starter-ball prompt](WORK-015-add-empty-party-starter-ball-prompt.md)
 - [WORK-016: Bound route progress to the reported trainer total](WORK-016-bound-route-progress-to-reported-total.md)
 - [WORK-017: Add the branded website icon](WORK-017-add-branded-website-icon.md)
+- [WORK-018: Add a scripted visual review harness](WORK-018-add-visual-review-harness.md)
 
 ## Completed
 
