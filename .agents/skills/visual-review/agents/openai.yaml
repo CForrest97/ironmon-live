@@ -1,0 +1,7 @@
+interface:
+  display_name: "Visual Review"
+  short_description: "Rate captured screen layout quality"
+  default_prompt: "Use $visual-review to review the captured IronMON Live screens and rate their layout quality."
+
+policy:
+  allow_implicit_invocation: true
