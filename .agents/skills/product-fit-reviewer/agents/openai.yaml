@@ -1,0 +1,7 @@
+interface:
+  display_name: "Product Fit Reviewer"
+  short_description: "Rate change alignment to PRD and principles"
+  default_prompt: "Use $product-fit-reviewer to independently review this branch against its governing PRD and product principles."
+
+policy:
+  allow_implicit_invocation: true
