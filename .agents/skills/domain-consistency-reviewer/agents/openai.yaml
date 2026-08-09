@@ -1,0 +1,7 @@
+interface:
+  display_name: "Domain Consistency Reviewer"
+  short_description: "Rate change consistency with domain language"
+  default_prompt: "Use $domain-consistency-reviewer to independently review this branch against the domain glossary, narrative, and context map."
+
+policy:
+  allow_implicit_invocation: true

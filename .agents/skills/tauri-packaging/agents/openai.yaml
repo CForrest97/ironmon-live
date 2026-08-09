@@ -1,0 +1,7 @@
+interface:
+  display_name: "Tauri Packaging"
+  short_description: "Apply companion native-packaging lessons"
+  default_prompt: "Use $tauri-packaging when changing apps/companion."
+
+policy:
+  allow_implicit_invocation: true

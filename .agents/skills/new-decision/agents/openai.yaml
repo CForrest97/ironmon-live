@@ -1,0 +1,7 @@
+interface:
+  display_name: "New Decision"
+  short_description: "Scaffold a valid DEC-### record"
+  default_prompt: "Use $new-decision to scaffold a new decision record."
+
+policy:
+  allow_implicit_invocation: false
