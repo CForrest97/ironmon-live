@@ -48,7 +48,7 @@ const SetupLink = () => (
       <h2>Set up your Tracker</h2>
       <p>Install and enable the bundled extension, then confirm your run is live.</p>
     </div>
-    <a className="button" href="/setup">
+    <a className="button button-secondary" href="/setup">
       Open setup guide
     </a>
   </section>
@@ -71,7 +71,6 @@ export const DownloadCompanion = ({ available = true }: { readonly available?: b
           <p className="lede">
             The quiet macOS menu-bar utility that connects IronMON Tracker to your live channel.
           </p>
-          <SetupLink />
           <div className="download-grid">
             <article className="download-card">
               <h2>Apple Silicon</h2>
@@ -84,6 +83,7 @@ export const DownloadCompanion = ({ available = true }: { readonly available?: b
               <span>Loading release information...</span>
             </article>
           </div>
+          <SetupLink />
         </main>
       </>
     );
@@ -98,7 +98,6 @@ export const DownloadCompanion = ({ available = true }: { readonly available?: b
         <p className="lede">
           The quiet macOS menu-bar utility that connects IronMON Tracker to your live channel.
         </p>
-        <SetupLink />
         <div className="download-grid">
           <article className="download-card">
             <h2>Apple Silicon</h2>
@@ -129,6 +128,7 @@ export const DownloadCompanion = ({ available = true }: { readonly available?: b
             )}
           </article>
         </div>
+        <SetupLink />
         <section className="release-details">
           <h2>Version {release.version}</h2>
           <p aria-label="System requirement">Requires macOS {release.minimumMacOS} or later.</p>

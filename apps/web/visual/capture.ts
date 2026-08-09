@@ -197,6 +197,7 @@ const readMetrics = (page: Page, viewportHeight: number, selector: string, limit
         innerWidth: window.innerWidth,
         horizontalOverflow: document.documentElement.scrollWidth > window.innerWidth,
         landmarks,
+        renderedText: document.body.innerText.replace(/\s+/g, " ").trim(),
       };
     },
     { landmarkSelector: selector, foldHeight: viewportHeight, maxLandmarks: limit },

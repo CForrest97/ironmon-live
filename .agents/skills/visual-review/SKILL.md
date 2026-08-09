@@ -16,16 +16,19 @@ and still fail the second: it can be beautifully balanced and still show the
 wrong things, or hide the right thing behind a generic label. Do not let a
 clean design lens finding stand in for a content check that was skipped.
 
-- **Design** (checks 1-7): does the layout read well — fold, alignment,
-  whitespace, hierarchy, consistency.
-- **Content fit** (check 8): given what this screen is *for*, is the right
-  information present, in the right place, at the right prominence — not just
-  whether the boxes holding it line up.
+- **Design.** Search the scene for pixel-level imperfections — anything
+  misaligned, overflowing, crowded, unbalanced, or inconsistent with the rest
+  of the app. Treat this as an open search, not a checklist to confirm clear:
+  the point is to notice what's actually wrong on this screen, not to verify
+  the absence of a fixed list of named problems.
+- **Content fit.** Given what this screen is *for*, is the right information
+  present, in the right place, at the right prominence — not just whether the
+  boxes holding it line up.
 
 Read `docs/product/specs/PRD-001-live-player-companion.md`'s Desired Outcomes
 before starting. The primary one governs every channel scene: *a player can
 understand detailed current-party information and current-route trainer
-progress at a glance during play.* Judge check 8 against that, not against
+progress at a glance during play.* Judge content fit against that, not against
 general UX taste.
 
 ## Measure before you judge
@@ -36,59 +39,72 @@ image answers: emphasis, balance, crowding, and whether the scene reads.
 
 Never report a measurable defect you have not computed from the manifest.
 
-## What to check
+## Design: searching for imperfections
 
-Work through each scene at each viewport.
+Work through each scene at each viewport. The manifest gives you the measured
+position, size, font size, and weight of every landmark — use it as your
+evidence, not the screenshot's appearance. The categories below are examples
+of the kind of thing that's worth finding, not a list to run down and clear:
 
-1. **Fold priority.** Compare the scene's `intent` against the landmarks with
-   `fullyAboveFold: true`. Name anything the intent needs that fell below the
-   fold, and anything above the fold that the intent does not need. Judge the
-   cost in screens: a landmark at `y` 1400 on a 900px viewport is a scroll and
-   a half away.
-2. **Alignment.** Group sibling landmarks by `x` and by `x + width`. Edges
-   within 1px are aligned; edges 2-8px apart are almost certainly a mistake
-   rather than a choice, and are worth reporting. Larger offsets are only a
-   finding when the image shows no deliberate indent or nesting.
-3. **Whitespace balance.** Compute vertical gaps between consecutive siblings
-   (`next.y - (previous.y + previous.height)`). Report gaps that do not fall on
-   a small set of repeated values, sections whose internal rhythm contradicts
-   their neighbours, and any single gap more than twice the median for its
-   region. Check left and right page margins for symmetry.
-4. **Grouping.** Related landmarks should sit closer to each other than to
-   unrelated ones. Report any place where spacing implies a grouping the
-   content does not have.
-5. **Hierarchy.** Compare `fontSize` and `fontWeight` down the page order. The
-   most important thing for the scene's intent should be the most prominent.
-   Report inversions and any two levels that are too close to distinguish.
-6. **Consistency.** Compare the same scene across viewports and comparable
-   scenes against each other. Report components that change spacing, alignment,
-   or emphasis without a reason visible in the content.
-7. **Overflow.** `horizontalOverflow: true` is always a blocking finding.
-   Report clipped or truncated text visible in the images.
-8. **Content fit.** This is a distinct pass, not a restatement of check 1. For
-   each landmark that carries real data (not chrome — a party member's HP, a
-   trainer's battled state, a route's progress, a badge list), ask what
-   decision or knowledge a player uses it for, then check whether the screen
-   actually gives them that. Concretely:
-   - **Missing critical data.** Something the player needs to act (current HP
-     as a number *and* a bar, status conditions, whether a battle is ongoing
-     and against what) that is absent, buried in an unopened accordion, or
-     only inferable rather than stated.
-   - **Prominence mismatched to importance.** A low-stakes decorative detail
-     (a badge icon, a cosmetic label) sized or positioned more prominently
-     than something the player needs mid-battle (HP, status, whose turn).
-     Compare `fontSize`/`fontWeight` and position, but judge by what the data
-     is *for*, not just its visual weight relative to neighbours.
-   - **Wrong grouping for the decision.** Data split across two places when a
-     single decision needs both together (for example: a party member's HP
-     without its status effect, or a trainer's battled state without which
-     Pokémon they're known to carry, when the fixture provides both).
-   - **Empty or placeholder-only regions.** A card or section rendered with a
-     heading but no content for this scene — that is a content-fit defect
-     even when its box aligns perfectly with its siblings.
-   A finding here needs the same evidence discipline as checks 1-7: name the
-   landmark, what data it holds or lacks per the manifest and the scene's
-   fixture, and the specific player decision it blocks or slows.
+- Something above the fold that the scene's `intent` doesn't need, or
+  something the intent needs that only appears after scrolling.
+- Edges that look aligned in the image but differ by a few pixels in `x` or
+  `x + width` — and, just as much, edges that look intentionally offset but
+  aren't (no indent or nesting visible to explain it).
+- Gaps between siblings that break the rhythm of their neighbours, margins
+  that aren't symmetric, or spacing that implies a grouping the content
+  doesn't have.
+- `fontSize`/`fontWeight` that don't track importance down the page — the
+  thing that matters most for this scene should read as the most prominent.
+- The same component looking or spacing itself differently across scenes or
+  viewports with no reason visible in the content.
+- Anything — text or otherwise — that breaches its container, gets clipped,
+  or collides with a neighbour. `horizontalOverflow: true` is always a
+  blocking finding, but overflow isn't limited to text: a row of icons,
+  progress markers, or any other element bleeding past its parent's right
+  edge is just as real a defect and just as measurable from the manifest.
+
+## Content fit: does the screen serve the player
+
+This is a distinct pass, not a restatement of the design lens — a screen can
+be pixel-perfect and still fail here. Read `renderedText` on each capture
+alongside the image: it's the page's actual rendered text, and content-fit
+questions ("is this information present," "how much is actually shown at a
+glance") are usually answered more reliably from what the page rendered as
+text than from reading it off a screenshot. Use the image for what only the
+image answers — prominence, grouping, whether it's easy to take in at a
+glance — and the text for what's present at all.
+
+For each landmark that carries real data (not chrome — a party member's HP, a
+trainer's battled state, a route's progress, a badge list), ask what decision
+or knowledge a player uses it for, then check whether the screen actually
+gives them that:
+
+- **Missing critical data.** Something the player needs to act (current HP as
+  a number *and* a bar, status conditions, whether a battle is ongoing and
+  against what) that is absent, buried in an unopened accordion, or only
+  inferable rather than stated.
+- **Prominence mismatched to importance.** A low-stakes decorative detail (a
+  badge icon, a cosmetic label) sized or positioned more prominently than
+  something the player needs mid-battle (HP, status, whose turn). Compare
+  `fontSize`/`fontWeight` and position, but judge by what the data is *for*,
+  not just its visual weight relative to neighbours.
+- **Wrong grouping for the decision.** Data split across two places when a
+  single decision needs both together (for example: a party member's HP
+  without its status effect, or a trainer's battled state without which
+  Pokémon they're known to carry, when the fixture provides both).
+- **Empty or placeholder-only regions.** A card or section rendered with a
+  heading but no content for this scene — that is a content-fit defect even
+  when its box aligns perfectly with its siblings.
+- **Thin at a glance.** Even with no single piece of data missing, ask
+  whether the scene as a whole gives a viewer enough to resolve the run's
+  state in one glance, per the PRD outcome above — a screen that technically
+  contains the right facts but reads as sparse or requires piecing together
+  several small labels is still a content-fit defect.
+
+A finding here needs the same evidence discipline as the design lens: name
+the landmark, what data it holds or lacks per the manifest, `renderedText`,
+and the scene's fixture, and the specific player decision it blocks or slows.
 
 Judge against the scene's stated intent, not a generic idea of good design.
 IronMON Live is watched while something else is happening, so a viewer should

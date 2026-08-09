@@ -58,8 +58,11 @@ Review the IronMON Live screenshots in ${directory} against the rubric in ${skil
 Read ${skillPath} first and follow it exactly, including its output format.
 
 ${directory}/manifest.json lists every capture with the measured geometry of its
-landmarks. Read it before the images and use it for anything measurable —
-alignment, spacing, above-the-fold placement, overflow. Read every PNG it names.
+landmarks and the page's rendered text (\`renderedText\`). Read it before the
+images and use it for anything measurable — alignment, spacing, above-the-fold
+placement, overflow — and use \`renderedText\` for what information is actually
+present, rather than relying on the screenshot to judge that. Read every PNG
+it names.
 
 The manifest describes these captures:
 ${manifest}

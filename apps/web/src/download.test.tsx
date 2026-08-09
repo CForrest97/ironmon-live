@@ -59,6 +59,13 @@ describe("companion download", () => {
         name: "Open setup guide",
       }),
     ).toHaveAttribute("href", "/setup");
+    expect(screen.getByRole("link", { name: "Open setup guide" })).toHaveClass("button-secondary");
+    expect(
+      screen
+        .getByRole("link", { name: "Download for Apple Silicon" })
+        .compareDocumentPosition(screen.getByRole("link", { name: "Open setup guide" })) &
+        Node.DOCUMENT_POSITION_FOLLOWING,
+    ).toBeTruthy();
   });
 
   it("does not offer dead links when a release is unavailable", async () => {

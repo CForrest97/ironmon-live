@@ -20,7 +20,7 @@ strategy, inferred game knowledge, or a claim about unreported ball contents.
 
 An empty-party live channel shows a classic pixel-style scene with three
 CSS-rendered balls only while Tracker reports `active`. One ball is randomly
-and stably marked "Recommended pick" for that display episode. The prompt is
+and stably marked "Random highlight" for that display episode. The prompt is
 absent in every other run state and after the party gains a member.
 
 ## Context
@@ -28,8 +28,8 @@ absent in every other run state and after the party gains a member.
 [PRD-003](../../docs/product/specs/PRD-003-expand-player-first-live-channel.md)
 otherwise excludes advice, encounter recommendations, and inferred gameplay
 facts. [DEC-005](../../docs/decisions/DEC-005-show-a-random-startup-ball-prompt.md)
-records the maintainer-requested narrow exception: the recommendation is
-random presentation, not evidence-based guidance.
+records the maintainer-requested narrow exception: the highlight is random
+presentation, not evidence-based guidance.
 
 ## Scope
 
@@ -44,7 +44,7 @@ Tracker write, contract, Worker, or live-delivery change.
   an empty-party `active` snapshot in both supported schema views.
 - Exactly one card is randomly selected on mount and remains selected through
   rerenders of the same empty-party active-run episode.
-- The selected card has a recommendation badge, stepped bounce, glow,
+- The selected card has a random-highlight badge, stepped bounce, glow,
   sparkles, and selection arrow; unselected cards are dimmer and static.
 - Reduced-motion preferences retain the badge and disable the animated
   movement and effects.
@@ -56,7 +56,7 @@ Tracker write, contract, Worker, or live-delivery change.
 ## Plan
 
 Render the conditionally mounted prompt in the shared `RunFrame`, using
-component-local random state so the recommendation is stable only for the
+component-local random state so the random highlight is stable only for the
 current display episode, including a version-1/version-2 schema transition.
 Cover its state conditions and selection classes with component tests, its
 reduced-motion CSS with a focused style test, and the 640-pixel layout with the
@@ -76,8 +76,8 @@ existing browser fixture.
 - Domain-consistency review: `consistent`, high confidence, no blocking
   findings.
 - The initial merge-risk review found a schema-version transition could reroll
-  the prompt; `RunFrame` now owns it, and a regression test verifies the
-  recommendation remains stable. The final merge-risk review found no blocking
+the prompt; `RunFrame` now owns it, and a regression test verifies the random
+highlight remains stable. The final merge-risk review found no blocking
   findings and rated the change 2 with high confidence, so human approval is
   required before merge.
 
