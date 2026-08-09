@@ -1,0 +1,7 @@
+interface:
+  display_name: "New Work Item"
+  short_description: "Scaffold a valid WORK-### item"
+  default_prompt: "Use $new-work-item to scaffold a new work item."
+
+policy:
+  allow_implicit_invocation: false
