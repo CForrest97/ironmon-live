@@ -14,6 +14,7 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { chromium, type Browser, type Page } from "@playwright/test";
+import { readValue, readValues } from "./args.ts";
 import type { CaptureImage, CaptureRecord, Manifest, Viewport } from "./manifest.ts";
 import { freezeRandomness, installChannelSocket, scenes, type Scene } from "./scenes.ts";
 
@@ -32,6 +33,12 @@ const VIEWPORTS: readonly Viewport[] = [
   { name: "desktop", width: 1440, height: 900 },
   { name: "narrow", width: 640, height: 900 },
 ];
+
+/** Reviewed by default; `--viewport=narrow` or `--viewport=all` opts into the rest. */
+const DEFAULT_VIEWPORT_NAMES = ["desktop"];
+
+/** Captures run this many scene/viewport pairs at once, across separate browser contexts. */
+const CONCURRENCY = 4;
 
 const LANDMARK_SELECTOR = [
   "main",
@@ -57,30 +64,20 @@ const LANDMARK_SELECTOR = [
 
 const MAX_LANDMARKS = 120;
 
-const SPRITE_HOSTS = /raw\.githubusercontent\.com|play\.pokemonshowdown\.com/;
+/** Sprites are fetched from real third-party CDNs; give them this long to settle before capturing regardless. */
+const IMAGE_LOAD_TIMEOUT_MS = 8_000;
 
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
+const passedArguments = process.argv.slice(2);
 
-const argumentValue = (flag: string) =>
-  process.argv
-    .slice(2)
-    .find((entry) => entry.startsWith(`${flag}=`))
-    ?.slice(flag.length + 1);
-
-const argumentValues = (flag: string) =>
-  process.argv
-    .slice(2)
-    .filter((entry) => entry.startsWith(`${flag}=`))
-    .map((entry) => entry.slice(flag.length + 1));
-
-const baseUrl = argumentValue("--base-url") ?? "http://127.0.0.1:4173";
+const baseUrl = readValue(passedArguments, "--base-url") ?? "http://127.0.0.1:4173";
 const outputDirectory = path.resolve(
   repositoryRoot,
-  argumentValue("--out") ?? "apps/web/test-results/visual",
+  readValue(passedArguments, "--out") ?? "apps/web/test-results/visual",
 );
 
 const selectedScenes = () => {
-  const requested = argumentValues("--scene");
+  const requested = readValues(passedArguments, "--scene");
   if (requested.length === 0) return scenes;
   const matched = scenes.filter((scene) => requested.includes(scene.name));
   if (matched.length !== requested.length) {
@@ -91,11 +88,14 @@ const selectedScenes = () => {
 };
 
 const selectedViewports = () => {
-  const requested = argumentValues("--viewport");
-  if (requested.length === 0) return VIEWPORTS;
+  const requested = readValues(passedArguments, "--viewport");
+  if (requested.length === 0) {
+    return VIEWPORTS.filter((viewport) => DEFAULT_VIEWPORT_NAMES.includes(viewport.name));
+  }
+  if (requested.includes("all")) return VIEWPORTS;
   const matched = VIEWPORTS.filter((viewport) => requested.includes(viewport.name));
   if (matched.length === 0) {
-    const known = VIEWPORTS.map((viewport) => viewport.name).join(", ");
+    const known = [...VIEWPORTS.map((viewport) => viewport.name), "all"].join(", ");
     throw new Error(`unknown viewport requested; known viewports are ${known}`);
   }
   return matched;
@@ -197,6 +197,7 @@ const readMetrics = (page: Page, viewportHeight: number, selector: string, limit
         innerWidth: window.innerWidth,
         horizontalOverflow: document.documentElement.scrollWidth > window.innerWidth,
         landmarks,
+        renderedText: document.body.innerText.replace(/\s+/g, " ").trim(),
       };
     },
     { landmarkSelector: selector, foldHeight: viewportHeight, maxLandmarks: limit },
@@ -215,10 +216,6 @@ const captureScene = async (
   });
   try {
     const page = await context.newPage();
-    // Sprite artwork comes from third-party CDNs. Blocking it keeps captures
-    // offline-safe and identical run to run; the boxes are CSS-sized, so the
-    // layout under review is the same either way.
-    await page.route(SPRITE_HOSTS, (route) => route.abort());
     await page.addInitScript(freezeRandomness);
     if (scene.channelEvent !== undefined) {
       await page.addInitScript(installChannelSocket, scene.channelEvent);
@@ -239,6 +236,17 @@ const captureScene = async (
     await page.evaluate(async () => {
       await document.fonts.ready;
     });
+    // Sprites come from third-party CDNs (raw.githubusercontent.com,
+    // play.pokemonshowdown.com) — real network requests, kept deliberately
+    // unblocked so the capture matches what a viewer actually sees. Wait for
+    // every <img> to settle (loaded or failed) so the screenshot never
+    // catches one mid-fetch; give up after IMAGE_LOAD_TIMEOUT_MS rather than
+    // hang the whole capture on a slow or unreachable CDN.
+    await page
+      .waitForFunction(() => [...document.images].every((image) => image.complete), undefined, {
+        timeout: IMAGE_LOAD_TIMEOUT_MS,
+      })
+      .catch(() => {});
 
     const metrics = await readMetrics(page, viewport.height, LANDMARK_SELECTOR, MAX_LANDMARKS);
     const bandCount = Math.min(MAX_BANDS, Math.ceil(metrics.documentHeight / viewport.height));
@@ -291,14 +299,23 @@ const main = async () => {
       ? { executablePath: process.env.PLAYWRIGHT_EXECUTABLE_PATH }
       : {},
   );
+  const jobs = selectedScenes().flatMap((scene) =>
+    selectedViewports().map((viewport) => ({ scene, viewport })),
+  );
   const captures: CaptureRecord[] = [];
   try {
-    for (const scene of selectedScenes()) {
-      for (const viewport of selectedViewports()) {
-        console.error(`capturing ${scene.name} at ${viewport.name}`);
-        captures.push(await captureScene(browser, scene, viewport));
+    let next = 0;
+    const worker = async () => {
+      for (;;) {
+        const index = next;
+        next += 1;
+        const job = jobs[index];
+        if (!job) return;
+        console.error(`capturing ${job.scene.name} at ${job.viewport.name}`);
+        captures[index] = await captureScene(browser, job.scene, job.viewport);
       }
-    }
+    };
+    await Promise.all(Array.from({ length: Math.min(CONCURRENCY, jobs.length) }, worker));
   } finally {
     await browser.close();
     server?.kill();
@@ -307,7 +324,7 @@ const main = async () => {
   const manifest: Manifest = {
     capturedAt: new Date().toISOString(),
     baseUrl,
-    note: "Coordinates and sizes are CSS pixels. Multiply by deviceScaleFactor for image pixels. Sprite artwork is deliberately blocked, so sprite boxes render empty at their real size; that is not a defect.",
+    note: "Coordinates and sizes are CSS pixels. Multiply by deviceScaleFactor for image pixels. Sprite artwork loads from real third-party CDNs; a sprite that failed or was still loading when captured renders as an empty box and is worth flagging like any other content-fit gap.",
     captures,
   };
   await writeFile(

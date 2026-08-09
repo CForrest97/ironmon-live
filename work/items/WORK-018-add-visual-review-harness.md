@@ -61,6 +61,10 @@ geometry in `apps/web/visual/capture.ts`, hold the rubric in
   their 576px column while every sibling spans the full width. Confirmed
   against the captured screenshot.
 - `npm run check` passed.
+- After maintainer feedback, moved fixture data to
+  `apps/web/visual/fixtures.json`, validated through
+  `parseChannelEvent`/`parseActiveChannels` at import time, and confirmed
+  `apps/web/test/viewport.spec.ts` and a scoped capture both pass against it.
 
 ## Agent Notes
 
@@ -69,5 +73,20 @@ records measured landmark geometry and the rubric requires measurable findings
 to be computed from it. Bands are capped at three; below-fold review is about
 the first scroll, not the whole page.
 
-Sprite artwork is blocked during capture. The boxes are CSS-sized, so layout is
-unaffected, and blocking keeps runs offline-safe and identical.
+Sprite artwork initially loaded from real third-party CDNs during capture but
+was then blocked for determinism and offline-safety, since the boxes are
+CSS-sized and layout is unaffected either way. Per maintainer feedback that
+the review should be as close to real life as possible, sprites now load for
+real again; the capture waits (up to 8s) for every `<img>` to settle before
+screenshotting so a mid-fetch sprite doesn't make runs disagree.
+
+The original fixtures were hand-typed TS object literals independent of
+`@ironmon-live/contracts`, so nothing caught them drifting from what the app
+actually parses. Fixture data now lives in one JSON file
+(`apps/web/visual/fixtures.json`) and is round-tripped through the real
+contract parsers at import time — a fixture the app's own parser would reject
+now fails at import, not as a silent rendering difference. The maintainer also
+pointed out the invented party was unconvincing; `capturedRunEvent` is now a
+real captured Tracker snapshot rather than synthesized data. The Playwright
+specs keep their own separate minimal fixture (`testFixtureEvent`) since they
+assert exact strings tied to it, unrelated to review realism.

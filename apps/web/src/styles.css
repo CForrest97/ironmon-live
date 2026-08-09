@@ -139,7 +139,7 @@ h2 {
 .entry {
   min-height: 100vh;
   display: grid;
-  align-content: center;
+  align-content: start;
   max-width: 36rem;
 }
 form {
@@ -192,8 +192,7 @@ button:active {
   list-style: none;
   display: grid;
   gap: var(--space-3);
-  grid-template-columns: repeat(auto-fit, minmax(15rem, 18rem));
-  justify-content: start;
+  grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr));
   padding: 0;
 }
 .channel-card {
@@ -273,13 +272,13 @@ button:active {
 .run-header {
   display: flex;
   justify-content: space-between;
-  align-items: flex-end;
+  align-items: center;
   padding: 0 0 var(--space-4);
   gap: var(--space-4);
   flex-wrap: wrap;
 }
 .run-header h1 {
-  margin-bottom: 6px;
+  margin-bottom: 0;
 }
 
 /* empty-party start-of-run scene */
@@ -310,7 +309,7 @@ button:active {
   margin-bottom: var(--space-2);
 }
 .starter-pick h2 {
-  font-size: var(--text-display-sm);
+  font-size: var(--text-display-md);
   margin: 0;
 }
 .starter-pick-description {
@@ -340,7 +339,7 @@ button:active {
 .starter-ball-choice-unselected {
   opacity: 0.64;
 }
-.starter-ball-choice-recommended {
+.starter-ball-choice-highlighted {
   animation: starter-pick-glow 900ms steps(2, end) infinite;
   border-color: var(--cream-100);
   outline: 2px solid var(--crimson-500);
@@ -354,7 +353,7 @@ button:active {
   position: relative;
   width: 100%;
 }
-.starter-ball-choice-recommended .starter-ball-stage {
+.starter-ball-choice-highlighted .starter-ball-stage {
   animation: starter-ball-bounce 720ms steps(4, end) infinite;
 }
 .starter-ball {
@@ -541,6 +540,7 @@ button:active {
   padding-top: var(--space-6);
 }
 .overview-grid {
+  align-items: start;
   display: grid;
   gap: var(--space-3);
   grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -574,6 +574,9 @@ button:active {
   overflow-wrap: anywhere;
 }
 .overview-card-party {
+  grid-column: span 2;
+}
+.overview-card:first-child {
   grid-column: span 2;
 }
 .badge-count {
@@ -623,10 +626,39 @@ button:active {
   font-size: var(--text-body-sm);
   color: var(--text-primary);
 }
+.overview-party-info .type-tags {
+  gap: 3px;
+  margin-top: 3px;
+}
+.overview-party-info .tag {
+  font-size: 0.6rem;
+  padding: 2px 4px;
+}
+.overview-party-moves {
+  color: var(--text-secondary);
+  display: block;
+  font-family: var(--font-sans);
+  font-size: var(--text-micro);
+  line-height: var(--lh-normal);
+  margin-top: 3px;
+  overflow-wrap: anywhere;
+}
 .panel-stack {
   display: grid;
   gap: var(--space-4);
   margin-top: var(--space-4);
+}
+.panel-route {
+  order: 1;
+}
+.panel-progress {
+  order: 2;
+}
+.panel-party {
+  order: 3;
+}
+.panel-battle {
+  order: 4;
 }
 .panel-summary {
   all: unset;
@@ -1078,6 +1110,8 @@ a:hover {
   border: var(--border-w-box) solid var(--navy-950);
   border-radius: var(--radius-sm);
   box-shadow: var(--shadow-box-sm);
+  display: flex;
+  flex-direction: column;
   padding: var(--space-6);
 }
 .download-card > div {
@@ -1085,6 +1119,7 @@ a:hover {
   flex-direction: column;
   align-items: flex-start;
   gap: var(--space-3);
+  margin-top: auto;
 }
 .download-card h2 {
   margin-top: 0;
@@ -1100,6 +1135,10 @@ a:hover {
   font-weight: 800;
   padding: 0.8rem 1rem;
   text-decoration: none;
+}
+.button-secondary {
+  background: transparent;
+  color: var(--accent-secondary);
 }
 .release-details {
   border-top: var(--border-w-hair) solid var(--border-hairline);
@@ -1180,6 +1219,9 @@ a:hover {
   border-radius: var(--radius-sm);
   padding: var(--space-5);
 }
+.setup-note h2 {
+  margin-top: 0;
+}
 .advanced-help {
   margin-top: var(--space-4);
 }
@@ -1215,6 +1257,9 @@ a:hover {
   main {
     width: min(100% - 1rem, 1120px);
   }
+  .entry {
+    max-width: none;
+  }
   .topbar {
     padding: var(--space-2) var(--space-3);
   }
@@ -1226,14 +1271,15 @@ a:hover {
   }
   .overview-grid,
   .facts {
-    grid-template-columns: minmax(0, 1fr);
+    grid-template-columns: repeat(2, minmax(0, 1fr));
   }
-  .overview-card-party {
-    grid-column: span 1;
+  .panel-stack {
+    margin-top: var(--space-6);
   }
   .panel-content,
   .party-card,
-  .setup-step {
+  .setup-step,
+  .setup-note {
     padding: var(--space-3);
   }
   .setup-callout {
@@ -1267,8 +1313,8 @@ a:hover {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .starter-ball-choice-recommended,
-  .starter-ball-choice-recommended .starter-ball-stage,
+  .starter-ball-choice-highlighted,
+  .starter-ball-choice-highlighted .starter-ball-stage,
   .starter-selection-arrow {
     animation: none;
   }

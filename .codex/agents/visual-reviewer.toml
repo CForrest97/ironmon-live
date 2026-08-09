@@ -1,5 +1,5 @@
 name = "visual_reviewer"
-description = "Read-only independent reviewer that rates the layout quality of captured IronMON Live screens."
+description = "Read-only independent reviewer that rates captured IronMON Live screens on layout quality and on content fit for player needs."
 model = "gpt-5.6-terra"
 model_reasoning_effort = "medium"
 sandbox_mode = "read-only"

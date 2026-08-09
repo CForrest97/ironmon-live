@@ -370,8 +370,8 @@ const PartyDetails = ({ member }: { readonly member: ExpandedPartyMember }) => (
 
 const STARTER_BALL_POSITIONS = ["Left", "Centre", "Right"] as const;
 
-const StarterBallRecommendation = () => {
-  const [recommendedIndex] = useState(() =>
+const StarterBallHighlight = () => {
+  const [highlightedIndex] = useState(() =>
     Math.floor(Math.random() * STARTER_BALL_POSITIONS.length),
   );
 
@@ -381,19 +381,19 @@ const StarterBallRecommendation = () => {
         <p className="eyebrow">First pick</p>
         <h2 id="starter-pick-heading">A first pick, just for fun</h2>
         <p className="starter-pick-description">
-          One ball is highlighted at random. It does not reveal what is inside.
+          One ball is highlighted at random. It does not reveal what is inside or suggest a choice.
         </p>
       </div>
       <ol className="starter-ball-options" aria-label="Starter ball choices">
         {STARTER_BALL_POSITIONS.map((position, index) => {
-          const isRecommended = index === recommendedIndex;
+          const isHighlighted = index === highlightedIndex;
           return (
             <li
-              className={`starter-ball-choice ${isRecommended ? "starter-ball-choice-recommended" : "starter-ball-choice-unselected"}`}
+              className={`starter-ball-choice ${isHighlighted ? "starter-ball-choice-highlighted" : "starter-ball-choice-unselected"}`}
               key={position}
             >
               <div className="starter-ball-stage">
-                {isRecommended && (
+                {isHighlighted && (
                   <span className="starter-selection-arrow" aria-hidden="true">
                     ▼
                   </span>
@@ -401,7 +401,7 @@ const StarterBallRecommendation = () => {
                 <span className="starter-ball" aria-hidden="true">
                   <span className="starter-ball-button" />
                 </span>
-                {isRecommended && (
+                {isHighlighted && (
                   <span className="starter-sparkles" aria-hidden="true">
                     {[0, 1, 2, 3].map((sparkle) => (
                       <span className="starter-sparkle" key={sparkle} />
@@ -410,7 +410,7 @@ const StarterBallRecommendation = () => {
                 )}
               </div>
               <span className="starter-ball-position">{position}</span>
-              {isRecommended && <span className="starter-ball-badge">Recommended pick</span>}
+              {isHighlighted && <span className="starter-ball-badge">Random highlight</span>}
             </li>
           );
         })}
@@ -425,7 +425,7 @@ const StarterBallPrompt = ({
 }: {
   readonly status: string;
   readonly partySize: number;
-}) => (status === "active" && partySize === 0 ? <StarterBallRecommendation /> : null);
+}) => (status === "active" && partySize === 0 ? <StarterBallHighlight /> : null);
 
 const RunFrame = ({
   status,
@@ -520,13 +520,15 @@ const Panel = ({
   open,
   onToggle,
   children,
+  className,
 }: {
   readonly title: string;
   readonly open: boolean;
   readonly onToggle: () => void;
   readonly children: ReactNode;
+  readonly className?: string;
 }) => (
-  <section className="panel">
+  <section className={`panel ${className ?? ""}`}>
     <button
       type="button"
       className="panel-summary"
@@ -573,15 +575,27 @@ const ExpandedRunContent = ({ snapshot }: { readonly snapshot: ExpandedRunSnapsh
         <article className="overview-card overview-card-party">
           <h2>Party</h2>
           <div className="overview-party">
-            {snapshot.party.map((member) => (
-              <div className="overview-party-row" key={member.id}>
-                <Sprite member={member} />
-                <div className="overview-party-info">
-                  <span className="overview-party-name">{member.name}</span>
-                  <HpBar member={member} />
+            {snapshot.party.length === 0 ? (
+              <p>No party yet</p>
+            ) : (
+              snapshot.party.map((member) => (
+                <div className="overview-party-row" key={member.id}>
+                  <Sprite member={member} />
+                  <div className="overview-party-info">
+                    <span className="overview-party-name">{member.name}</span>
+                    <HpBar member={member} />
+                    <TypeTags value={member.types} />
+                    {availableValue(member.moves, (moves) => (
+                      <span className="overview-party-moves">
+                        {moves.length === 0
+                          ? "No moves"
+                          : moves.map((move) => move.name).join(" · ")}
+                      </span>
+                    ))}
+                  </div>
                 </div>
-              </div>
-            ))}
+              ))
+            )}
           </div>
         </article>
         <article className="overview-card">
@@ -606,6 +620,7 @@ const ExpandedRunContent = ({ snapshot }: { readonly snapshot: ExpandedRunSnapsh
       <section className="panel-stack" aria-label="Run details">
         <Panel
           title="Party"
+          className="panel-party"
           open={openPanel === "Party"}
           onToggle={() => {
             togglePanel("Party");
@@ -620,6 +635,7 @@ const ExpandedRunContent = ({ snapshot }: { readonly snapshot: ExpandedRunSnapsh
         {activeBattle && (
           <Panel
             title="Battle"
+            className="panel-battle"
             open={openPanel === "Battle"}
             onToggle={() => {
               togglePanel("Battle");
@@ -649,6 +665,7 @@ const ExpandedRunContent = ({ snapshot }: { readonly snapshot: ExpandedRunSnapsh
         )}
         <Panel
           title="Route"
+          className="panel-route"
           open={openPanel === "Route"}
           onToggle={() => {
             togglePanel("Route");
@@ -693,6 +710,7 @@ const ExpandedRunContent = ({ snapshot }: { readonly snapshot: ExpandedRunSnapsh
         </Panel>
         <Panel
           title="Progress"
+          className="panel-progress"
           open={openPanel === "Progress"}
           onToggle={() => {
             togglePanel("Progress");

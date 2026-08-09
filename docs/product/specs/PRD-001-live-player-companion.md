@@ -36,8 +36,8 @@ not yet been discovered.
 
 ## Desired Outcomes
 
-- A player can understand detailed current-party information and current-route
-  trainer progress at a glance during play.
+- A player can understand detailed current-party information, current-route
+  trainer progress and active battle details at a glance during play.
 - Run-state changes observable by the Tracker appear in the live view within
   one second under supported operating conditions.
 - A player can let another person follow the current run without repeatedly
@@ -48,7 +48,6 @@ not yet been discovered.
 - Search, directories, or public discovery of players or channels.
 - Accounts, authenticated viewing, or secure channel ownership in this version.
 - Permanent run history or retention of a final run snapshot.
-- Encounter or battle information.
 - Inventory or remaining route-item progress.
 - Spectator-specific features or presentation.
 - Inferring information that the Tracker does not report.
@@ -122,8 +121,7 @@ channel remains available for a later run.
   becomes the channel state without claiming ownership for either publisher.
 - A terminal snapshot continues to show its reported status and run details
   until heartbeat expiry.
-- Inventory, remaining route-item progress, encounter information, and battle
-  information do not appear in the initial view.
+- Inventory, remaining route-item progress do not appear in the initial view.
 
 ## Affected Contexts
 

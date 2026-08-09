@@ -93,8 +93,10 @@ snapshot-derived gameplay information.
 2. The initial visible overview shall show run status, current location, an
    active-battle summary when a battle is active, party health and state
    summary, and current-route trainer progress.
-3. The overview shall remain compact; detailed values shall be available only
-   through clearly named Party, Battle, Route, and Progress panels.
+3. The overview shall remain compact and show each party member's reported
+   types and move names with its readiness summary; deeper detailed values
+   shall be available through clearly named Party, Battle, Route, and Progress
+   panels.
 4. The Party panel shall make core identity and condition prominent, then make
    reported level, current and maximum HP, types, status, ability, held item,
    moves and PP, major stats, stat stages, IVs, EVs, nature, experience,
@@ -140,7 +142,7 @@ snapshot-derived gameplay information.
 14. When, and only when, reported status is `active` and the reported party
     is empty, the channel shall show exactly three labelled, CSS-rendered
     standard balls and randomly mark one stable, presentation-only
-    "Recommended pick" for that empty-party active-run episode. It shall provide
+    "Random highlight" for that empty-party active-run episode. It shall provide
     no interaction, reroll, persistence, Tracker write, external asset, or
     claim about contents, encounters, or gameplay value; it shall disappear
     when either condition no longer holds.
@@ -162,7 +164,7 @@ snapshot-derived gameplay information.
 - A failed or absent external image does not hide a Pokémon's, trainer's, or
   state information.
 - An empty-party `active` snapshot in either supported schema view shows one
-  stable random recommended ball out of three; an empty non-`active` snapshot
+  stable random highlighted ball out of three; an empty non-`active` snapshot
   and every non-empty party hide the prompt.
 - Automated layout coverage verifies the overview and panel operation at 640
   CSS pixels; component coverage verifies disclosure and image fallbacks.

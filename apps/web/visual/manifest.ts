@@ -22,6 +22,8 @@ export type PageMetrics = {
   readonly innerWidth: number;
   readonly horizontalOverflow: boolean;
   readonly landmarks: readonly Landmark[];
+  /** The page's rendered text (`document.body.innerText`), collapsed to single spaces. */
+  readonly renderedText: string;
 };
 
 export type CaptureImage = { readonly file: string; readonly band: string };

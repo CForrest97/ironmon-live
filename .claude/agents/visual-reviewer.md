@@ -1,8 +1,8 @@
 ---
 name: visual-reviewer
-description: Read-only independent reviewer that rates the layout quality of captured IronMON Live screens against the visual-review rubric. Use after capturing screens; never for implementation or self-review.
+description: Read-only independent reviewer that rates captured IronMON Live screens on layout quality and on whether the right player-facing information is present and prominent, against the visual-review rubric. Use after capturing screens; never for implementation or self-review.
 tools: Read, Grep, Glob, Bash
-model: opus
+model: haiku
 ---
 
 # Visual reviewer

@@ -100,18 +100,26 @@ const legacyActiveEmptyPartySnapshot = {
 } satisfies LegacyRunSnapshot;
 
 describe("expanded run dashboard", () => {
-  it("shows party HP and badge state in the overview without opening a panel", () => {
+  it("shows party health, types, moves, and badge state in the overview without opening a panel", () => {
     render(<ExpandedRunView snapshot={snapshot()} />);
     const overview = screen.getByRole("region", { name: "Run overview" });
     expect(overview).toHaveTextContent("Route 1");
     expect(overview).toHaveTextContent("Bulbasaur");
     expect(overview).toHaveTextContent("12/20 HP");
+    expect(overview).toHaveTextContent("grass");
+    expect(overview).toHaveTextContent("Tackle");
     expect(overview).toHaveTextContent("No badges yet");
     ["Party", "Battle", "Route", "Progress"].forEach((panel) => {
       expect(screen.getByRole("button", { name: panel })).toBeInTheDocument();
     });
     fireEvent.click(screen.getByRole("button", { name: "Party" }));
     expect(screen.getAllByText(/Tackle/u)[0]).toBeInTheDocument();
+  });
+
+  it("states when the overview has no party yet", () => {
+    render(<ExpandedRunView snapshot={{ ...snapshot(false), party: [] }} />);
+
+    expect(screen.getByRole("region", { name: "Run overview" })).toHaveTextContent("No party yet");
   });
 
   it("also shows badges inside the Progress panel", () => {
@@ -230,7 +238,7 @@ describe("expanded run dashboard", () => {
 });
 
 describe("empty-party active-run ball prompt", () => {
-  it("shows one stable random recommendation in the expanded view", () => {
+  it("shows one stable random highlight in the expanded view", () => {
     const random = vi.spyOn(Math, "random").mockReturnValue(0.5);
     const run = { ...snapshot(false), party: [] };
     const { container, rerender } = render(<ExpandedRunView snapshot={run} />);
@@ -241,18 +249,18 @@ describe("empty-party active-run ball prompt", () => {
     for (const position of ["Left", "Centre", "Right"]) {
       expect(screen.getByText(position)).toBeVisible();
     }
-    expect(screen.getByText("Recommended pick")).toBeVisible();
+    expect(screen.getByText("Random highlight")).toBeVisible();
 
     const choices = [...container.querySelectorAll<HTMLElement>(".starter-ball-choice")];
     expect(choices).toHaveLength(3);
-    expect(choices[1]).toHaveClass("starter-ball-choice-recommended");
+    expect(choices[1]).toHaveClass("starter-ball-choice-highlighted");
     expect(
       choices.filter((choice) => choice.classList.contains("starter-ball-choice-unselected")),
     ).toHaveLength(2);
 
     rerender(<ExpandedRunView snapshot={{ ...run, observedAt: "2026-08-01T10:00:01Z" }} />);
     expect(random).toHaveBeenCalledOnce();
-    expect(choices[1]).toHaveClass("starter-ball-choice-recommended");
+    expect(choices[1]).toHaveClass("starter-ball-choice-highlighted");
   });
 
   it("shows the same prompt for a legacy active snapshot", () => {
@@ -261,14 +269,14 @@ describe("empty-party active-run ball prompt", () => {
 
     expect(screen.getByRole("heading", { name: "A first pick, just for fun" })).toBeVisible();
     expect(screen.getAllByRole("listitem")).toHaveLength(3);
-    expect(screen.getByText("Left").closest("li")).toHaveClass("starter-ball-choice-recommended");
+    expect(screen.getByText("Left").closest("li")).toHaveClass("starter-ball-choice-highlighted");
   });
 
-  it("keeps the recommendation through an active empty-party schema transition", () => {
+  it("keeps the highlight through an active empty-party schema transition", () => {
     const random = vi.spyOn(Math, "random").mockReturnValue(0.5);
     const expandedRun = { ...snapshot(false), party: [] };
     const { rerender } = render(<RunView snapshot={expandedRun} />);
-    expect(screen.getByText("Centre").closest("li")).toHaveClass("starter-ball-choice-recommended");
+    expect(screen.getByText("Centre").closest("li")).toHaveClass("starter-ball-choice-highlighted");
 
     rerender(
       <RunView
@@ -276,7 +284,7 @@ describe("empty-party active-run ball prompt", () => {
       />,
     );
     expect(random).toHaveBeenCalledOnce();
-    expect(screen.getByText("Centre").closest("li")).toHaveClass("starter-ball-choice-recommended");
+    expect(screen.getByText("Centre").closest("li")).toHaveClass("starter-ball-choice-highlighted");
   });
 
   it("hides the prompt outside an empty-party active-run episode", () => {

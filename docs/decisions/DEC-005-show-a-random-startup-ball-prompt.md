@@ -30,7 +30,7 @@ empty. It shall:
   Left, Centre, and Right;
 - choose one ball randomly in the web component when that empty-party active
   episode mounts, keep that choice stable for the episode, and label only it
-  "Recommended pick";
+  "Random highlight";
 - make no claim about a ball's contents, encounter, route, battle, party, or
   strategic value; and
 - offer no interaction, reroll, Tracker write, persistence, or protocol or
