@@ -10,17 +10,13 @@ import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
+import { hasFlag, readValue, readValues } from "./args.ts";
 import type { Manifest } from "./manifest.ts";
 
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
 const skillPath = ".agents/skills/visual-review/SKILL.md";
 
 const passedArguments = process.argv.slice(2);
-
-const argumentValue = (flag: string) =>
-  passedArguments.find((entry) => entry.startsWith(`${flag}=`))?.slice(flag.length + 1);
-
-const hasFlag = (flag: string) => passedArguments.includes(flag);
 
 const run = (command: string, commandArguments: readonly string[], captureStdout: boolean) =>
   new Promise<string>((resolve, reject) => {
@@ -40,9 +36,16 @@ const run = (command: string, commandArguments: readonly string[], captureStdout
   });
 
 const capture = async () => {
-  const forwarded = passedArguments.filter((entry) =>
-    ["--scene=", "--viewport=", "--out=", "--base-url="].some((flag) => entry.startsWith(flag)),
-  );
+  // Normalize to `--flag=value` for the child process regardless of which
+  // form (`--flag value` or `--flag=value`) the caller used.
+  const out = readValue(passedArguments, "--out");
+  const baseUrl = readValue(passedArguments, "--base-url");
+  const forwarded = [
+    ...readValues(passedArguments, "--scene").map((value) => `--scene=${value}`),
+    ...readValues(passedArguments, "--viewport").map((value) => `--viewport=${value}`),
+    ...(out ? [`--out=${out}`] : []),
+    ...(baseUrl ? [`--base-url=${baseUrl}`] : []),
+  ];
   const output = await run("node", ["apps/web/visual/capture.ts", ...forwarded], true);
   const directory = output.trim().split("\n").at(-1);
   if (!directory) throw new Error("the capture did not report an output directory");
@@ -63,8 +66,11 @@ ${manifest}
 `;
 
 const main = async () => {
-  const directory = hasFlag("--skip-capture")
-    ? path.resolve(repositoryRoot, argumentValue("--out") ?? "apps/web/test-results/visual")
+  const directory = hasFlag(passedArguments, "--skip-capture")
+    ? path.resolve(
+        repositoryRoot,
+        readValue(passedArguments, "--out") ?? "apps/web/test-results/visual",
+      )
     : await capture();
 
   const manifest = JSON.parse(
@@ -79,8 +85,8 @@ const main = async () => {
     })
     .join("\n");
 
-  const model = argumentValue("--model");
-  const effort = argumentValue("--effort");
+  const model = readValue(passedArguments, "--model");
+  const effort = readValue(passedArguments, "--effort");
   const claudeArguments = [
     "-p",
     promptFor(directory, summary),

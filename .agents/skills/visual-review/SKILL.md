@@ -94,8 +94,11 @@ Judge against the scene's stated intent, not a generic idea of good design.
 IronMON Live is watched while something else is happening, so a viewer should
 resolve the run's state in one glance.
 
-Sprite artwork is blocked during capture, so sprite boxes are empty at their
-real size. Never report that as a finding.
+Sprite artwork loads from real third-party CDNs during capture, so it can be
+slow, missing, or briefly a broken-image icon like a real viewer would see.
+Treat a sprite that failed to load as a normal content-fit or design finding —
+don't wave it away, but don't assume it reveals a code bug either; it may just
+be that species/portrait ID not existing on the CDN.
 
 ## Reporting
 

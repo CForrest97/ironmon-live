@@ -14,6 +14,7 @@ import path from "node:path";
 import process from "node:process";
 import { fileURLToPath } from "node:url";
 import { chromium, type Browser, type Page } from "@playwright/test";
+import { readValue, readValues } from "./args.ts";
 import type { CaptureImage, CaptureRecord, Manifest, Viewport } from "./manifest.ts";
 import { freezeRandomness, installChannelSocket, scenes, type Scene } from "./scenes.ts";
 
@@ -63,30 +64,20 @@ const LANDMARK_SELECTOR = [
 
 const MAX_LANDMARKS = 120;
 
-const SPRITE_HOSTS = /raw\.githubusercontent\.com|play\.pokemonshowdown\.com/;
+/** Sprites are fetched from real third-party CDNs; give them this long to settle before capturing regardless. */
+const IMAGE_LOAD_TIMEOUT_MS = 8_000;
 
 const repositoryRoot = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "../../..");
+const passedArguments = process.argv.slice(2);
 
-const argumentValue = (flag: string) =>
-  process.argv
-    .slice(2)
-    .find((entry) => entry.startsWith(`${flag}=`))
-    ?.slice(flag.length + 1);
-
-const argumentValues = (flag: string) =>
-  process.argv
-    .slice(2)
-    .filter((entry) => entry.startsWith(`${flag}=`))
-    .map((entry) => entry.slice(flag.length + 1));
-
-const baseUrl = argumentValue("--base-url") ?? "http://127.0.0.1:4173";
+const baseUrl = readValue(passedArguments, "--base-url") ?? "http://127.0.0.1:4173";
 const outputDirectory = path.resolve(
   repositoryRoot,
-  argumentValue("--out") ?? "apps/web/test-results/visual",
+  readValue(passedArguments, "--out") ?? "apps/web/test-results/visual",
 );
 
 const selectedScenes = () => {
-  const requested = argumentValues("--scene");
+  const requested = readValues(passedArguments, "--scene");
   if (requested.length === 0) return scenes;
   const matched = scenes.filter((scene) => requested.includes(scene.name));
   if (matched.length !== requested.length) {
@@ -97,7 +88,7 @@ const selectedScenes = () => {
 };
 
 const selectedViewports = () => {
-  const requested = argumentValues("--viewport");
+  const requested = readValues(passedArguments, "--viewport");
   if (requested.length === 0) {
     return VIEWPORTS.filter((viewport) => DEFAULT_VIEWPORT_NAMES.includes(viewport.name));
   }
@@ -224,10 +215,6 @@ const captureScene = async (
   });
   try {
     const page = await context.newPage();
-    // Sprite artwork comes from third-party CDNs. Blocking it keeps captures
-    // offline-safe and identical run to run; the boxes are CSS-sized, so the
-    // layout under review is the same either way.
-    await page.route(SPRITE_HOSTS, (route) => route.abort());
     await page.addInitScript(freezeRandomness);
     if (scene.channelEvent !== undefined) {
       await page.addInitScript(installChannelSocket, scene.channelEvent);
@@ -248,6 +235,17 @@ const captureScene = async (
     await page.evaluate(async () => {
       await document.fonts.ready;
     });
+    // Sprites come from third-party CDNs (raw.githubusercontent.com,
+    // play.pokemonshowdown.com) — real network requests, kept deliberately
+    // unblocked so the capture matches what a viewer actually sees. Wait for
+    // every <img> to settle (loaded or failed) so the screenshot never
+    // catches one mid-fetch; give up after IMAGE_LOAD_TIMEOUT_MS rather than
+    // hang the whole capture on a slow or unreachable CDN.
+    await page
+      .waitForFunction(() => [...document.images].every((image) => image.complete), undefined, {
+        timeout: IMAGE_LOAD_TIMEOUT_MS,
+      })
+      .catch(() => {});
 
     const metrics = await readMetrics(page, viewport.height, LANDMARK_SELECTOR, MAX_LANDMARKS);
     const bandCount = Math.min(MAX_BANDS, Math.ceil(metrics.documentHeight / viewport.height));
@@ -325,7 +323,7 @@ const main = async () => {
   const manifest: Manifest = {
     capturedAt: new Date().toISOString(),
     baseUrl,
-    note: "Coordinates and sizes are CSS pixels. Multiply by deviceScaleFactor for image pixels. Sprite artwork is deliberately blocked, so sprite boxes render empty at their real size; that is not a defect.",
+    note: "Coordinates and sizes are CSS pixels. Multiply by deviceScaleFactor for image pixels. Sprite artwork loads from real third-party CDNs; a sprite that failed or was still loading when captured renders as an empty box and is worth flagging like any other content-fit gap.",
     captures,
   };
   await writeFile(
