@@ -15,6 +15,7 @@ keep completed items as durable delivery history.
 - [WORK-011: List active channels on the homepage](WORK-011-list-active-channels-on-homepage.md)
 - [WORK-012: Add a run preview to homepage channel cards](WORK-012-add-a-run-preview-to-homepage-channel-cards.md)
 - [WORK-013: Fix silent publish desyncs in channel view](WORK-013-fix-silent-publish-desyncs-in-channel-view.md)
+- [WORK-014: Add a release tag helper](WORK-014-add-release-tag-helper.md)
 - [WORK-015: Add an empty-party starter-ball prompt](WORK-015-add-empty-party-starter-ball-prompt.md)
 - [WORK-016: Bound route progress to the reported trainer total](WORK-016-bound-route-progress-to-reported-total.md)
 - [WORK-017: Add the branded website icon](WORK-017-add-branded-website-icon.md)
