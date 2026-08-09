@@ -1,0 +1,2569 @@
+{
+  "testFixtureEvent": {
+    "type": "active",
+    "snapshot": {
+      "kind": "snapshot",
+      "schemaVersion": 2,
+      "observedAt": "2026-08-01T10:00:00Z",
+      "status": "active",
+      "party": [
+        {
+          "id": "1",
+          "name": "Bulbasaur",
+          "speciesId": {
+            "availability": "available",
+            "value": "1"
+          },
+          "level": {
+            "availability": "available",
+            "value": 5
+          },
+          "currentHp": {
+            "availability": "available",
+            "value": 12
+          },
+          "maximumHp": {
+            "availability": "available",
+            "value": 20
+          },
+          "types": {
+            "availability": "available",
+            "value": ["grass"]
+          },
+          "status": {
+            "availability": "available",
+            "value": "healthy"
+          },
+          "ability": {
+            "availability": "unavailable"
+          },
+          "heldItem": {
+            "availability": "unavailable"
+          },
+          "moves": {
+            "availability": "available",
+            "value": [
+              {
+                "id": "tackle",
+                "name": "Tackle",
+                "pp": {
+                  "availability": "available",
+                  "value": 35
+                }
+              }
+            ]
+          },
+          "stats": {
+            "availability": "available",
+            "value": {
+              "hp": 20
+            }
+          },
+          "baseStats": {
+            "availability": "available",
+            "value": {
+              "hp": 20
+            }
+          },
+          "statStages": {
+            "availability": "available",
+            "value": {
+              "atk": 0
+            }
+          },
+          "ivs": {
+            "availability": "available",
+            "value": {
+              "hp": 0
+            }
+          },
+          "evs": {
+            "availability": "available",
+            "value": {
+              "hp": 0
+            }
+          },
+          "nature": {
+            "availability": "unavailable"
+          },
+          "experience": {
+            "availability": "available",
+            "value": 0
+          },
+          "friendship": {
+            "availability": "available",
+            "value": 0
+          },
+          "gender": {
+            "availability": "unavailable"
+          },
+          "shiny": {
+            "availability": "available",
+            "value": false
+          },
+          "pokerus": {
+            "availability": "available",
+            "value": false
+          }
+        }
+      ],
+      "location": {
+        "availability": "available",
+        "value": {
+          "name": "Route 1",
+          "mapId": {
+            "availability": "unavailable"
+          }
+        }
+      },
+      "battle": {
+        "availability": "available",
+        "value": {
+          "active": true,
+          "kind": "trainer",
+          "format": "single",
+          "player": [
+            {
+              "id": "1",
+              "name": "Bulbasaur",
+              "speciesId": {
+                "availability": "available",
+                "value": "1"
+              },
+              "level": {
+                "availability": "available",
+                "value": 5
+              },
+              "currentHp": {
+                "availability": "available",
+                "value": 12
+              },
+              "maximumHp": {
+                "availability": "available",
+                "value": 20
+              },
+              "types": {
+                "availability": "available",
+                "value": ["grass"]
+              },
+              "status": {
+                "availability": "available",
+                "value": "healthy"
+              },
+              "ability": {
+                "availability": "unavailable"
+              },
+              "heldItem": {
+                "availability": "unavailable"
+              },
+              "moves": {
+                "availability": "available",
+                "value": [
+                  {
+                    "id": "tackle",
+                    "name": "Tackle",
+                    "pp": {
+                      "availability": "available",
+                      "value": 35
+                    }
+                  }
+                ]
+              },
+              "stats": {
+                "availability": "available",
+                "value": {
+                  "hp": 20
+                }
+              },
+              "baseStats": {
+                "availability": "available",
+                "value": {
+                  "hp": 20
+                }
+              },
+              "statStages": {
+                "availability": "available",
+                "value": {
+                  "atk": 0
+                }
+              },
+              "ivs": {
+                "availability": "available",
+                "value": {
+                  "hp": 0
+                }
+              },
+              "evs": {
+                "availability": "available",
+                "value": {
+                  "hp": 0
+                }
+              },
+              "nature": {
+                "availability": "unavailable"
+              },
+              "experience": {
+                "availability": "available",
+                "value": 0
+              },
+              "friendship": {
+                "availability": "available",
+                "value": 0
+              },
+              "gender": {
+                "availability": "unavailable"
+              },
+              "shiny": {
+                "availability": "available",
+                "value": false
+              },
+              "pokerus": {
+                "availability": "available",
+                "value": false
+              }
+            }
+          ],
+          "opponents": [
+            {
+              "id": "1",
+              "name": "Bulbasaur",
+              "speciesId": {
+                "availability": "available",
+                "value": "1"
+              },
+              "level": {
+                "availability": "available",
+                "value": 5
+              },
+              "currentHp": {
+                "availability": "available",
+                "value": 12
+              },
+              "maximumHp": {
+                "availability": "available",
+                "value": 20
+              },
+              "types": {
+                "availability": "available",
+                "value": ["grass"]
+              },
+              "status": {
+                "availability": "available",
+                "value": "healthy"
+              },
+              "ability": {
+                "availability": "unavailable"
+              },
+              "heldItem": {
+                "availability": "unavailable"
+              },
+              "moves": {
+                "availability": "available",
+                "value": [
+                  {
+                    "id": "tackle",
+                    "name": "Tackle",
+                    "pp": {
+                      "availability": "available",
+                      "value": 35
+                    }
+                  }
+                ]
+              },
+              "stats": {
+                "availability": "available",
+                "value": {
+                  "hp": 20
+                }
+              },
+              "baseStats": {
+                "availability": "available",
+                "value": {
+                  "hp": 20
+                }
+              },
+              "statStages": {
+                "availability": "available",
+                "value": {
+                  "atk": 0
+                }
+              },
+              "ivs": {
+                "availability": "available",
+                "value": {
+                  "hp": 0
+                }
+              },
+              "evs": {
+                "availability": "available",
+                "value": {
+                  "hp": 0
+                }
+              },
+              "nature": {
+                "availability": "unavailable"
+              },
+              "experience": {
+                "availability": "available",
+                "value": 0
+              },
+              "friendship": {
+                "availability": "available",
+                "value": 0
+              },
+              "gender": {
+                "availability": "unavailable"
+              },
+              "shiny": {
+                "availability": "available",
+                "value": false
+              },
+              "pokerus": {
+                "availability": "available",
+                "value": false
+              }
+            }
+          ],
+          "trainer": {
+            "availability": "unavailable"
+          },
+          "outcome": {
+            "availability": "available",
+            "value": "in_progress"
+          }
+        }
+      },
+      "route": {
+        "availability": "available",
+        "value": {
+          "name": "Route 1",
+          "trainers": [],
+          "completed": 0,
+          "total": 0
+        }
+      },
+      "progress": {
+        "availability": "available",
+        "value": {
+          "romName": {
+            "availability": "unavailable"
+          },
+          "gameCode": {
+            "availability": "unavailable"
+          },
+          "trackerVersion": {
+            "availability": "unavailable"
+          },
+          "timer": {
+            "availability": "unavailable"
+          },
+          "paused": {
+            "availability": "available",
+            "value": false
+          },
+          "playtime": {
+            "availability": "unavailable"
+          },
+          "badges": {
+            "availability": "available",
+            "value": []
+          },
+          "centreHeals": {
+            "availability": "available",
+            "value": 0
+          },
+          "wildBattles": {
+            "availability": "available",
+            "value": 0
+          },
+          "trainerBattles": {
+            "availability": "available",
+            "value": 0
+          },
+          "fishing": {
+            "availability": "available",
+            "value": 0
+          },
+          "rockSmash": {
+            "availability": "available",
+            "value": 0
+          }
+        }
+      }
+    }
+  },
+  "capturedRunEvent": {
+    "type": "active",
+    "snapshot": {
+      "status": "active",
+      "observedAt": "2026-08-09T19:31:34Z",
+      "location": {
+        "availability": "available",
+        "value": {
+          "mapId": {
+            "availability": "available",
+            "value": "19.0"
+          },
+          "name": "Route 103"
+        }
+      },
+      "battle": {
+        "availability": "available",
+        "value": {
+          "active": false
+        }
+      },
+      "party": [
+        {
+          "heldItem": {
+            "availability": "available",
+            "value": "Max Elixir"
+          },
+          "ivs": {
+            "availability": "available",
+            "value": {
+              "hp": 22,
+              "spd": 0,
+              "def": 2,
+              "atk": 21,
+              "spe": 6,
+              "spa": 18
+            }
+          },
+          "speciesId": {
+            "availability": "available",
+            "value": "385"
+          },
+          "statStages": {
+            "availability": "available",
+            "value": {
+              "atk": 6,
+              "eva": 6,
+              "spd": 6,
+              "acc": 6,
+              "spa": 6,
+              "spe": 6,
+              "def": 6
+            }
+          },
+          "ability": {
+            "availability": "available",
+            "value": "Blaze"
+          },
+          "nature": {
+            "availability": "available",
+            "value": "Naughty"
+          },
+          "types": {
+            "availability": "available",
+            "value": ["steel", "psychic"]
+          },
+          "evs": {
+            "availability": "available",
+            "value": {
+              "hp": 0,
+              "spd": 0,
+              "def": 0,
+              "atk": 1,
+              "spe": 0,
+              "spa": 0
+            }
+          },
+          "level": {
+            "availability": "available",
+            "value": 5
+          },
+          "pokerus": {
+            "availability": "available",
+            "value": false
+          },
+          "shiny": {
+            "availability": "available",
+            "value": false
+          },
+          "name": "JIRACHI",
+          "maximumHp": {
+            "availability": "available",
+            "value": 25
+          },
+          "currentHp": {
+            "availability": "available",
+            "value": 25
+          },
+          "id": "409",
+          "stats": {
+            "availability": "available",
+            "value": {
+              "hp": 25,
+              "spd": 18,
+              "def": 10,
+              "atk": 16,
+              "spe": 15,
+              "spa": 15
+            }
+          },
+          "status": {
+            "availability": "available",
+            "value": "healthy"
+          },
+          "friendship": {
+            "availability": "available",
+            "value": 100
+          },
+          "experience": {
+            "availability": "available",
+            "value": 17
+          },
+          "baseStats": {
+            "availability": "available",
+            "value": {
+              "hp": 94,
+              "spd": 168,
+              "def": 53,
+              "atk": 92,
+              "spe": 103,
+              "spa": 91
+            }
+          },
+          "moves": {
+            "availability": "available",
+            "value": [
+              {
+                "id": "265",
+                "name": "SmellingSalt",
+                "pp": {
+                  "availability": "available",
+                  "value": 10
+                }
+              },
+              {
+                "id": "195",
+                "name": "Perish Song",
+                "pp": {
+                  "availability": "available",
+                  "value": 5
+                }
+              },
+              {
+                "id": "58",
+                "name": "Ice Beam",
+                "pp": {
+                  "availability": "available",
+                  "value": 10
+                }
+              },
+              {
+                "id": "329",
+                "name": "Sheer Cold",
+                "pp": {
+                  "availability": "available",
+                  "value": 5
+                }
+              }
+            ]
+          },
+          "gender": {
+            "availability": "available",
+            "value": "unknown"
+          }
+        }
+      ],
+      "schemaVersion": 2,
+      "kind": "snapshot",
+      "route": {
+        "availability": "available",
+        "value": {
+          "total": 14,
+          "name": "Route 103",
+          "trainers": [
+            {
+              "id": "520",
+              "party": {
+                "availability": "available",
+                "value": [
+                  {
+                    "heldItem": {
+                      "availability": "unavailable"
+                    },
+                    "ivs": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 0,
+                        "spd": 0,
+                        "def": 0,
+                        "atk": 0,
+                        "spe": 0,
+                        "spa": 0
+                      }
+                    },
+                    "speciesId": {
+                      "availability": "available",
+                      "value": "169.0"
+                    },
+                    "statStages": {
+                      "availability": "unavailable"
+                    },
+                    "ability": {
+                      "availability": "unavailable"
+                    },
+                    "nature": {
+                      "availability": "unavailable"
+                    },
+                    "types": {
+                      "availability": "available",
+                      "value": ["poison", "flying"]
+                    },
+                    "evs": {
+                      "availability": "unavailable"
+                    },
+                    "level": {
+                      "availability": "available",
+                      "value": 8
+                    },
+                    "pokerus": {
+                      "availability": "unavailable"
+                    },
+                    "shiny": {
+                      "availability": "unavailable"
+                    },
+                    "name": "Crobat",
+                    "maximumHp": {
+                      "availability": "unavailable"
+                    },
+                    "currentHp": {
+                      "availability": "unavailable"
+                    },
+                    "id": "169.0",
+                    "stats": {
+                      "availability": "unavailable"
+                    },
+                    "status": {
+                      "availability": "unavailable"
+                    },
+                    "friendship": {
+                      "availability": "unavailable"
+                    },
+                    "experience": {
+                      "availability": "unavailable"
+                    },
+                    "baseStats": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 41,
+                        "spd": 125,
+                        "def": 75,
+                        "atk": 76,
+                        "spe": 134,
+                        "spa": 83
+                      }
+                    },
+                    "moves": {
+                      "availability": "unavailable"
+                    },
+                    "gender": {
+                      "availability": "unavailable"
+                    }
+                  }
+                ]
+              },
+              "doubleBattle": {
+                "availability": "available",
+                "value": false
+              },
+              "trainerClass": {
+                "availability": "available",
+                "value": "Gent"
+              },
+              "battleItems": {
+                "availability": "available",
+                "value": []
+              },
+              "name": "Esteban",
+              "battled": {
+                "availability": "available",
+                "value": false
+              },
+              "portraitId": {
+                "availability": "available",
+                "value": "71"
+              }
+            },
+            {
+              "id": "523",
+              "party": {
+                "availability": "available",
+                "value": [
+                  {
+                    "heldItem": {
+                      "availability": "unavailable"
+                    },
+                    "ivs": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 0,
+                        "spd": 0,
+                        "def": 0,
+                        "atk": 0,
+                        "spe": 0,
+                        "spa": 0
+                      }
+                    },
+                    "speciesId": {
+                      "availability": "available",
+                      "value": "68.0"
+                    },
+                    "statStages": {
+                      "availability": "unavailable"
+                    },
+                    "ability": {
+                      "availability": "unavailable"
+                    },
+                    "nature": {
+                      "availability": "unavailable"
+                    },
+                    "types": {
+                      "availability": "available",
+                      "value": ["fighting"]
+                    },
+                    "evs": {
+                      "availability": "unavailable"
+                    },
+                    "level": {
+                      "availability": "available",
+                      "value": 8
+                    },
+                    "pokerus": {
+                      "availability": "unavailable"
+                    },
+                    "shiny": {
+                      "availability": "unavailable"
+                    },
+                    "name": "Machamp",
+                    "maximumHp": {
+                      "availability": "unavailable"
+                    },
+                    "currentHp": {
+                      "availability": "unavailable"
+                    },
+                    "id": "68.0",
+                    "stats": {
+                      "availability": "unavailable"
+                    },
+                    "status": {
+                      "availability": "unavailable"
+                    },
+                    "friendship": {
+                      "availability": "unavailable"
+                    },
+                    "experience": {
+                      "availability": "unavailable"
+                    },
+                    "baseStats": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 66,
+                        "spd": 106,
+                        "def": 89,
+                        "atk": 156,
+                        "spe": 67,
+                        "spa": 21
+                      }
+                    },
+                    "moves": {
+                      "availability": "unavailable"
+                    },
+                    "gender": {
+                      "availability": "unavailable"
+                    }
+                  }
+                ]
+              },
+              "doubleBattle": {
+                "availability": "available",
+                "value": false
+              },
+              "trainerClass": {
+                "availability": "available",
+                "value": "Gent"
+              },
+              "battleItems": {
+                "availability": "available",
+                "value": []
+              },
+              "name": "Esteban",
+              "battled": {
+                "availability": "available",
+                "value": false
+              },
+              "portraitId": {
+                "availability": "available",
+                "value": "71"
+              }
+            },
+            {
+              "id": "526",
+              "party": {
+                "availability": "available",
+                "value": [
+                  {
+                    "heldItem": {
+                      "availability": "unavailable"
+                    },
+                    "ivs": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 0,
+                        "spd": 0,
+                        "def": 0,
+                        "atk": 0,
+                        "spe": 0,
+                        "spa": 0
+                      }
+                    },
+                    "speciesId": {
+                      "availability": "available",
+                      "value": "385"
+                    },
+                    "statStages": {
+                      "availability": "unavailable"
+                    },
+                    "ability": {
+                      "availability": "unavailable"
+                    },
+                    "nature": {
+                      "availability": "unavailable"
+                    },
+                    "types": {
+                      "availability": "available",
+                      "value": ["steel", "psychic"]
+                    },
+                    "evs": {
+                      "availability": "unavailable"
+                    },
+                    "level": {
+                      "availability": "available",
+                      "value": 8
+                    },
+                    "pokerus": {
+                      "availability": "unavailable"
+                    },
+                    "shiny": {
+                      "availability": "unavailable"
+                    },
+                    "name": "Jirachi",
+                    "maximumHp": {
+                      "availability": "unavailable"
+                    },
+                    "currentHp": {
+                      "availability": "unavailable"
+                    },
+                    "id": "409.0",
+                    "stats": {
+                      "availability": "unavailable"
+                    },
+                    "status": {
+                      "availability": "unavailable"
+                    },
+                    "friendship": {
+                      "availability": "unavailable"
+                    },
+                    "experience": {
+                      "availability": "unavailable"
+                    },
+                    "baseStats": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 94,
+                        "spd": 168,
+                        "def": 53,
+                        "atk": 92,
+                        "spe": 103,
+                        "spa": 91
+                      }
+                    },
+                    "moves": {
+                      "availability": "unavailable"
+                    },
+                    "gender": {
+                      "availability": "unavailable"
+                    }
+                  }
+                ]
+              },
+              "doubleBattle": {
+                "availability": "available",
+                "value": false
+              },
+              "trainerClass": {
+                "availability": "available",
+                "value": "Gent"
+              },
+              "battleItems": {
+                "availability": "available",
+                "value": []
+              },
+              "name": "Esteban",
+              "battled": {
+                "availability": "available",
+                "value": false
+              },
+              "portraitId": {
+                "availability": "available",
+                "value": "71"
+              }
+            },
+            {
+              "id": "529",
+              "party": {
+                "availability": "available",
+                "value": [
+                  {
+                    "heldItem": {
+                      "availability": "unavailable"
+                    },
+                    "ivs": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 0,
+                        "spd": 0,
+                        "def": 0,
+                        "atk": 0,
+                        "spe": 0,
+                        "spa": 0
+                      }
+                    },
+                    "speciesId": {
+                      "availability": "available",
+                      "value": "169.0"
+                    },
+                    "statStages": {
+                      "availability": "unavailable"
+                    },
+                    "ability": {
+                      "availability": "unavailable"
+                    },
+                    "nature": {
+                      "availability": "unavailable"
+                    },
+                    "types": {
+                      "availability": "available",
+                      "value": ["poison", "flying"]
+                    },
+                    "evs": {
+                      "availability": "unavailable"
+                    },
+                    "level": {
+                      "availability": "available",
+                      "value": 8
+                    },
+                    "pokerus": {
+                      "availability": "unavailable"
+                    },
+                    "shiny": {
+                      "availability": "unavailable"
+                    },
+                    "name": "Crobat",
+                    "maximumHp": {
+                      "availability": "unavailable"
+                    },
+                    "currentHp": {
+                      "availability": "unavailable"
+                    },
+                    "id": "169.0",
+                    "stats": {
+                      "availability": "unavailable"
+                    },
+                    "status": {
+                      "availability": "unavailable"
+                    },
+                    "friendship": {
+                      "availability": "unavailable"
+                    },
+                    "experience": {
+                      "availability": "unavailable"
+                    },
+                    "baseStats": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 41,
+                        "spd": 125,
+                        "def": 75,
+                        "atk": 76,
+                        "spe": 134,
+                        "spa": 83
+                      }
+                    },
+                    "moves": {
+                      "availability": "unavailable"
+                    },
+                    "gender": {
+                      "availability": "unavailable"
+                    }
+                  }
+                ]
+              },
+              "doubleBattle": {
+                "availability": "available",
+                "value": false
+              },
+              "trainerClass": {
+                "availability": "available",
+                "value": "Gent"
+              },
+              "battleItems": {
+                "availability": "available",
+                "value": []
+              },
+              "name": "Jo",
+              "battled": {
+                "availability": "available",
+                "value": false
+              },
+              "portraitId": {
+                "availability": "available",
+                "value": "72"
+              }
+            },
+            {
+              "id": "532",
+              "party": {
+                "availability": "available",
+                "value": [
+                  {
+                    "heldItem": {
+                      "availability": "unavailable"
+                    },
+                    "ivs": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 0,
+                        "spd": 0,
+                        "def": 0,
+                        "atk": 0,
+                        "spe": 0,
+                        "spa": 0
+                      }
+                    },
+                    "speciesId": {
+                      "availability": "available",
+                      "value": "68.0"
+                    },
+                    "statStages": {
+                      "availability": "unavailable"
+                    },
+                    "ability": {
+                      "availability": "unavailable"
+                    },
+                    "nature": {
+                      "availability": "unavailable"
+                    },
+                    "types": {
+                      "availability": "available",
+                      "value": ["fighting"]
+                    },
+                    "evs": {
+                      "availability": "unavailable"
+                    },
+                    "level": {
+                      "availability": "available",
+                      "value": 8
+                    },
+                    "pokerus": {
+                      "availability": "unavailable"
+                    },
+                    "shiny": {
+                      "availability": "unavailable"
+                    },
+                    "name": "Machamp",
+                    "maximumHp": {
+                      "availability": "unavailable"
+                    },
+                    "currentHp": {
+                      "availability": "unavailable"
+                    },
+                    "id": "68.0",
+                    "stats": {
+                      "availability": "unavailable"
+                    },
+                    "status": {
+                      "availability": "unavailable"
+                    },
+                    "friendship": {
+                      "availability": "unavailable"
+                    },
+                    "experience": {
+                      "availability": "unavailable"
+                    },
+                    "baseStats": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 66,
+                        "spd": 106,
+                        "def": 89,
+                        "atk": 156,
+                        "spe": 67,
+                        "spa": 21
+                      }
+                    },
+                    "moves": {
+                      "availability": "unavailable"
+                    },
+                    "gender": {
+                      "availability": "unavailable"
+                    }
+                  }
+                ]
+              },
+              "doubleBattle": {
+                "availability": "available",
+                "value": false
+              },
+              "trainerClass": {
+                "availability": "available",
+                "value": "Gent"
+              },
+              "battleItems": {
+                "availability": "available",
+                "value": []
+              },
+              "name": "Jo",
+              "battled": {
+                "availability": "available",
+                "value": false
+              },
+              "portraitId": {
+                "availability": "available",
+                "value": "72"
+              }
+            },
+            {
+              "id": "535",
+              "party": {
+                "availability": "available",
+                "value": [
+                  {
+                    "heldItem": {
+                      "availability": "unavailable"
+                    },
+                    "ivs": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 0,
+                        "spd": 0,
+                        "def": 0,
+                        "atk": 0,
+                        "spe": 0,
+                        "spa": 0
+                      }
+                    },
+                    "speciesId": {
+                      "availability": "available",
+                      "value": "385"
+                    },
+                    "statStages": {
+                      "availability": "unavailable"
+                    },
+                    "ability": {
+                      "availability": "unavailable"
+                    },
+                    "nature": {
+                      "availability": "unavailable"
+                    },
+                    "types": {
+                      "availability": "available",
+                      "value": ["steel", "psychic"]
+                    },
+                    "evs": {
+                      "availability": "unavailable"
+                    },
+                    "level": {
+                      "availability": "available",
+                      "value": 8
+                    },
+                    "pokerus": {
+                      "availability": "unavailable"
+                    },
+                    "shiny": {
+                      "availability": "unavailable"
+                    },
+                    "name": "Jirachi",
+                    "maximumHp": {
+                      "availability": "unavailable"
+                    },
+                    "currentHp": {
+                      "availability": "unavailable"
+                    },
+                    "id": "409.0",
+                    "stats": {
+                      "availability": "unavailable"
+                    },
+                    "status": {
+                      "availability": "unavailable"
+                    },
+                    "friendship": {
+                      "availability": "unavailable"
+                    },
+                    "experience": {
+                      "availability": "unavailable"
+                    },
+                    "baseStats": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 94,
+                        "spd": 168,
+                        "def": 53,
+                        "atk": 92,
+                        "spe": 103,
+                        "spa": 91
+                      }
+                    },
+                    "moves": {
+                      "availability": "unavailable"
+                    },
+                    "gender": {
+                      "availability": "unavailable"
+                    }
+                  }
+                ]
+              },
+              "doubleBattle": {
+                "availability": "available",
+                "value": false
+              },
+              "trainerClass": {
+                "availability": "available",
+                "value": "Gent"
+              },
+              "battleItems": {
+                "availability": "available",
+                "value": []
+              },
+              "name": "Jo",
+              "battled": {
+                "availability": "available",
+                "value": false
+              },
+              "portraitId": {
+                "availability": "available",
+                "value": "72"
+              }
+            },
+            {
+              "id": "36",
+              "party": {
+                "availability": "available",
+                "value": [
+                  {
+                    "heldItem": {
+                      "availability": "unavailable"
+                    },
+                    "ivs": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 0,
+                        "spd": 0,
+                        "def": 0,
+                        "atk": 0,
+                        "spe": 0,
+                        "spa": 0
+                      }
+                    },
+                    "speciesId": {
+                      "availability": "available",
+                      "value": "179.0"
+                    },
+                    "statStages": {
+                      "availability": "unavailable"
+                    },
+                    "ability": {
+                      "availability": "unavailable"
+                    },
+                    "nature": {
+                      "availability": "unavailable"
+                    },
+                    "types": {
+                      "availability": "available",
+                      "value": ["electric"]
+                    },
+                    "evs": {
+                      "availability": "unavailable"
+                    },
+                    "level": {
+                      "availability": "available",
+                      "value": 23
+                    },
+                    "pokerus": {
+                      "availability": "unavailable"
+                    },
+                    "shiny": {
+                      "availability": "unavailable"
+                    },
+                    "name": "Mareep",
+                    "maximumHp": {
+                      "availability": "unavailable"
+                    },
+                    "currentHp": {
+                      "availability": "unavailable"
+                    },
+                    "id": "179.0",
+                    "stats": {
+                      "availability": "unavailable"
+                    },
+                    "status": {
+                      "availability": "unavailable"
+                    },
+                    "friendship": {
+                      "availability": "unavailable"
+                    },
+                    "experience": {
+                      "availability": "unavailable"
+                    },
+                    "baseStats": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 69,
+                        "spd": 70,
+                        "def": 48,
+                        "atk": 16,
+                        "spe": 54,
+                        "spa": 22
+                      }
+                    },
+                    "moves": {
+                      "availability": "unavailable"
+                    },
+                    "gender": {
+                      "availability": "unavailable"
+                    }
+                  },
+                  {
+                    "heldItem": {
+                      "availability": "unavailable"
+                    },
+                    "ivs": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 0,
+                        "spd": 0,
+                        "def": 0,
+                        "atk": 0,
+                        "spe": 0,
+                        "spa": 0
+                      }
+                    },
+                    "speciesId": {
+                      "availability": "available",
+                      "value": "208.0"
+                    },
+                    "statStages": {
+                      "availability": "unavailable"
+                    },
+                    "ability": {
+                      "availability": "unavailable"
+                    },
+                    "nature": {
+                      "availability": "unavailable"
+                    },
+                    "types": {
+                      "availability": "available",
+                      "value": ["steel", "ground"]
+                    },
+                    "evs": {
+                      "availability": "unavailable"
+                    },
+                    "level": {
+                      "availability": "available",
+                      "value": 23
+                    },
+                    "pokerus": {
+                      "availability": "unavailable"
+                    },
+                    "shiny": {
+                      "availability": "unavailable"
+                    },
+                    "name": "Steelix",
+                    "maximumHp": {
+                      "availability": "unavailable"
+                    },
+                    "currentHp": {
+                      "availability": "unavailable"
+                    },
+                    "id": "208.0",
+                    "stats": {
+                      "availability": "unavailable"
+                    },
+                    "status": {
+                      "availability": "unavailable"
+                    },
+                    "friendship": {
+                      "availability": "unavailable"
+                    },
+                    "experience": {
+                      "availability": "unavailable"
+                    },
+                    "baseStats": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 104,
+                        "spd": 80,
+                        "def": 126,
+                        "atk": 129,
+                        "spe": 15,
+                        "spa": 57
+                      }
+                    },
+                    "moves": {
+                      "availability": "unavailable"
+                    },
+                    "gender": {
+                      "availability": "unavailable"
+                    }
+                  }
+                ]
+              },
+              "doubleBattle": {
+                "availability": "available",
+                "value": false
+              },
+              "trainerClass": {
+                "availability": "available",
+                "value": "God"
+              },
+              "battleItems": {
+                "availability": "available",
+                "value": []
+              },
+              "name": "Joe",
+              "battled": {
+                "availability": "available",
+                "value": false
+              },
+              "portraitId": {
+                "availability": "available",
+                "value": "15"
+              }
+            },
+            {
+              "id": "481",
+              "party": {
+                "availability": "available",
+                "value": [
+                  {
+                    "heldItem": {
+                      "availability": "unavailable"
+                    },
+                    "ivs": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 0,
+                        "spd": 0,
+                        "def": 0,
+                        "atk": 0,
+                        "spe": 0,
+                        "spa": 0
+                      }
+                    },
+                    "speciesId": {
+                      "availability": "available",
+                      "value": "288"
+                    },
+                    "statStages": {
+                      "availability": "unavailable"
+                    },
+                    "ability": {
+                      "availability": "unavailable"
+                    },
+                    "nature": {
+                      "availability": "unavailable"
+                    },
+                    "types": {
+                      "availability": "available",
+                      "value": ["normal"]
+                    },
+                    "evs": {
+                      "availability": "unavailable"
+                    },
+                    "level": {
+                      "availability": "available",
+                      "value": 24
+                    },
+                    "pokerus": {
+                      "availability": "unavailable"
+                    },
+                    "shiny": {
+                      "availability": "unavailable"
+                    },
+                    "name": "Vigoroth",
+                    "maximumHp": {
+                      "availability": "unavailable"
+                    },
+                    "currentHp": {
+                      "availability": "unavailable"
+                    },
+                    "id": "365.0",
+                    "stats": {
+                      "availability": "unavailable"
+                    },
+                    "status": {
+                      "availability": "unavailable"
+                    },
+                    "friendship": {
+                      "availability": "unavailable"
+                    },
+                    "experience": {
+                      "availability": "unavailable"
+                    },
+                    "baseStats": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 123,
+                        "spd": 83,
+                        "def": 35,
+                        "atk": 99,
+                        "spe": 81,
+                        "spa": 18
+                      }
+                    },
+                    "moves": {
+                      "availability": "unavailable"
+                    },
+                    "gender": {
+                      "availability": "unavailable"
+                    }
+                  },
+                  {
+                    "heldItem": {
+                      "availability": "unavailable"
+                    },
+                    "ivs": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 0,
+                        "spd": 0,
+                        "def": 0,
+                        "atk": 0,
+                        "spe": 0,
+                        "spa": 0
+                      }
+                    },
+                    "speciesId": {
+                      "availability": "available",
+                      "value": "336"
+                    },
+                    "statStages": {
+                      "availability": "unavailable"
+                    },
+                    "ability": {
+                      "availability": "unavailable"
+                    },
+                    "nature": {
+                      "availability": "unavailable"
+                    },
+                    "types": {
+                      "availability": "available",
+                      "value": ["poison"]
+                    },
+                    "evs": {
+                      "availability": "unavailable"
+                    },
+                    "level": {
+                      "availability": "available",
+                      "value": 24
+                    },
+                    "pokerus": {
+                      "availability": "unavailable"
+                    },
+                    "shiny": {
+                      "availability": "unavailable"
+                    },
+                    "name": "Seviper",
+                    "maximumHp": {
+                      "availability": "unavailable"
+                    },
+                    "currentHp": {
+                      "availability": "unavailable"
+                    },
+                    "id": "379.0",
+                    "stats": {
+                      "availability": "unavailable"
+                    },
+                    "status": {
+                      "availability": "unavailable"
+                    },
+                    "friendship": {
+                      "availability": "unavailable"
+                    },
+                    "experience": {
+                      "availability": "unavailable"
+                    },
+                    "baseStats": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 23,
+                        "spd": 144,
+                        "def": 25,
+                        "atk": 121,
+                        "spe": 89,
+                        "spa": 55
+                      }
+                    },
+                    "moves": {
+                      "availability": "unavailable"
+                    },
+                    "gender": {
+                      "availability": "unavailable"
+                    }
+                  }
+                ]
+              },
+              "doubleBattle": {
+                "availability": "available",
+                "value": true
+              },
+              "trainerClass": {
+                "availability": "available",
+                "value": "Sr & Jr"
+              },
+              "battleItems": {
+                "availability": "available",
+                "value": []
+              },
+              "name": "Kim & Zoe",
+              "battled": {
+                "availability": "available",
+                "value": false
+              },
+              "portraitId": {
+                "availability": "available",
+                "value": "67"
+              }
+            },
+            {
+              "id": "293",
+              "party": {
+                "availability": "available",
+                "value": [
+                  {
+                    "heldItem": {
+                      "availability": "available",
+                      "value": "Oran Berry"
+                    },
+                    "ivs": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 0,
+                        "spd": 0,
+                        "def": 0,
+                        "atk": 0,
+                        "spe": 0,
+                        "spa": 0
+                      }
+                    },
+                    "speciesId": {
+                      "availability": "available",
+                      "value": "115.0"
+                    },
+                    "statStages": {
+                      "availability": "unavailable"
+                    },
+                    "ability": {
+                      "availability": "unavailable"
+                    },
+                    "nature": {
+                      "availability": "unavailable"
+                    },
+                    "types": {
+                      "availability": "available",
+                      "value": ["normal"]
+                    },
+                    "evs": {
+                      "availability": "unavailable"
+                    },
+                    "level": {
+                      "availability": "available",
+                      "value": 24
+                    },
+                    "pokerus": {
+                      "availability": "unavailable"
+                    },
+                    "shiny": {
+                      "availability": "unavailable"
+                    },
+                    "name": "Kangaskhan",
+                    "maximumHp": {
+                      "availability": "unavailable"
+                    },
+                    "currentHp": {
+                      "availability": "unavailable"
+                    },
+                    "id": "115.0",
+                    "stats": {
+                      "availability": "unavailable"
+                    },
+                    "status": {
+                      "availability": "unavailable"
+                    },
+                    "friendship": {
+                      "availability": "unavailable"
+                    },
+                    "experience": {
+                      "availability": "unavailable"
+                    },
+                    "baseStats": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 88,
+                        "spd": 132,
+                        "def": 85,
+                        "atk": 83,
+                        "spe": 69,
+                        "spa": 33
+                      }
+                    },
+                    "moves": {
+                      "availability": "unavailable"
+                    },
+                    "gender": {
+                      "availability": "unavailable"
+                    }
+                  }
+                ]
+              },
+              "doubleBattle": {
+                "availability": "available",
+                "value": false
+              },
+              "trainerClass": {
+                "availability": "available",
+                "value": "Doctor"
+              },
+              "battleItems": {
+                "availability": "available",
+                "value": []
+              },
+              "name": "Rachel",
+              "battled": {
+                "availability": "available",
+                "value": false
+              },
+              "portraitId": {
+                "availability": "available",
+                "value": "51"
+              }
+            },
+            {
+              "id": "336",
+              "party": {
+                "availability": "available",
+                "value": [
+                  {
+                    "heldItem": {
+                      "availability": "unavailable"
+                    },
+                    "ivs": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 0,
+                        "spd": 0,
+                        "def": 0,
+                        "atk": 0,
+                        "spe": 0,
+                        "spa": 0
+                      }
+                    },
+                    "speciesId": {
+                      "availability": "available",
+                      "value": "101.0"
+                    },
+                    "statStages": {
+                      "availability": "unavailable"
+                    },
+                    "ability": {
+                      "availability": "unavailable"
+                    },
+                    "nature": {
+                      "availability": "unavailable"
+                    },
+                    "types": {
+                      "availability": "available",
+                      "value": ["electric"]
+                    },
+                    "evs": {
+                      "availability": "unavailable"
+                    },
+                    "level": {
+                      "availability": "available",
+                      "value": 8
+                    },
+                    "pokerus": {
+                      "availability": "unavailable"
+                    },
+                    "shiny": {
+                      "availability": "unavailable"
+                    },
+                    "name": "Electrode",
+                    "maximumHp": {
+                      "availability": "unavailable"
+                    },
+                    "currentHp": {
+                      "availability": "unavailable"
+                    },
+                    "id": "101.0",
+                    "stats": {
+                      "availability": "unavailable"
+                    },
+                    "status": {
+                      "availability": "unavailable"
+                    },
+                    "friendship": {
+                      "availability": "unavailable"
+                    },
+                    "experience": {
+                      "availability": "unavailable"
+                    },
+                    "baseStats": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 32,
+                        "spd": 120,
+                        "def": 107,
+                        "atk": 53,
+                        "spe": 41,
+                        "spa": 127
+                      }
+                    },
+                    "moves": {
+                      "availability": "unavailable"
+                    },
+                    "gender": {
+                      "availability": "unavailable"
+                    }
+                  },
+                  {
+                    "heldItem": {
+                      "availability": "unavailable"
+                    },
+                    "ivs": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 0,
+                        "spd": 0,
+                        "def": 0,
+                        "atk": 0,
+                        "spe": 0,
+                        "spa": 0
+                      }
+                    },
+                    "speciesId": {
+                      "availability": "available",
+                      "value": "222.0"
+                    },
+                    "statStages": {
+                      "availability": "unavailable"
+                    },
+                    "ability": {
+                      "availability": "unavailable"
+                    },
+                    "nature": {
+                      "availability": "unavailable"
+                    },
+                    "types": {
+                      "availability": "available",
+                      "value": ["water", "rock"]
+                    },
+                    "evs": {
+                      "availability": "unavailable"
+                    },
+                    "level": {
+                      "availability": "available",
+                      "value": 17
+                    },
+                    "pokerus": {
+                      "availability": "unavailable"
+                    },
+                    "shiny": {
+                      "availability": "unavailable"
+                    },
+                    "name": "Corsola",
+                    "maximumHp": {
+                      "availability": "unavailable"
+                    },
+                    "currentHp": {
+                      "availability": "unavailable"
+                    },
+                    "id": "222.0",
+                    "stats": {
+                      "availability": "unavailable"
+                    },
+                    "status": {
+                      "availability": "unavailable"
+                    },
+                    "friendship": {
+                      "availability": "unavailable"
+                    },
+                    "experience": {
+                      "availability": "unavailable"
+                    },
+                    "baseStats": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 109,
+                        "spd": 17,
+                        "def": 123,
+                        "atk": 46,
+                        "spe": 74,
+                        "spa": 12
+                      }
+                    },
+                    "moves": {
+                      "availability": "unavailable"
+                    },
+                    "gender": {
+                      "availability": "unavailable"
+                    }
+                  },
+                  {
+                    "heldItem": {
+                      "availability": "unavailable"
+                    },
+                    "ivs": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 0,
+                        "spd": 0,
+                        "def": 0,
+                        "atk": 0,
+                        "spe": 0,
+                        "spa": 0
+                      }
+                    },
+                    "speciesId": {
+                      "availability": "available",
+                      "value": "249.0"
+                    },
+                    "statStages": {
+                      "availability": "unavailable"
+                    },
+                    "ability": {
+                      "availability": "unavailable"
+                    },
+                    "nature": {
+                      "availability": "unavailable"
+                    },
+                    "types": {
+                      "availability": "available",
+                      "value": ["psychic", "flying"]
+                    },
+                    "evs": {
+                      "availability": "unavailable"
+                    },
+                    "level": {
+                      "availability": "available",
+                      "value": 24
+                    },
+                    "pokerus": {
+                      "availability": "unavailable"
+                    },
+                    "shiny": {
+                      "availability": "unavailable"
+                    },
+                    "name": "Lugia",
+                    "maximumHp": {
+                      "availability": "unavailable"
+                    },
+                    "currentHp": {
+                      "availability": "unavailable"
+                    },
+                    "id": "249.0",
+                    "stats": {
+                      "availability": "unavailable"
+                    },
+                    "status": {
+                      "availability": "unavailable"
+                    },
+                    "friendship": {
+                      "availability": "unavailable"
+                    },
+                    "experience": {
+                      "availability": "unavailable"
+                    },
+                    "baseStats": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 245,
+                        "spd": 89,
+                        "def": 19,
+                        "atk": 120,
+                        "spe": 73,
+                        "spa": 134
+                      }
+                    },
+                    "moves": {
+                      "availability": "unavailable"
+                    },
+                    "gender": {
+                      "availability": "unavailable"
+                    }
+                  }
+                ]
+              },
+              "doubleBattle": {
+                "availability": "available",
+                "value": false
+              },
+              "trainerClass": {
+                "availability": "available",
+                "value": "Artist"
+              },
+              "battleItems": {
+                "availability": "available",
+                "value": []
+              },
+              "name": "Kimberley",
+              "battled": {
+                "availability": "available",
+                "value": false
+              },
+              "portraitId": {
+                "availability": "available",
+                "value": "55"
+              }
+            },
+            {
+              "id": "703",
+              "party": {
+                "availability": "available",
+                "value": [
+                  {
+                    "heldItem": {
+                      "availability": "unavailable"
+                    },
+                    "ivs": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 12,
+                        "spd": 12,
+                        "def": 12,
+                        "atk": 12,
+                        "spe": 12,
+                        "spa": 12
+                      }
+                    },
+                    "speciesId": {
+                      "availability": "available",
+                      "value": "305"
+                    },
+                    "statStages": {
+                      "availability": "unavailable"
+                    },
+                    "ability": {
+                      "availability": "unavailable"
+                    },
+                    "nature": {
+                      "availability": "unavailable"
+                    },
+                    "types": {
+                      "availability": "available",
+                      "value": ["steel", "rock"]
+                    },
+                    "evs": {
+                      "availability": "unavailable"
+                    },
+                    "level": {
+                      "availability": "available",
+                      "value": 24
+                    },
+                    "pokerus": {
+                      "availability": "unavailable"
+                    },
+                    "shiny": {
+                      "availability": "unavailable"
+                    },
+                    "name": "Lairon",
+                    "maximumHp": {
+                      "availability": "unavailable"
+                    },
+                    "currentHp": {
+                      "availability": "unavailable"
+                    },
+                    "id": "383.0",
+                    "stats": {
+                      "availability": "unavailable"
+                    },
+                    "status": {
+                      "availability": "unavailable"
+                    },
+                    "friendship": {
+                      "availability": "unavailable"
+                    },
+                    "experience": {
+                      "availability": "unavailable"
+                    },
+                    "baseStats": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 84,
+                        "spd": 122,
+                        "def": 15,
+                        "atk": 43,
+                        "spe": 131,
+                        "spa": 36
+                      }
+                    },
+                    "moves": {
+                      "availability": "unavailable"
+                    },
+                    "gender": {
+                      "availability": "unavailable"
+                    }
+                  }
+                ]
+              },
+              "doubleBattle": {
+                "availability": "available",
+                "value": false
+              },
+              "trainerClass": {
+                "availability": "available",
+                "value": "Juggler"
+              },
+              "battleItems": {
+                "availability": "available",
+                "value": []
+              },
+              "name": "Chloe",
+              "battled": {
+                "availability": "available",
+                "value": false
+              },
+              "portraitId": {
+                "availability": "available",
+                "value": "11"
+              }
+            },
+            {
+              "id": "702",
+              "party": {
+                "availability": "available",
+                "value": [
+                  {
+                    "heldItem": {
+                      "availability": "unavailable"
+                    },
+                    "ivs": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 12,
+                        "spd": 12,
+                        "def": 12,
+                        "atk": 12,
+                        "spe": 12,
+                        "spa": 12
+                      }
+                    },
+                    "speciesId": {
+                      "availability": "available",
+                      "value": "52.0"
+                    },
+                    "statStages": {
+                      "availability": "unavailable"
+                    },
+                    "ability": {
+                      "availability": "unavailable"
+                    },
+                    "nature": {
+                      "availability": "unavailable"
+                    },
+                    "types": {
+                      "availability": "available",
+                      "value": ["normal"]
+                    },
+                    "evs": {
+                      "availability": "unavailable"
+                    },
+                    "level": {
+                      "availability": "available",
+                      "value": 24
+                    },
+                    "pokerus": {
+                      "availability": "unavailable"
+                    },
+                    "shiny": {
+                      "availability": "unavailable"
+                    },
+                    "name": "Meowth",
+                    "maximumHp": {
+                      "availability": "unavailable"
+                    },
+                    "currentHp": {
+                      "availability": "unavailable"
+                    },
+                    "id": "52.0",
+                    "stats": {
+                      "availability": "unavailable"
+                    },
+                    "status": {
+                      "availability": "unavailable"
+                    },
+                    "friendship": {
+                      "availability": "unavailable"
+                    },
+                    "experience": {
+                      "availability": "unavailable"
+                    },
+                    "baseStats": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 79,
+                        "spd": 47,
+                        "def": 59,
+                        "atk": 32,
+                        "spe": 45,
+                        "spa": 28
+                      }
+                    },
+                    "moves": {
+                      "availability": "unavailable"
+                    },
+                    "gender": {
+                      "availability": "unavailable"
+                    }
+                  }
+                ]
+              },
+              "doubleBattle": {
+                "availability": "available",
+                "value": false
+              },
+              "trainerClass": {
+                "availability": "available",
+                "value": "Sailor"
+              },
+              "battleItems": {
+                "availability": "available",
+                "value": []
+              },
+              "name": "Robin",
+              "battled": {
+                "availability": "available",
+                "value": false
+              },
+              "portraitId": {
+                "availability": "available",
+                "value": "27"
+              }
+            },
+            {
+              "id": "736",
+              "party": {
+                "availability": "available",
+                "value": [
+                  {
+                    "heldItem": {
+                      "availability": "unavailable"
+                    },
+                    "ivs": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 0,
+                        "spd": 0,
+                        "def": 0,
+                        "atk": 0,
+                        "spe": 0,
+                        "spa": 0
+                      }
+                    },
+                    "speciesId": {
+                      "availability": "available",
+                      "value": "170.0"
+                    },
+                    "statStages": {
+                      "availability": "unavailable"
+                    },
+                    "ability": {
+                      "availability": "unavailable"
+                    },
+                    "nature": {
+                      "availability": "unavailable"
+                    },
+                    "types": {
+                      "availability": "available",
+                      "value": ["water", "electric"]
+                    },
+                    "evs": {
+                      "availability": "unavailable"
+                    },
+                    "level": {
+                      "availability": "available",
+                      "value": 24
+                    },
+                    "pokerus": {
+                      "availability": "unavailable"
+                    },
+                    "shiny": {
+                      "availability": "unavailable"
+                    },
+                    "name": "Chinchou",
+                    "maximumHp": {
+                      "availability": "unavailable"
+                    },
+                    "currentHp": {
+                      "availability": "unavailable"
+                    },
+                    "id": "170.0",
+                    "stats": {
+                      "availability": "unavailable"
+                    },
+                    "status": {
+                      "availability": "unavailable"
+                    },
+                    "friendship": {
+                      "availability": "unavailable"
+                    },
+                    "experience": {
+                      "availability": "unavailable"
+                    },
+                    "baseStats": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 87,
+                        "spd": 67,
+                        "def": 38,
+                        "atk": 38,
+                        "spe": 36,
+                        "spa": 64
+                      }
+                    },
+                    "moves": {
+                      "availability": "unavailable"
+                    },
+                    "gender": {
+                      "availability": "unavailable"
+                    }
+                  }
+                ]
+              },
+              "doubleBattle": {
+                "availability": "available",
+                "value": false
+              },
+              "trainerClass": {
+                "availability": "available",
+                "value": "Writer"
+              },
+              "battleItems": {
+                "availability": "available",
+                "value": []
+              },
+              "name": "Jacqueline",
+              "battled": {
+                "availability": "available",
+                "value": false
+              },
+              "portraitId": {
+                "availability": "available",
+                "value": "66"
+              }
+            },
+            {
+              "id": "735",
+              "party": {
+                "availability": "available",
+                "value": [
+                  {
+                    "heldItem": {
+                      "availability": "unavailable"
+                    },
+                    "ivs": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 0,
+                        "spd": 0,
+                        "def": 0,
+                        "atk": 0,
+                        "spe": 0,
+                        "spa": 0
+                      }
+                    },
+                    "speciesId": {
+                      "availability": "available",
+                      "value": "229.0"
+                    },
+                    "statStages": {
+                      "availability": "unavailable"
+                    },
+                    "ability": {
+                      "availability": "unavailable"
+                    },
+                    "nature": {
+                      "availability": "unavailable"
+                    },
+                    "types": {
+                      "availability": "available",
+                      "value": ["dark", "fire"]
+                    },
+                    "evs": {
+                      "availability": "unavailable"
+                    },
+                    "level": {
+                      "availability": "available",
+                      "value": 24
+                    },
+                    "pokerus": {
+                      "availability": "unavailable"
+                    },
+                    "shiny": {
+                      "availability": "unavailable"
+                    },
+                    "name": "Houndoom",
+                    "maximumHp": {
+                      "availability": "unavailable"
+                    },
+                    "currentHp": {
+                      "availability": "unavailable"
+                    },
+                    "id": "229.0",
+                    "stats": {
+                      "availability": "unavailable"
+                    },
+                    "status": {
+                      "availability": "unavailable"
+                    },
+                    "friendship": {
+                      "availability": "unavailable"
+                    },
+                    "experience": {
+                      "availability": "unavailable"
+                    },
+                    "baseStats": {
+                      "availability": "available",
+                      "value": {
+                        "hp": 163,
+                        "spd": 80,
+                        "def": 95,
+                        "atk": 17,
+                        "spe": 47,
+                        "spa": 98
+                      }
+                    },
+                    "moves": {
+                      "availability": "unavailable"
+                    },
+                    "gender": {
+                      "availability": "unavailable"
+                    }
+                  }
+                ]
+              },
+              "doubleBattle": {
+                "availability": "available",
+                "value": false
+              },
+              "trainerClass": {
+                "availability": "available",
+                "value": "Preschooler"
+              },
+              "battleItems": {
+                "availability": "available",
+                "value": []
+              },
+              "name": "Veronica",
+              "battled": {
+                "availability": "available",
+                "value": false
+              },
+              "portraitId": {
+                "availability": "available",
+                "value": "7"
+              }
+            }
+          ],
+          "completed": 0
+        }
+      },
+      "progress": {
+        "availability": "available",
+        "value": {
+          "badges": {
+            "availability": "available",
+            "value": []
+          },
+          "paused": {
+            "availability": "available",
+            "value": false
+          },
+          "fishing": {
+            "availability": "available",
+            "value": 0
+          },
+          "romName": {
+            "availability": "available",
+            "value": "Pokemon Emerald (U)"
+          },
+          "playtime": {
+            "availability": "available",
+            "value": "00:40"
+          },
+          "trackerVersion": {
+            "availability": "available",
+            "value": "9.3.1"
+          },
+          "trainerBattles": {
+            "availability": "available",
+            "value": -999
+          },
+          "centreHeals": {
+            "availability": "available",
+            "value": 10
+          },
+          "rockSmash": {
+            "availability": "available",
+            "value": 0
+          },
+          "wildBattles": {
+            "availability": "available",
+            "value": -999
+          },
+          "gameCode": {
+            "availability": "available",
+            "value": "1112556869"
+          },
+          "timer": {
+            "availability": "available",
+            "value": "00:40"
+          }
+        }
+      }
+    }
+  },
+  "activeChannels": {
+    "channels": [
+      {
+        "code": "00042",
+        "preview": {
+          "lead": {
+            "availability": "available",
+            "value": {
+              "name": "Ivysaur",
+              "speciesId": {
+                "availability": "available",
+                "value": "2"
+              }
+            }
+          },
+          "location": {
+            "availability": "available",
+            "value": "Rock Tunnel"
+          },
+          "game": {
+            "availability": "available",
+            "value": "Pokemon FireRed"
+          }
+        }
+      }
+    ]
+  },
+  "companionRelease": {
+    "version": "0.1.19"
+  }
+}

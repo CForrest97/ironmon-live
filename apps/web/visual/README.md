@@ -8,17 +8,24 @@ screenshots and geometry manifest.
 
 ## Customising fixture data
 
-Edit [`scenes.ts`](./scenes.ts). Party composition, moves, status effects,
-route trainers, and progress counters all live in the `FIXTURE DATA` section
-near the top of the file — search for that heading. Add a new `Scene` to the
-`scenes` array at the bottom to review a state that isn't covered yet.
+Edit [`fixtures.json`](./fixtures.json) — it's the single source of the raw
+data (party members, trainers, route, progress counters). `capturedRunEvent`
+is a real Tracker snapshot, not invented data; prefer swapping in another real
+capture over hand-editing individual fields. `testFixtureEvent` is a separate,
+deliberately minimal fixture the Playwright viewport specs assert exact
+strings against ("Route 1", a "Tackle" move) — leave it alone unless you're
+also updating those assertions.
+
+`scenes.ts` only composes and validates `fixtures.json` (via
+`parseChannelEvent`/`parseActiveChannels` from `@ironmon-live/contracts`, the
+same parser the app runs on real traffic) — it no longer holds any literal
+party or trainer data. Add a new `Scene` to the `scenes` array at the bottom
+of `scenes.ts` to review a state that isn't covered yet.
 
 Keep fixtures plausible for the point in a run they claim to represent. The
 content-fit lens in the rubric judges whether the right information is on
 screen, so a generic or sparse fixture (every party member healthy, no status
-effects, one Tackle each) understates real findings — it can't surface a
-crowded-detail or missing-status problem that only shows up with a realistic
-mid-run party.
+effects, one Tackle each) understates real findings.
 
 ## Choosing the model and effort
 

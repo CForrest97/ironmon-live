@@ -2,294 +2,97 @@
  * Deterministic IronMON Live UI states, shared by the Playwright viewport specs
  * and the visual-review capture so a state is only described once.
  *
- * To change what the review sees: edit the fixture data below (`FIXTURE DATA`
- * section) — party composition, moves, status, route trainers, counters — or
- * add a new `Scene` to the `scenes` array at the bottom. Keep it plausible for
- * where in a run the scene claims to be; the reviewer judges information
- * density and detail placement against this data, so a sparse or generic
- * fixture understates real findings.
+ * To change what the review sees: edit `fixtures.json` — that's the single
+ * source of the raw data (party members, trainers, route, progress counters).
+ * `capturedRunEvent` there is a real Tracker snapshot, not invented data, so
+ * prefer replacing it with another real capture over hand-editing it. Add a
+ * new `Scene` to the `scenes` array at the bottom to review a state that
+ * isn't covered yet.
+ *
+ * Every fixture is validated against `@ironmon-live/contracts` — the same
+ * parser the app runs on real WebSocket/fetch traffic — via `assertValid*`
+ * below. That's what catches a fixture that drifts from the real contract:
+ * a `fixtures.json` edit that the app's own parser would reject at runtime
+ * (an empty string where one isn't allowed, a typo'd field name) fails here,
+ * at import time, instead of showing up as a silent rendering difference in
+ * a screenshot.
  *
  * `installChannelSocket` and `freezeRandomness` are stringified by
  * `page.addInitScript` and re-evaluated inside the page, so they must stay
  * self-contained and must not close over anything in this module.
  */
 
-type Available<T> = { readonly availability: "available"; readonly value: T };
-type Unavailable = { readonly availability: "unavailable" };
+import {
+  parseActiveChannels,
+  parseChannelEvent,
+  type ActiveChannelsResponse,
+  type ChannelEvent,
+} from "@ironmon-live/contracts";
+import rawFixtures from "./fixtures.json" with { type: "json" };
 
-const available = <T>(value: T): Available<T> => ({ availability: "available", value });
-const unavailable: Unavailable = { availability: "unavailable" };
-
-const leadMember = {
-  id: "1",
-  name: "Bulbasaur",
-  speciesId: available("1"),
-  level: available(5),
-  currentHp: available(12),
-  maximumHp: available(20),
-  types: available(["grass"]),
-  status: available("healthy"),
-  ability: unavailable,
-  heldItem: unavailable,
-  moves: available([{ id: "tackle", name: "Tackle", pp: available(35) }]),
-  stats: available({ hp: 20 }),
-  baseStats: available({ hp: 20 }),
-  statStages: available({ atk: 0 }),
-  ivs: available({ hp: 0 }),
-  evs: available({ hp: 0 }),
-  nature: unavailable,
-  experience: available(0),
-  friendship: available(0),
-  gender: unavailable,
-  shiny: available(false),
-  pokerus: available(false),
+const assertValidEvent = (name: string, event: unknown): ChannelEvent => {
+  try {
+    return parseChannelEvent(JSON.parse(JSON.stringify(event)) as unknown);
+  } catch (error) {
+    throw new Error(
+      `fixture "${name}" does not match the ChannelEvent contract: ${String(error)}`,
+      {
+        cause: error,
+      },
+    );
+  }
 };
 
-const move = (name: string, pp: number) => ({
-  id: name.toLowerCase().replace(/\s+/g, "-"),
-  name,
-  pp: available(pp),
-});
+const assertValidChannels = (name: string, channels: unknown): ActiveChannelsResponse => {
+  try {
+    return parseActiveChannels(JSON.parse(JSON.stringify(channels)) as unknown);
+  } catch (error) {
+    throw new Error(
+      `fixture "${name}" does not match the ActiveChannelsResponse contract: ${String(error)}`,
+      { cause: error },
+    );
+  }
+};
+
+/** `/download` fetches this from a CDN JSON endpoint, not the Tracker contract. */
+type CompanionReleaseFixture = { readonly version: string };
 
 /**
- * FIXTURE DATA — edit here for a specific party member's detail.
- *
- * The Tracker reports party members with partially-known detail (an ability
- * or nature it hasn't inferred yet stays `unavailable`), so leave some of
- * `ability`, `heldItem`, and `nature` unset per member rather than filling
- * every field — an always-fully-known party is not what the app renders.
+ * The minimal fixture the viewport specs assert exact strings against
+ * ("Route 1", a "Tackle" move). Kept deliberately separate from the realistic
+ * scene fixtures below — the spec is checking behavior, not judging realism.
  */
-const partyMember = (
-  id: string,
-  name: string,
-  speciesId: string,
-  types: readonly string[],
-  level: number,
-  currentHp: number,
-  maximumHp: number,
-  detail: {
-    readonly moves: readonly { readonly name: string; readonly pp: number }[];
-    readonly status?: string;
-    readonly ability?: string;
-    readonly heldItem?: string;
-    readonly nature?: string;
-  },
-) => ({
-  ...leadMember,
-  id,
-  name,
-  speciesId: available(speciesId),
-  types: available(types),
-  level: available(level),
-  currentHp: available(currentHp),
-  maximumHp: available(maximumHp),
-  status: available(detail.status ?? "healthy"),
-  moves: available(detail.moves.map((entry) => move(entry.name, entry.pp))),
-  ability: detail.ability ? available(detail.ability) : unavailable,
-  heldItem: detail.heldItem ? available(detail.heldItem) : unavailable,
-  nature: detail.nature ? available(detail.nature) : unavailable,
-});
+export const activeRunEvent = assertValidEvent("testFixtureEvent", rawFixtures.testFixtureEvent);
 
-const trainer = (id: string, name: string, trainerClass: string, battled: boolean) => ({
-  id,
-  name,
-  trainerClass: available(trainerClass),
-  portraitId: unavailable,
-  battled: available(battled),
-  party: unavailable,
-  battleItems: unavailable,
-  doubleBattle: available(false),
-});
-
-/** The minimal active run asserted by the viewport specs. Changing it changes those assertions. */
-export const activeRunEvent = {
-  type: "active",
-  snapshot: {
-    kind: "snapshot",
-    schemaVersion: 2,
-    observedAt: "2026-08-01T10:00:00Z",
-    status: "active",
-    party: [leadMember],
-    location: available({ name: "Route 1", mapId: unavailable }),
-    battle: available({
-      active: true,
-      kind: "trainer",
-      format: "single",
-      player: [leadMember],
-      opponents: [leadMember],
-      trainer: unavailable,
-      outcome: available("in_progress"),
-    }),
-    route: available({ name: "Route 1", trainers: [], completed: 0, total: 0 }),
-    progress: available({
-      romName: unavailable,
-      gameCode: unavailable,
-      trackerVersion: unavailable,
-      timer: unavailable,
-      paused: available(false),
-      playtime: unavailable,
-      badges: available([]),
-      centreHeals: available(0),
-      wildBattles: available(0),
-      trainerBattles: available(0),
-      fishing: available(0),
-      rockSmash: available(0),
-    }),
-  },
-};
+/** A real captured Tracker snapshot — see `fixtures.json`'s `capturedRunEvent`. */
+const capturedRunEvent = assertValidEvent("capturedRunEvent", rawFixtures.capturedRunEvent);
+if (capturedRunEvent.type !== "active") {
+  throw new Error('fixture "capturedRunEvent" must be an active-run ChannelEvent');
+}
 
 /** An active run with no party yet, which surfaces the starter-ball prompt. */
-export const emptyPartyEvent = {
-  ...activeRunEvent,
-  snapshot: {
-    ...activeRunEvent.snapshot,
-    party: [],
-    battle: available({ active: false }),
-  },
-};
-
-/**
- * A mid-run state with a full party, a populated route, and real counters. Not
- * asserted by the specs; it exists so layout review sees the dense case rather
- * than the sparse one.
- */
-export const fullPartyEvent = {
+export const emptyPartyEvent = assertValidEvent("emptyPartyEvent", {
   type: "active",
   snapshot: {
-    ...activeRunEvent.snapshot,
-    party: [
-      partyMember("1", "Ivysaur", "2", ["grass", "poison"], 24, 61, 74, {
-        moves: [
-          { name: "Vine Whip", pp: 10 },
-          { name: "Growl", pp: 40 },
-          { name: "Poison Powder", pp: 35 },
-          { name: "Sleep Powder", pp: 15 },
-        ],
-        nature: "Modest",
-      }),
-      partyMember("2", "Pidgeotto", "17", ["normal", "flying"], 22, 58, 66, {
-        moves: [
-          { name: "Gust", pp: 35 },
-          { name: "Quick Attack", pp: 30 },
-          { name: "Sand-Attack", pp: 15 },
-        ],
-      }),
-      partyMember("3", "Kadabra", "64", ["psychic"], 21, 12, 52, {
-        moves: [
-          { name: "Confusion", pp: 25 },
-          { name: "Teleport", pp: 20 },
-          { name: "Kinesis", pp: 15 },
-        ],
-        ability: "Synchronize",
-        nature: "Timid",
-      }),
-      partyMember("4", "Growlithe", "58", ["fire"], 20, 55, 61, {
-        moves: [
-          { name: "Ember", pp: 25 },
-          { name: "Bite", pp: 25 },
-          { name: "Roar", pp: 20 },
-        ],
-        ability: "Intimidate",
-        heldItem: "Oran Berry",
-      }),
-      partyMember("5", "Onix", "95", ["rock", "ground"], 19, 47, 49, {
-        moves: [
-          { name: "Tackle", pp: 35 },
-          { name: "Screech", pp: 40 },
-          { name: "Bind", pp: 20 },
-          { name: "Rock Throw", pp: 15 },
-        ],
-      }),
-      partyMember("6", "Nidorino", "33", ["poison"], 18, 20, 57, {
-        moves: [
-          { name: "Poison Sting", pp: 35 },
-          { name: "Horn Attack", pp: 25 },
-          { name: "Double Kick", pp: 30 },
-        ],
-        status: "paralyzed",
-      }),
-    ],
-    location: available({ name: "Rock Tunnel", mapId: available("82") }),
-    battle: available({
-      active: true,
-      kind: "trainer",
-      format: "single",
-      player: [
-        partyMember("1", "Ivysaur", "2", ["grass", "poison"], 24, 61, 74, {
-          moves: [
-            { name: "Vine Whip", pp: 10 },
-            { name: "Growl", pp: 40 },
-            { name: "Poison Powder", pp: 35 },
-            { name: "Sleep Powder", pp: 15 },
-          ],
-          nature: "Modest",
-        }),
-      ],
-      opponents: [
-        partyMember("7", "Machop", "66", ["fighting"], 23, 39, 63, {
-          moves: [
-            { name: "Karate Chop", pp: 25 },
-            { name: "Low Kick", pp: 20 },
-          ],
-        }),
-      ],
-      trainer: available(trainer("hiker-1", "Hiker Franklin", "Hiker", false)),
-      outcome: available("in_progress"),
-    }),
-    route: available({
-      name: "Rock Tunnel",
-      trainers: [
-        trainer("t1", "Pokemaniac Ashton", "Pokemaniac", true),
-        trainer("t2", "Hiker Lenny", "Hiker", true),
-        trainer("t3", "Jr. Trainer Dana", "Jr. Trainer", true),
-        trainer("t4", "Hiker Franklin", "Hiker", false),
-        trainer("t5", "Pokemaniac Winston", "Pokemaniac", false),
-      ],
-      completed: 3,
-      total: 5,
-    }),
-    progress: available({
-      romName: available("Pokemon FireRed"),
-      gameCode: available("BPRE"),
-      trackerVersion: available("8.5.1"),
-      timer: available("01:42:18"),
-      paused: available(false),
-      playtime: available("1h 42m"),
-      badges: available(["Boulder", "Cascade"]),
-      centreHeals: available(7),
-      wildBattles: available(64),
-      trainerBattles: available(19),
-      fishing: available(2),
-      rockSmash: available(4),
-    }),
-  },
-};
-
-const previewChannel = (code: string, lead: string, speciesId: string, location: string) => ({
-  code,
-  preview: {
-    lead: available({ name: lead, speciesId: available(speciesId) }),
-    location: available(location),
-    game: available("Pokemon FireRed"),
+    ...capturedRunEvent.snapshot,
+    party: [],
+    battle: { availability: "available", value: { active: false } },
   },
 });
 
-export const activeChannelsFixture = {
-  channels: [
-    previewChannel("00042", "Ivysaur", "2", "Rock Tunnel"),
-    previewChannel("01337", "Charmeleon", "5", "Mt. Moon"),
-    previewChannel("07777", "Squirtle", "7", "Viridian Forest"),
-  ],
-};
+export const activeChannelsFixture = assertValidChannels(
+  "activeChannels",
+  rawFixtures.activeChannels,
+);
 
-export const companionReleaseFixture = { version: "0.1.19" };
+export const companionReleaseFixture: CompanionReleaseFixture = rawFixtures.companionRelease;
 
 /**
  * Replaces `WebSocket` with a fixture that replays one channel event. It keeps
  * republishing so the channel view's staleness banner (8s without traffic)
  * cannot appear part-way through a capture and make screenshots disagree.
  */
-export const installChannelSocket = (channelEvent: unknown) => {
+export const installChannelSocket = (channelEvent: ChannelEvent) => {
   class FixtureSocket extends EventTarget {
     constructor() {
       super();
@@ -333,9 +136,9 @@ export type Scene = {
   readonly intent: string;
   /** Selector awaited before capture, so screenshots never catch a half-rendered page. */
   readonly ready: string;
-  readonly channelEvent?: unknown;
-  readonly activeChannels?: unknown;
-  readonly companionRelease?: unknown;
+  readonly channelEvent?: ChannelEvent;
+  readonly activeChannels?: ActiveChannelsResponse;
+  readonly companionRelease?: CompanionReleaseFixture;
 };
 
 export const scenes: readonly Scene[] = [
@@ -359,12 +162,12 @@ export const scenes: readonly Scene[] = [
   },
   {
     name: "channel-mid-run",
-    title: "Channel mid-run with a full party",
+    title: "Channel with a live run",
     path: "/channel/00042",
     intent:
       "Follow a run in progress at a glance: what is alive, what is being fought, and how far the route has gone.",
     ready: '[aria-label="Run overview"]',
-    channelEvent: fullPartyEvent,
+    channelEvent: capturedRunEvent,
   },
   {
     name: "channel-run-start",
