@@ -33,6 +33,12 @@ const VIEWPORTS: readonly Viewport[] = [
   { name: "narrow", width: 640, height: 900 },
 ];
 
+/** Reviewed by default; `--viewport=narrow` or `--viewport=all` opts into the rest. */
+const DEFAULT_VIEWPORT_NAMES = ["desktop"];
+
+/** Captures run this many scene/viewport pairs at once, across separate browser contexts. */
+const CONCURRENCY = 4;
+
 const LANDMARK_SELECTOR = [
   "main",
   "header",
@@ -92,10 +98,13 @@ const selectedScenes = () => {
 
 const selectedViewports = () => {
   const requested = argumentValues("--viewport");
-  if (requested.length === 0) return VIEWPORTS;
+  if (requested.length === 0) {
+    return VIEWPORTS.filter((viewport) => DEFAULT_VIEWPORT_NAMES.includes(viewport.name));
+  }
+  if (requested.includes("all")) return VIEWPORTS;
   const matched = VIEWPORTS.filter((viewport) => requested.includes(viewport.name));
   if (matched.length === 0) {
-    const known = VIEWPORTS.map((viewport) => viewport.name).join(", ");
+    const known = [...VIEWPORTS.map((viewport) => viewport.name), "all"].join(", ");
     throw new Error(`unknown viewport requested; known viewports are ${known}`);
   }
   return matched;
@@ -291,14 +300,23 @@ const main = async () => {
       ? { executablePath: process.env.PLAYWRIGHT_EXECUTABLE_PATH }
       : {},
   );
+  const jobs = selectedScenes().flatMap((scene) =>
+    selectedViewports().map((viewport) => ({ scene, viewport })),
+  );
   const captures: CaptureRecord[] = [];
   try {
-    for (const scene of selectedScenes()) {
-      for (const viewport of selectedViewports()) {
-        console.error(`capturing ${scene.name} at ${viewport.name}`);
-        captures.push(await captureScene(browser, scene, viewport));
+    let next = 0;
+    const worker = async () => {
+      for (;;) {
+        const index = next;
+        next += 1;
+        const job = jobs[index];
+        if (!job) return;
+        console.error(`capturing ${job.scene.name} at ${job.viewport.name}`);
+        captures[index] = await captureScene(browser, job.scene, job.viewport);
       }
-    }
+    };
+    await Promise.all(Array.from({ length: Math.min(CONCURRENCY, jobs.length) }, worker));
   } finally {
     await browser.close();
     server?.kill();

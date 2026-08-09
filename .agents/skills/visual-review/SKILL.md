@@ -1,6 +1,6 @@
 ---
 name: visual-review
-description: Review captured IronMON Live screenshots for layout quality — fold priority, whitespace, alignment, hierarchy, grouping, and consistency — using the measured geometry manifest rather than impressions. Use when reviewing rendered pages; do not use for code review or implementation.
+description: Review captured IronMON Live screenshots for layout quality — fold priority, whitespace, alignment, hierarchy, grouping, consistency — and for content fit against player needs, using the measured geometry manifest rather than impressions. Use when reviewing rendered pages; do not use for code review or implementation.
 ---
 
 # Visual review
@@ -10,6 +10,23 @@ Review the captured screens read-only. Do not edit files or change the app.
 Each capture is a scene at one viewport, split into bands. Band 1 is exactly
 what a viewer sees before scrolling; later bands are the first scrolls. The
 manifest records every landmark's measured position and size in CSS pixels.
+
+This review has two lenses, and both are required. A screen can pass the first
+and still fail the second: it can be beautifully balanced and still show the
+wrong things, or hide the right thing behind a generic label. Do not let a
+clean design lens finding stand in for a content check that was skipped.
+
+- **Design** (checks 1-7): does the layout read well — fold, alignment,
+  whitespace, hierarchy, consistency.
+- **Content fit** (check 8): given what this screen is *for*, is the right
+  information present, in the right place, at the right prominence — not just
+  whether the boxes holding it line up.
+
+Read `docs/product/specs/PRD-001-live-player-companion.md`'s Desired Outcomes
+before starting. The primary one governs every channel scene: *a player can
+understand detailed current-party information and current-route trainer
+progress at a glance during play.* Judge check 8 against that, not against
+general UX taste.
 
 ## Measure before you judge
 
@@ -48,6 +65,30 @@ Work through each scene at each viewport.
    or emphasis without a reason visible in the content.
 7. **Overflow.** `horizontalOverflow: true` is always a blocking finding.
    Report clipped or truncated text visible in the images.
+8. **Content fit.** This is a distinct pass, not a restatement of check 1. For
+   each landmark that carries real data (not chrome — a party member's HP, a
+   trainer's battled state, a route's progress, a badge list), ask what
+   decision or knowledge a player uses it for, then check whether the screen
+   actually gives them that. Concretely:
+   - **Missing critical data.** Something the player needs to act (current HP
+     as a number *and* a bar, status conditions, whether a battle is ongoing
+     and against what) that is absent, buried in an unopened accordion, or
+     only inferable rather than stated.
+   - **Prominence mismatched to importance.** A low-stakes decorative detail
+     (a badge icon, a cosmetic label) sized or positioned more prominently
+     than something the player needs mid-battle (HP, status, whose turn).
+     Compare `fontSize`/`fontWeight` and position, but judge by what the data
+     is *for*, not just its visual weight relative to neighbours.
+   - **Wrong grouping for the decision.** Data split across two places when a
+     single decision needs both together (for example: a party member's HP
+     without its status effect, or a trainer's battled state without which
+     Pokémon they're known to carry, when the fixture provides both).
+   - **Empty or placeholder-only regions.** A card or section rendered with a
+     heading but no content for this scene — that is a content-fit defect
+     even when its box aligns perfectly with its siblings.
+   A finding here needs the same evidence discipline as checks 1-7: name the
+   landmark, what data it holds or lacks per the manifest and the scene's
+   fixture, and the specific player decision it blocks or slows.
 
 Judge against the scene's stated intent, not a generic idea of good design.
 IronMON Live is watched while something else is happening, so a viewer should
@@ -60,6 +101,7 @@ real size. Never report that as a finding.
 
 Report findings ordered by severity. Give each one:
 
+- Its lens: `[design]` or `[content-fit]`.
 - The scene, viewport, and band.
 - The measurement or the visible evidence, with the landmark labels involved.
 - Its cost to the viewer, in terms of the scene's intent.
@@ -68,19 +110,22 @@ Report findings ordered by severity. Give each one:
 Name the scenes that are sound in one closing line. Do not pad the list to look
 thorough, and do not restate the rubric as a finding.
 
-Choose exactly one rating:
+Choose exactly one rating for each lens:
 
 - `0` — no finding worth acting on.
 - `1` — minor polish only; nothing obstructs the scene's intent.
 - `2` — the scene's intent is measurably harder to serve: needed information
-  below the fold, broken alignment, or unbalanced whitespace.
-- `3` — the scene fails at this viewport: overflow, clipping, unreadable
-  hierarchy, or an unusable layout.
+  below the fold or missing entirely, broken alignment, or unbalanced
+  whitespace.
+- `3` — the scene fails at this viewport or for this player need: overflow,
+  clipping, unreadable hierarchy, an unusable layout, or a decision the player
+  cannot make from what the screen shows.
 
 Return exactly this compact footer after the findings:
 
 ```text
 VISUAL_RATING: <0|1|2|3>
+CONTENT_FIT_RATING: <0|1|2|3>
 VISUAL_CONFIDENCE: <high|medium|low>
 SCENES_REVIEWED: <count>
 BLOCKING_FINDINGS: <count>

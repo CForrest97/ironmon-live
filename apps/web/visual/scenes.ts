@@ -2,6 +2,13 @@
  * Deterministic IronMON Live UI states, shared by the Playwright viewport specs
  * and the visual-review capture so a state is only described once.
  *
+ * To change what the review sees: edit the fixture data below (`FIXTURE DATA`
+ * section) — party composition, moves, status, route trainers, counters — or
+ * add a new `Scene` to the `scenes` array at the bottom. Keep it plausible for
+ * where in a run the scene claims to be; the reviewer judges information
+ * density and detail placement against this data, so a sparse or generic
+ * fixture understates real findings.
+ *
  * `installChannelSocket` and `freezeRandomness` are stringified by
  * `page.addInitScript` and re-evaluated inside the page, so they must stay
  * self-contained and must not close over anything in this module.
@@ -38,6 +45,20 @@ const leadMember = {
   pokerus: available(false),
 };
 
+const move = (name: string, pp: number) => ({
+  id: name.toLowerCase().replace(/\s+/g, "-"),
+  name,
+  pp: available(pp),
+});
+
+/**
+ * FIXTURE DATA — edit here for a specific party member's detail.
+ *
+ * The Tracker reports party members with partially-known detail (an ability
+ * or nature it hasn't inferred yet stays `unavailable`), so leave some of
+ * `ability`, `heldItem`, and `nature` unset per member rather than filling
+ * every field — an always-fully-known party is not what the app renders.
+ */
 const partyMember = (
   id: string,
   name: string,
@@ -46,6 +67,13 @@ const partyMember = (
   level: number,
   currentHp: number,
   maximumHp: number,
+  detail: {
+    readonly moves: readonly { readonly name: string; readonly pp: number }[];
+    readonly status?: string;
+    readonly ability?: string;
+    readonly heldItem?: string;
+    readonly nature?: string;
+  },
 ) => ({
   ...leadMember,
   id,
@@ -55,6 +83,11 @@ const partyMember = (
   level: available(level),
   currentHp: available(currentHp),
   maximumHp: available(maximumHp),
+  status: available(detail.status ?? "healthy"),
+  moves: available(detail.moves.map((entry) => move(entry.name, entry.pp))),
+  ability: detail.ability ? available(detail.ability) : unavailable,
+  heldItem: detail.heldItem ? available(detail.heldItem) : unavailable,
+  nature: detail.nature ? available(detail.nature) : unavailable,
 });
 
 const trainer = (id: string, name: string, trainerClass: string, battled: boolean) => ({
@@ -125,20 +158,81 @@ export const fullPartyEvent = {
   snapshot: {
     ...activeRunEvent.snapshot,
     party: [
-      partyMember("1", "Ivysaur", "2", ["grass", "poison"], 24, 61, 74),
-      partyMember("2", "Pidgeotto", "17", ["normal", "flying"], 22, 58, 66),
-      partyMember("3", "Kadabra", "64", ["psychic"], 21, 12, 52),
-      partyMember("4", "Growlithe", "58", ["fire"], 20, 55, 61),
-      partyMember("5", "Onix", "95", ["rock", "ground"], 19, 47, 49),
-      partyMember("6", "Nidorino", "33", ["poison"], 18, 44, 57),
+      partyMember("1", "Ivysaur", "2", ["grass", "poison"], 24, 61, 74, {
+        moves: [
+          { name: "Vine Whip", pp: 10 },
+          { name: "Growl", pp: 40 },
+          { name: "Poison Powder", pp: 35 },
+          { name: "Sleep Powder", pp: 15 },
+        ],
+        nature: "Modest",
+      }),
+      partyMember("2", "Pidgeotto", "17", ["normal", "flying"], 22, 58, 66, {
+        moves: [
+          { name: "Gust", pp: 35 },
+          { name: "Quick Attack", pp: 30 },
+          { name: "Sand-Attack", pp: 15 },
+        ],
+      }),
+      partyMember("3", "Kadabra", "64", ["psychic"], 21, 12, 52, {
+        moves: [
+          { name: "Confusion", pp: 25 },
+          { name: "Teleport", pp: 20 },
+          { name: "Kinesis", pp: 15 },
+        ],
+        ability: "Synchronize",
+        nature: "Timid",
+      }),
+      partyMember("4", "Growlithe", "58", ["fire"], 20, 55, 61, {
+        moves: [
+          { name: "Ember", pp: 25 },
+          { name: "Bite", pp: 25 },
+          { name: "Roar", pp: 20 },
+        ],
+        ability: "Intimidate",
+        heldItem: "Oran Berry",
+      }),
+      partyMember("5", "Onix", "95", ["rock", "ground"], 19, 47, 49, {
+        moves: [
+          { name: "Tackle", pp: 35 },
+          { name: "Screech", pp: 40 },
+          { name: "Bind", pp: 20 },
+          { name: "Rock Throw", pp: 15 },
+        ],
+      }),
+      partyMember("6", "Nidorino", "33", ["poison"], 18, 20, 57, {
+        moves: [
+          { name: "Poison Sting", pp: 35 },
+          { name: "Horn Attack", pp: 25 },
+          { name: "Double Kick", pp: 30 },
+        ],
+        status: "paralyzed",
+      }),
     ],
     location: available({ name: "Rock Tunnel", mapId: available("82") }),
     battle: available({
       active: true,
       kind: "trainer",
       format: "single",
-      player: [partyMember("1", "Ivysaur", "2", ["grass", "poison"], 24, 61, 74)],
-      opponents: [partyMember("7", "Machop", "66", ["fighting"], 23, 39, 63)],
+      player: [
+        partyMember("1", "Ivysaur", "2", ["grass", "poison"], 24, 61, 74, {
+          moves: [
+            { name: "Vine Whip", pp: 10 },
+            { name: "Growl", pp: 40 },
+            { name: "Poison Powder", pp: 35 },
+            { name: "Sleep Powder", pp: 15 },
+          ],
+          nature: "Modest",
+        }),
+      ],
+      opponents: [
+        partyMember("7", "Machop", "66", ["fighting"], 23, 39, 63, {
+          moves: [
+            { name: "Karate Chop", pp: 25 },
+            { name: "Low Kick", pp: 20 },
+          ],
+        }),
+      ],
       trainer: available(trainer("hiker-1", "Hiker Franklin", "Hiker", false)),
       outcome: available("in_progress"),
     }),

@@ -80,12 +80,14 @@ const main = async () => {
     .join("\n");
 
   const model = argumentValue("--model");
+  const effort = argumentValue("--effort");
   const claudeArguments = [
     "-p",
     promptFor(directory, summary),
     "--allowed-tools",
     "Read,Glob,Grep",
     ...(model ? ["--model", model] : []),
+    ...(effort ? ["--effort", effort] : []),
   ];
 
   console.error(`reviewing ${String(manifest.captures.length)} views with claude`);
