@@ -69,8 +69,12 @@ of learning.
 - Confirm the exact field set directly with the requester before building a
   preview or summary surface; do not infer one from a related but different
   view.
+- Keep compact summary facts in shared wrapping rows and place dense strips
+  beside their artwork when the available width supports it.
 - Bound route-progress markers and rows to the Tracker-reported trainer total;
   a reported zero must render no trainers even if a stale list is present.
+- Do not run image-generation scripts or tools unless the requester explicitly
+  asks; image generation may incur material cost.
 
 ## Independent review gate
 

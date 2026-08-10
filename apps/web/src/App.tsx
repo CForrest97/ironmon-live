@@ -88,9 +88,9 @@ const NatureBadge = ({ value }: { readonly value: Available<string> }) =>
     if (!effect) return <span className="nature-badge">{nature}</span>;
     return (
       <span className="nature-badge">
-        {nature}
-        <span className="nature-boost"> ▲{STAT_LABELS[effect.boosted] ?? effect.boosted}</span>
-        <span className="nature-lower"> ▼{STAT_LABELS[effect.lowered] ?? effect.lowered}</span>
+        <span>{nature}</span>
+        <span className="nature-boost">▲{STAT_LABELS[effect.boosted] ?? effect.boosted}</span>
+        <span className="nature-lower">▼{STAT_LABELS[effect.lowered] ?? effect.lowered}</span>
       </span>
     );
   });
@@ -128,6 +128,30 @@ const BaseStatPotential = ({
     );
   });
 
+const BaseStatStrip = ({
+  value,
+}: {
+  readonly value: Available<Readonly<Record<string, number>>>;
+}) =>
+  availableValue(value, (values) => {
+    const entries = orderedStatEntries(values);
+    const total = entries.reduce((sum, [, amount]) => sum + amount, 0);
+    return (
+      <dl className="base-stat-strip" aria-label="Randomized base stats">
+        {entries.map(([label, amount]) => (
+          <div key={label}>
+            <dt>{STAT_LABELS[label] ?? label}</dt>
+            <dd>{amount}</dd>
+          </div>
+        ))}
+        <div className="base-stat-total">
+          <dt>BST</dt>
+          <dd>{total}</dd>
+        </div>
+      </dl>
+    );
+  });
+
 const TypeTags = ({ value }: { readonly value: Available<readonly string[]> }) =>
   availableValue(value, (types) =>
     types.length === 0 ? (
@@ -158,6 +182,25 @@ const BadgeChips = ({ value }: { readonly value: Available<readonly string[]> })
     ),
   );
 
+const conditionTone = (status: string) => {
+  const tones: Readonly<Record<string, string>> = {
+    BRN: "burned",
+    FRZ: "frozen",
+    PAR: "paralyzed",
+    PSN: "poisoned",
+    SLP: "asleep",
+    TOX: "poisoned",
+  };
+  return (
+    tones[status.toUpperCase()] ?? (status.toLowerCase() === "healthy" ? "healthy" : "unknown")
+  );
+};
+
+const ConditionBadge = ({ status }: { readonly status: Available<string> }) =>
+  availableValue(status, (value) => (
+    <span className={`tag condition-badge condition-${conditionTone(value)}`}>{value}</span>
+  ));
+
 const HpBar = ({ member }: { readonly member: ExpandedPartyMember }) => {
   const { currentHp, maximumHp, status } = member;
   if (currentHp.availability !== "available" || maximumHp.availability !== "available") {
@@ -177,7 +220,7 @@ const HpBar = ({ member }: { readonly member: ExpandedPartyMember }) => {
   return (
     <div className="hp-bar">
       <div className="hp-bar-label">
-        <span>{availableValue(status, (value) => value)}</span>
+        <ConditionBadge status={status} />
         <span className="hp-bar-value">
           {current}/{maximum} HP
         </span>
@@ -334,37 +377,34 @@ const PartyDetails = ({ member }: { readonly member: ExpandedPartyMember }) => (
       </div>
     ))}
     <BaseStatPotential value={member.baseStats} />
-    <details className="party-more">
-      <summary>More details</summary>
-      <dl className="facts">
-        <div>
-          <dt>Experience</dt>
-          <dd>{availableValue(member.experience, String)}</dd>
-        </div>
-        <div>
-          <dt>Friendship</dt>
-          <dd>{availableValue(member.friendship, String)}</dd>
-        </div>
-        <div>
-          <dt>Gender</dt>
-          <dd>{availableValue(member.gender, String)}</dd>
-        </div>
-        <div>
-          <dt>Shiny</dt>
-          <dd>{availableValue(member.shiny, String)}</dd>
-        </div>
-        <div>
-          <dt>PokeRus</dt>
-          <dd>{availableValue(member.pokerus, String)}</dd>
-        </div>
-      </dl>
-      <h4>Stats</h4>
-      <StatValues value={member.stats} nature={member.nature} />
-      <h4>IVs</h4>
-      <Values value={member.ivs} />
-      <h4>EVs</h4>
-      <Values value={member.evs} />
-    </details>
+    <dl className="facts">
+      <div>
+        <dt>Experience</dt>
+        <dd>{availableValue(member.experience, String)}</dd>
+      </div>
+      <div>
+        <dt>Friendship</dt>
+        <dd>{availableValue(member.friendship, String)}</dd>
+      </div>
+      <div>
+        <dt>Gender</dt>
+        <dd>{availableValue(member.gender, String)}</dd>
+      </div>
+      <div>
+        <dt>Shiny</dt>
+        <dd>{availableValue(member.shiny, String)}</dd>
+      </div>
+      <div>
+        <dt>PokeRus</dt>
+        <dd>{availableValue(member.pokerus, String)}</dd>
+      </div>
+    </dl>
+    <h4>Stats</h4>
+    <StatValues value={member.stats} nature={member.nature} />
+    <h4>IVs</h4>
+    <Values value={member.ivs} />
+    <h4>EVs</h4>
+    <Values value={member.evs} />
   </article>
 );
 
@@ -515,47 +555,152 @@ export const LegacyRunView = ({ snapshot }: { readonly snapshot: LegacyRunSnapsh
   </RunFrame>
 );
 
+type PanelName = "Party" | "Battle" | "Route" | "Progress";
+
 const Panel = ({
+  name,
   title,
+  description,
   open,
   onToggle,
   children,
   className,
 }: {
+  readonly name: PanelName;
   readonly title: string;
+  readonly description: string;
   readonly open: boolean;
   readonly onToggle: () => void;
   readonly children: ReactNode;
   readonly className?: string;
 }) => (
-  <section className={`panel ${className ?? ""}`}>
+  <section className={`panel ${className ?? ""}`} id={`panel-${name.toLowerCase()}`}>
     <button
       type="button"
       className="panel-summary"
       aria-expanded={open}
-      aria-controls={`panel-${title}`}
+      aria-controls={`panel-content-${name.toLowerCase()}`}
       onClick={onToggle}
     >
-      {title}
+      <span className="panel-summary-copy">
+        <span className="panel-summary-title">
+          {open ? "Hide" : "Show"} {title}
+        </span>
+        <span className="panel-summary-description">{description}</span>
+      </span>
+      <span className="panel-summary-chevron" aria-hidden="true">
+        {open ? "⌃" : "⌄"}
+      </span>
     </button>
     {open && (
-      <div className="panel-content" id={`panel-${title}`}>
+      <div className="panel-content" id={`panel-content-${name.toLowerCase()}`}>
         {children}
       </div>
     )}
   </section>
 );
 
-const ExpandedRunContent = ({ snapshot }: { readonly snapshot: ExpandedRunSnapshot }) => {
-  const [openPanel, setOpenPanel] = useState<string | undefined>(undefined);
-  const togglePanel = (title: string) => {
-    setOpenPanel((current) => (current === title ? undefined : title));
-  };
+const FocusCombatants = ({
+  label,
+  members,
+}: {
+  readonly label: string;
+  readonly members: readonly ExpandedPartyMember[];
+}) => (
+  <div className="focus-combatants">
+    <span>{label}</span>
+    <ul>
+      {members.map((member) => (
+        <li key={member.id}>
+          <strong>{member.name}</strong>
+          {" · "}
+          {availableValue(member.currentHp, (current) =>
+            availableValue(
+              member.maximumHp,
+              (maximum) => `${String(current)}/${String(maximum)} HP`,
+            ),
+          )}
+          {" · "}
+          <ConditionBadge status={member.status} />
+        </li>
+      ))}
+    </ul>
+  </div>
+);
 
+const CurrentFocus = ({
+  snapshot,
+  onShowDetails,
+}: {
+  readonly snapshot: ExpandedRunSnapshot;
+  readonly onShowDetails: (panel: PanelName) => void;
+}) => {
+  const activeBattle =
+    snapshot.battle.availability === "available" && snapshot.battle.value.active
+      ? snapshot.battle.value
+      : undefined;
   const routeProgress = availableValue(
     snapshot.route,
-    (route) => `${String(route.completed)}/${String(route.total)}`,
+    (route) => `${String(route.completed)}/${String(route.total)} trainers`,
   );
+  const panel = activeBattle ? "Battle" : "Route";
+  const content = activeBattle ? (
+    <>
+      <p>
+        {activeBattle.kind} battle · {activeBattle.format}
+        {" · "}
+        {availableValue(
+          activeBattle.trainer,
+          (trainer) =>
+            `${trainer.trainerClass.availability === "available" ? `${trainer.trainerClass.value} ` : ""}${trainer.name}`,
+        )}
+      </p>
+      <FocusCombatants label="Your active Pokémon" members={activeBattle.player} />
+      <FocusCombatants label="Opponents" members={activeBattle.opponents} />
+      <div className="focus-route-context" role="group" aria-label="Route context">
+        <span>Route context</span>
+        <strong>{availableValue(snapshot.location, (location) => location.name)}</strong>
+        <span className="badge-count">{routeProgress}</span>
+      </div>
+    </>
+  ) : (
+    <>
+      <p>{availableValue(snapshot.location, (location) => location.name)}</p>
+      <span className="badge-count">{routeProgress}</span>
+    </>
+  );
+
+  return (
+    <section className="current-focus" aria-label="Current focus">
+      <div className="current-focus-heading">
+        <span className="eyebrow">Current focus</span>
+        <button
+          type="button"
+          onClick={() => {
+            onShowDetails(panel);
+          }}
+        >
+          Show {panel.toLowerCase()} details
+        </button>
+      </div>
+      {content}
+    </section>
+  );
+};
+
+const ExpandedRunContent = ({ snapshot }: { readonly snapshot: ExpandedRunSnapshot }) => {
+  const [openPanel, setOpenPanel] = useState<PanelName | undefined>(undefined);
+
+  const showPanel = (panel: PanelName) => {
+    setOpenPanel(panel);
+    window.requestAnimationFrame(() => {
+      document.getElementById(`panel-${panel.toLowerCase()}`)?.scrollIntoView({ block: "start" });
+    });
+  };
+  const togglePanel = (panel: PanelName) => {
+    setOpenPanel((current) => (current === panel ? undefined : panel));
+  };
+
   const activeBattle =
     snapshot.battle.availability === "available" && snapshot.battle.value.active
       ? snapshot.battle.value
@@ -564,53 +709,46 @@ const ExpandedRunContent = ({ snapshot }: { readonly snapshot: ExpandedRunSnapsh
   return (
     <>
       <section aria-label="Run overview" className="overview-grid">
-        <article className="overview-card">
-          <h2>Location</h2>
-          <p>{availableValue(snapshot.location, (location) => location.name)}</p>
-          {availableValue(snapshot.route, (route) => (
-            <ProgressTrack steps={routeProgressSteps(route)} />
-          ))}
-          <span className="badge-count">{routeProgress} trainers</span>
-        </article>
         <article className="overview-card overview-card-party">
-          <h2>Party</h2>
+          <h2>Party overview</h2>
           <div className="overview-party">
             {snapshot.party.length === 0 ? (
               <p>No party yet</p>
             ) : (
               snapshot.party.map((member) => (
-                <div className="overview-party-row" key={member.id}>
-                  <Sprite member={member} />
-                  <div className="overview-party-info">
-                    <span className="overview-party-name">{member.name}</span>
-                    <HpBar member={member} />
-                    <TypeTags value={member.types} />
-                    {availableValue(member.moves, (moves) => (
-                      <span className="overview-party-moves">
-                        {moves.length === 0
-                          ? "No moves"
-                          : moves.map((move) => move.name).join(" · ")}
-                      </span>
-                    ))}
+                <div className="overview-party-member" key={member.id}>
+                  <div className="overview-party-row">
+                    <Sprite member={member} />
+                    <div className="overview-party-info">
+                      <div className="overview-party-identity">
+                        <span className="overview-party-name">{member.name}</span>
+                        <NatureBadge value={member.nature} />
+                        <TypeTags value={member.types} />
+                      </div>
+                      <HpBar member={member} />
+                      <div className="overview-party-traits">
+                        <span className="overview-party-ability">
+                          <span>Ability</span>
+                          {availableValue(member.ability, String)}
+                        </span>
+                        {availableValue(member.moves, (moves) => (
+                          <span className="overview-party-moves">
+                            {moves.length === 0
+                              ? "No moves"
+                              : moves.map((move) => move.name).join(" · ")}
+                          </span>
+                        ))}
+                      </div>
+                      <BaseStatStrip value={member.baseStats} />
+                    </div>
                   </div>
                 </div>
               ))
             )}
           </div>
         </article>
-        <article className="overview-card">
-          <h2>Battle</h2>
-          <p>
-            {activeBattle ? (
-              `${activeBattle.kind} · ${activeBattle.format}`
-            ) : snapshot.battle.availability === "available" ? (
-              "No active battle"
-            ) : (
-              <Unavailable />
-            )}
-          </p>
-        </article>
-        <article className="overview-card">
+        <CurrentFocus snapshot={snapshot} onShowDetails={showPanel} />
+        <article className="overview-status overview-status-badges">
           <h2>Badges</h2>
           {availableValue(snapshot.progress, (progress) => (
             <BadgeChips value={progress.badges} />
@@ -619,7 +757,9 @@ const ExpandedRunContent = ({ snapshot }: { readonly snapshot: ExpandedRunSnapsh
       </section>
       <section className="panel-stack" aria-label="Run details">
         <Panel
-          title="Party"
+          name="Party"
+          title="Party details"
+          description="Moves, stats, IVs, EVs, and condition"
           className="panel-party"
           open={openPanel === "Party"}
           onToggle={() => {
@@ -634,7 +774,9 @@ const ExpandedRunContent = ({ snapshot }: { readonly snapshot: ExpandedRunSnapsh
         </Panel>
         {activeBattle && (
           <Panel
-            title="Battle"
+            name="Battle"
+            title="Battle details"
+            description="Combatants, opponent, moves, and outcome"
             className="panel-battle"
             open={openPanel === "Battle"}
             onToggle={() => {
@@ -664,7 +806,9 @@ const ExpandedRunContent = ({ snapshot }: { readonly snapshot: ExpandedRunSnapsh
           </Panel>
         )}
         <Panel
-          title="Route"
+          name="Route"
+          title="Route trainers"
+          description="Trainer status, parties, moves, and items"
           className="panel-route"
           open={openPanel === "Route"}
           onToggle={() => {
@@ -709,7 +853,9 @@ const ExpandedRunContent = ({ snapshot }: { readonly snapshot: ExpandedRunSnapsh
           })}
         </Panel>
         <Panel
-          title="Progress"
+          name="Progress"
+          title="Run progress"
+          description="Badges, timer, playtime, and counters"
           className="panel-progress"
           open={openPanel === "Progress"}
           onToggle={() => {

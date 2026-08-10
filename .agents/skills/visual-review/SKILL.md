@@ -26,10 +26,16 @@ clean design lens finding stand in for a content check that was skipped.
   boxes holding it line up.
 
 Read `docs/product/specs/PRD-001-live-player-companion.md`'s Desired Outcomes
-before starting. The primary one governs every channel scene: *a player can
-understand detailed current-party information and current-route trainer
-progress at a glance during play.* Judge content fit against that, not against
-general UX taste.
+and numbered Requirements before starting. The primary outcome governs every
+channel scene: *a player can understand detailed current-party information and
+current-route trainer progress at a glance during play.* Judge content fit
+against that, not against general UX taste — but treat the Requirements as the
+literal, checkable definition of what "detailed" and "at a glance" mean. Where
+a requirement names specific fields (for example, "shows its IVs, EVs, stats,
+moves, and types"), check `renderedText` and the manifest for each named field
+individually rather than for the topic in general. A requirement whose general
+subject appears on screen but whose specific named fields do not is still a
+miss — do not credit a requirement from a partial match.
 
 ## Measure before you judge
 
@@ -42,12 +48,30 @@ Never report a measurable defect you have not computed from the manifest.
 ## Design: searching for imperfections
 
 Work through each scene at each viewport. The manifest gives you the measured
-position, size, font size, and weight of every landmark — use it as your
-evidence, not the screenshot's appearance. The categories below are examples
-of the kind of thing that's worth finding, not a list to run down and clear:
+position, size, font size, and weight of every landmark, plus how much of the
+fold is actually covered by content (`foldFillRatio`, `foldEmptyBelowContentPx`)
+— use it as your evidence, not the screenshot's appearance. The categories
+below are examples of the kind of thing that's worth finding, not a list to
+run down and clear:
 
 - Something above the fold that the scene's `intent` doesn't need, or
   something the intent needs that only appears after scrolling.
+- The page's top-to-bottom order doesn't match the priority the `intent`
+  implies — if the intent names things in a sequence (for example "what is
+  alive, what is being fought, how far the route has gone"), check whether the
+  landmarks' `y` order actually agrees. A lower-priority section placed above
+  a higher-priority one is a defect even when each section looks fine on its
+  own.
+- A low `foldFillRatio` or a large `foldEmptyBelowContentPx` for a scene whose
+  `intent` calls for taking in the state at a glance. These are measured, not
+  impressions — a mostly-empty fold or a large empty band below the last
+  visible element is a defect in its own right, separate from whether
+  individual cards are internally well-aligned.
+- The same landmark `label` (or near-identical wording) appears more than once
+  for genuinely different elements — for example a summary card and a
+  separately expandable section both titled the same thing — with nothing
+  distinguishing what each one is or holds. That reads as a duplicate or a
+  dead element to a viewer even when both are intentional.
 - Edges that look aligned in the image but differ by a few pixels in `x` or
   `x + width` — and, just as much, edges that look intentionally offset but
   aren't (no indent or nesting visible to explain it).

@@ -26,3 +26,4 @@ keep completed items as durable delivery history.
 
 - [WORK-007: Define the quiet companion utility](WORK-007-define-companion-utility.md)
 - [WORK-009: Define the expanded player-first live channel](WORK-009-define-expanded-player-first-live-channel.md)
+- [WORK-020: Require explicit approval for image generation](WORK-020-require-explicit-image-generation-approval.md)

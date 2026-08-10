@@ -170,6 +170,15 @@ export const scenes: readonly Scene[] = [
     channelEvent: capturedRunEvent,
   },
   {
+    name: "channel-active-battle",
+    title: "Channel during an active battle",
+    path: "/channel/00042",
+    intent:
+      "Follow an active battle at a glance: identify the combatants, their readiness, and the route context.",
+    ready: '[aria-label="Current focus"]',
+    channelEvent: activeRunEvent,
+  },
+  {
     name: "channel-run-start",
     title: "Channel at run start",
     path: "/channel/00042",
