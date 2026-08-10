@@ -170,7 +170,7 @@ const readMetrics = (page: Page, viewportHeight: number, selector: string, limit
         return text.length > 60 ? `${text.slice(0, 57)}...` : text;
       };
 
-      const landmarks = [...document.querySelectorAll(landmarkSelector)]
+      const allLandmarks = [...document.querySelectorAll(landmarkSelector)]
         .map((element) => {
           const rect = element.getBoundingClientRect();
           const style = window.getComputedStyle(element);
@@ -188,15 +188,35 @@ const readMetrics = (page: Page, viewportHeight: number, selector: string, limit
           };
         })
         .filter((landmark) => landmark.width > 0 && landmark.height > 0)
-        .sort((first, second) => first.y - second.y || first.x - second.x)
-        .slice(0, maxLandmarks);
+        .sort((first, second) => first.y - second.y || first.x - second.x);
+
+      // Merge landmark y-ranges into a union so a parent and its children
+      // collapse into one span instead of double-counting — this measures
+      // genuinely empty bands of the fold, not the padding inside a card.
+      const covered: Array<{ start: number; end: number }> = [];
+      for (const landmark of allLandmarks) {
+        const start = landmark.y;
+        const end = landmark.y + landmark.height;
+        const last = covered[covered.length - 1];
+        if (last && start <= last.end) last.end = Math.max(last.end, end);
+        else covered.push({ start, end });
+      }
+      const coveredWithinFold = covered.reduce((total, range) => {
+        const start = Math.min(range.start, foldHeight);
+        const end = Math.min(range.end, foldHeight);
+        return total + Math.max(0, end - start);
+      }, 0);
+      const lastRange = covered.at(-1);
+      const lastCoveredY = lastRange ? Math.min(lastRange.end, foldHeight) : 0;
 
       return {
         documentHeight: document.documentElement.scrollHeight,
         scrollWidth: document.documentElement.scrollWidth,
         innerWidth: window.innerWidth,
         horizontalOverflow: document.documentElement.scrollWidth > window.innerWidth,
-        landmarks,
+        foldFillRatio: Math.round((coveredWithinFold / foldHeight) * 100) / 100,
+        foldEmptyBelowContentPx: Math.max(0, Math.round(foldHeight - lastCoveredY)),
+        landmarks: allLandmarks.slice(0, maxLandmarks),
         renderedText: document.body.innerText.replace(/\s+/g, " ").trim(),
       };
     },
@@ -324,7 +344,7 @@ const main = async () => {
   const manifest: Manifest = {
     capturedAt: new Date().toISOString(),
     baseUrl,
-    note: "Coordinates and sizes are CSS pixels. Multiply by deviceScaleFactor for image pixels. Sprite artwork loads from real third-party CDNs; a sprite that failed or was still loading when captured renders as an empty box and is worth flagging like any other content-fit gap.",
+    note: "Coordinates and sizes are CSS pixels. Multiply by deviceScaleFactor for image pixels. Sprite artwork loads from real third-party CDNs; a sprite that failed or was still loading when captured renders as an empty box and is worth flagging like any other content-fit gap. foldFillRatio is the fraction of the fold covered by any landmark (nested elements merged so a parent and its children only count once); foldEmptyBelowContentPx is the empty gap between the last landmark and the fold. Low fill or a large trailing gap is a measurable whitespace defect, not a matter of taste.",
     captures,
   };
   await writeFile(
