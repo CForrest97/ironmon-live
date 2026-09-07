@@ -14,19 +14,19 @@
   },
   "dependencies": {
     "@ironmon-live/contracts": "0.1.0",
-    "react": "19.1.1",
-    "react-dom": "19.1.1"
+    "react": "19.2.8",
+    "react-dom": "19.2.8"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "1.50.0",
-    "@cloudflare/workers-types": "5.20260731.1",
+    "@cloudflare/vite-plugin": "1.54.4",
+    "@cloudflare/workers-types": "5.20260904.1",
     "@playwright/test": "1.62.1",
-    "@testing-library/jest-dom": "7.0.0",
-    "@testing-library/react": "16.3.2",
-    "@types/react": "19.1.9",
-    "@types/react-dom": "19.1.7",
-    "@vitejs/plugin-react": "4.7.0",
-    "vite": "7.3.6",
-    "wrangler": "4.118.0"
+    "@testing-library/jest-dom": "7.0.1",
+    "@testing-library/react": "16.3.3",
+    "@types/react": "19.2.18",
+    "@types/react-dom": "19.2.7",
+    "@vitejs/plugin-react": "6.1.1",
+    "vite": "8.2.2",
+    "wrangler": "4.129.0"
   }
 }
