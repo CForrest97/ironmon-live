@@ -5,6 +5,7 @@ status: in-progress
 kind: product
 artifacts:
   - PRD-003
+  - DEC-006
 ---
 
 # Bound route progress to the reported trainer total
@@ -25,9 +26,11 @@ trainers than the reported total.
 
 The maintainer supplied an active schema-version-2 snapshot for Route 101 with
 `trainers: []`, `completed: 0`, and `total: 0`, alongside a viewer screenshot
-that showed many unbattled trainer markers below `0/0 trainers`. The route
-panel in [PRD-003](../../docs/product/specs/PRD-003-expand-player-first-live-channel.md)
-must present reported trainer count and reported trainer state consistently.
+that showed many unbattled trainer markers below `0/0 trainers`.
+[PRD-003](../../docs/product/specs/PRD-003-expand-player-first-live-channel.md)
+and [DEC-006](../../docs/decisions/DEC-006-bound-route-display-to-reported-trainer-total.md)
+now define a reported total as the presentation bound when it conflicts with a
+trainer list.
 
 ## Scope
 
@@ -60,12 +63,20 @@ inconsistent-state boundary observed in the screenshot.
 - `npm run validate:docs` and `npm run check` reach only the pre-existing
   untracked `WORK-014` omission from `work/items/README.md`; this item leaves
   that unrelated work untouched.
-- Product-fit, domain-consistency, and independent merge-risk reviews are in
-  progress before merge.
+- Final product-fit review: `aligned`, high confidence, no blocking findings.
+- Initial domain-consistency review found one blocking finding: the precedence
+  between two conflicting reported route values was undocumented. DEC-006
+  resolves that presentation boundary; final review: `consistent`, high
+  confidence, no blocking findings.
+- Initial merge-risk review: rating 1, high confidence, no blocking findings
+  and no human approval required for this incremental fix. The final
+  merge-risk review found no blocking findings and rated the documented product
+  rule 2 with high confidence, so human approval is required before merge.
 
 ## Agent Notes
 
 The supplied JSON itself contains an empty trainer list, so it cannot generate
-markers in the current mapping code. The guard protects the viewer from an
-inconsistent or stale list arriving with an authoritative zero total without
-inventing trainer state.
+markers in the current mapping code. The guard protects the viewer from a
+conflicting list arriving with an authoritative zero total without inventing
+trainer state. A review identified this display precedence as an undocumented
+product rule; DEC-006 records it before the change is merged.
